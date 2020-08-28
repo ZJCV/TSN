@@ -45,9 +45,9 @@ def build_dataset():
     train_transform, _ = build_train_transform()
     test_transform = build_test_transform()
 
-    train_dataset = HMDB51(data_dir, annotation_dir, num_seg=3, split=1,
+    train_dataset = HMDB51(data_dir, annotation_dir, num_seg=3, split=1, modality=('RGB', 'RGBDiff'),
                            train=True, transform=train_transform)
-    test_dataset = HMDB51(data_dir, annotation_dir, num_seg=3, split=1,
+    test_dataset = HMDB51(data_dir, annotation_dir, num_seg=3, split=1, modality=('RGB', 'RGBDiff'),
                           train=True, transform=test_transform)
 
     return {'train': train_dataset, 'test': test_dataset}, {'train': len(train_dataset), 'test': len(test_dataset)}
@@ -56,7 +56,7 @@ def build_dataset():
 def build_dataloader():
     data_sets, data_sizes = build_dataset()
 
-    train_dataloader = DataLoader(data_sets['train'], batch_size=32, shuffle=True, num_workers=8)
-    test_dataloader = DataLoader(data_sets['test'], batch_size=32, shuffle=True, num_workers=8)
+    train_dataloader = DataLoader(data_sets['train'], batch_size=16, shuffle=True, num_workers=8)
+    test_dataloader = DataLoader(data_sets['test'], batch_size=16, shuffle=True, num_workers=8)
 
     return {'train': train_dataloader, 'test': test_dataloader}, data_sizes

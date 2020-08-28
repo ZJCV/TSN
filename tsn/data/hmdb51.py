@@ -14,11 +14,14 @@ import numpy as np
 
 import torch
 from torch.utils.data import Dataset
+from tsn.util.image import rgbdiff
 
 
 class HMDB51(Dataset):
 
-    def __init__(self, data_dir, annotation_dir, num_seg=3, split=1, train=True, transform=None):
+    def __init__(self, data_dir, annotation_dir, modality=("RGB"), num_seg=3, split=1, train=True, transform=None):
+        assert modality == ('RGB') or modality == ('RGBDiff') or modality == ('RGB', 'RGBDiff')
+
         if train:
             annotation_path = os.path.join(annotation_dir, f'hmdb51_train_split_{split}_rawframes.txt')
         else:
@@ -30,6 +33,7 @@ class HMDB51(Dataset):
         self.data_dir = data_dir
         self.transform = transform
         self.num_seg = num_seg
+        self.modality = modality
 
         video_list = list()
         img_num_list = list()
@@ -49,22 +53,37 @@ class HMDB51(Dataset):
     def __getitem__(self, index: int):
         """
         从选定的视频文件夹中随机选取T帧
-        :return: (T, C, H, W)，其中T表示num_seg
+        如果选择了输入模态为RGB或者RGBDiff,则返回(T, C, H, W)，其中T表示num_seg；
+        如果输入模态为(RGB, RGBDiff)，则返回(T*2, C, H, W)
         """
         assert index < len(self.video_list)
         target = self.cate_list[index]
 
-        num_list = random.sample(range(self.img_num_list[index]), self.num_seg)
+        if 'RGBDiff' in self.modality:
+            num_list = sorted(random.sample(range(self.img_num_list[index] - 1), self.num_seg))
+        else:
+            num_list = sorted(random.sample(range(self.img_num_list[index]), self.num_seg))
         video_path = os.path.join(self.data_dir, self.video_list[index])
 
         image_list = list()
         for num in num_list:
-            image_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num))
-            img = cv2.imread(image_path)
+            if 'RGB' in self.modality:
+                image_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num))
+                img = cv2.imread(image_path)
 
-            if self.transform:
-                img = self.transform(img)
-            image_list.append(img)
+                if self.transform:
+                    img = self.transform(img)
+                image_list.append(img)
+            if 'RGBDiff' in self.modality:
+                img1_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num))
+                img1 = cv2.imread(img1_path)
+                img2_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num + 1))
+                img2 = cv2.imread(img2_path)
+
+                img = rgbdiff(img1, img2)
+                if self.transform:
+                    img = self.transform(img)
+                image_list.append(img)
         image = torch.stack(image_list)
 
         return image, target
