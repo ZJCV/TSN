@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 
 """
-@date: 2020/8/28 下午6:41
-@file: mobilenetv2.py
+@date: 2020/8/29 上午9:54
+@file: tsn.py
 @author: zj
 @description: 
 """
 
 import torch
-import torchvision.models as models
-
+import torch.nn as nn
+from torchvision.models import resnet50
 from .consensus import Consensus
 
 
-class MobileNetV2(models.MobileNetV2):
+class TSN(nn.Module):
 
-    def __init__(self, num_classes=1000, consensus='avg'):
-        super(MobileNetV2, self).__init__(num_classes=num_classes)
+    def __init__(self, num_classes=1000, backbone='resnet', consensus='avg'):
+        super(TSN, self).__init__()
 
+        self.backbone = self.build_backbone(backbone, num_classes=num_classes)
         self.consensus = Consensus(type=consensus)
 
     def forward(self, x):
@@ -30,7 +31,11 @@ class MobileNetV2(models.MobileNetV2):
         input_data = x.transpose(0, 1)
         prob_list = list()
         for data in input_data:
-            prob_list.append(self._forward_impl(data))
+            prob_list.append(self.backbone(data))
 
         probs = self.consensus(torch.stack(prob_list))
         return probs
+
+    def build_backbone(self, name, num_classes=1000):
+        if 'resnet'.__eq__(name):
+            return resnet50(num_classes=num_classes)

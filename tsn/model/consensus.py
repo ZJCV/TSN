@@ -24,4 +24,6 @@ class Consensus(nn.Module):
         self.shape = input.size()
         if self.type == 'avg':
             output = input.mean(dim=self.dim, keepdim=False)
-        return output
+            return output
+        else:
+            raise ValueError('融合类型不存在')

@@ -11,11 +11,11 @@ import torch
 import torch.nn as nn
 from torch.nn.modules import Sequential
 
-from .mobilenetv2 import MobileNetV2
+from .tsn import TSN
 
 
 def build_model(num_classes=1000):
-    return MobileNetV2(num_classes=num_classes)
+    return TSN(num_classes=num_classes, backbone='resnet', consensus='avg')
 
 
 def build_criterion():
