@@ -33,5 +33,5 @@ if __name__ == '__main__':
     checkpointer = CheckPointer(model, optimizer=optimizer, scheduler=lr_scheduler, save_dir=output_dir,
                                 save_to_disk=True, logger=None)
 
-    train_model('MobileNet_v2', model, criterion, optimizer, lr_scheduler, data_loaders, data_sizes, checkpointer,
+    train_model('ResNet50', model, criterion, optimizer, lr_scheduler, data_loaders, data_sizes, checkpointer,
                 epoches=epoches, device=device)
