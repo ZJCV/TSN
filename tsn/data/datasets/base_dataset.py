@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-@date: 2020/8/28 下午4:37
-@file: hmdb51.py
+@date: 2020/8/29 上午11:05
+@file: base_dataset.py
 @author: zj
 @description: 
 """
@@ -18,24 +18,21 @@ from torch.utils.data import Dataset
 from tsn.util.image import rgbdiff
 
 
-class HMDB51(Dataset):
+class BaseDataset(Dataset):
 
-    def __init__(self, data_dir, annotation_dir, modality=("RGB"), num_seg=3, split=1, train=True, transform=None):
+    def __init__(self, data_dir, modality=("RGB"), num_seg=3, transform=None):
         assert modality == ('RGB') or modality == ('RGBDiff') or modality == ('RGB', 'RGBDiff')
-
-        if train:
-            annotation_path = os.path.join(annotation_dir, f'hmdb51_train_split_{split}_rawframes.txt')
-        else:
-            annotation_path = os.path.join(annotation_dir, f'hmdb51_val_split_{split}_rawframes.txt')
-
-        if not os.path.isfile(annotation_path):
-            raise ValueError(f'{annotation_path}不是文件路径')
 
         self.data_dir = data_dir
         self.transform = transform
         self.num_seg = num_seg
         self.modality = modality
 
+        self.video_list = None
+        self.cate_list = None
+        self.img_num_list = None
+
+    def update(self, annotation_path):
         video_list = list()
         img_num_list = list()
         cate_list = list()

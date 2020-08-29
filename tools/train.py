@@ -23,7 +23,7 @@ if __name__ == '__main__':
     data_loaders, data_sizes = build_dataloader()
 
     criterion = build_criterion()
-    model = build_model(num_classes=51).to(device)
+    model = build_model(num_classes=101).to(device)
     optimizer = build_optimizer(model)
     lr_scheduler = build_lr_scheduler(optimizer)
 

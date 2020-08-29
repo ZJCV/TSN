@@ -10,7 +10,8 @@
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 
-from .hmdb51 import HMDB51
+from tsn.data.datasets.hmdb51 import HMDB51
+from tsn.data.datasets.ucf101 import UCF101
 
 
 def build_train_transform():
@@ -39,16 +40,18 @@ def build_test_transform():
 
 
 def build_dataset():
-    data_dir = '/home/zj/zhonglian/mmaction2/data/hmdb51/rawframes'
-    annotation_dir = '/home/zj/zhonglian/mmaction2/data/hmdb51'
+    # data_dir = '/home/zj/zhonglian/mmaction2/data/hmdb51/rawframes'
+    # annotation_dir = '/home/zj/zhonglian/mmaction2/data/hmdb51'
+    data_dir = '/home/zj/zhonglian/mmaction2/data/ucf101/rawframes'
+    annotation_dir = '/home/zj/zhonglian/mmaction2/data/ucf101'
 
     train_transform, _ = build_train_transform()
     test_transform = build_test_transform()
 
-    train_dataset = HMDB51(data_dir, annotation_dir, num_seg=3, split=1, modality=('RGB', 'RGBDiff'),
+    train_dataset = UCF101(data_dir, annotation_dir, num_seg=3, split=1, modality=('RGB', 'RGBDiff'),
                            train=True, transform=train_transform)
-    test_dataset = HMDB51(data_dir, annotation_dir, num_seg=3, split=1, modality=('RGB', 'RGBDiff'),
-                          train=True, transform=test_transform)
+    test_dataset = UCF101(data_dir, annotation_dir, num_seg=3, split=1, modality=('RGB', 'RGBDiff'),
+                          train=False, transform=test_transform)
 
     return {'train': train_dataset, 'test': test_dataset}, {'train': len(train_dataset), 'test': len(test_dataset)}
 
