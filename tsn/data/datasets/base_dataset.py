@@ -32,18 +32,21 @@ class BaseDataset(Dataset):
         self.cate_list = None
         self.img_num_list = None
 
-    def update(self, annotation_path):
+    def update(self, annotation_list):
+        assert len(annotation_list) > 0
         video_list = list()
         img_num_list = list()
         cate_list = list()
-        with open(annotation_path, 'r') as f:
-            lines = f.readlines()
-            for line in lines:
-                dir_name, img_num, cate = line.strip().split(' ')
 
-                video_list.append(dir_name)
-                img_num_list.append(int(img_num))
-                cate_list.append(int(cate))
+        for annotation_path in annotation_list:
+            with open(annotation_path, 'r') as f:
+                lines = f.readlines()
+                for line in lines:
+                    dir_name, img_num, cate = line.strip().split(' ')
+
+                    video_list.append(dir_name)
+                    img_num_list.append(int(img_num))
+                    cate_list.append(int(cate))
         self.video_list = video_list
         self.img_num_list = img_num_list
         self.cate_list = cate_list
