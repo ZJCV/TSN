@@ -11,6 +11,31 @@ import os
 
 from .base_dataset import BaseDataset
 
+classes = ['ApplyEyeMakeup', 'ApplyLipstick', 'Archery', 'BabyCrawling',
+           'BalanceBeam', 'BandMarching', 'BaseballPitch', 'Basketball',
+           'BasketballDunk', 'BenchPress', 'Biking', 'Billiards',
+           'BlowDryHair', 'BlowingCandles', 'BodyWeightSquats', 'Bowling',
+           'BoxingPunchingBag', 'BoxingSpeedBag', 'BreastStroke',
+           'BrushingTeeth', 'CleanAndJerk', 'CliffDiving', 'CricketBowling',
+           'CricketShot', 'CuttingInKitchen', 'Diving', 'Drumming', 'Fencing',
+           'FieldHockeyPenalty', 'FloorGymnastics', 'FrisbeeCatch',
+           'FrontCrawl', 'GolfSwing', 'Haircut', 'Hammering', 'HammerThrow',
+           'HandstandPushups', 'HandstandWalking', 'HeadMassage', 'HighJump',
+           'HorseRace', 'HorseRiding', 'HulaHoop', 'IceDancing',
+           'JavelinThrow', 'JugglingBalls', 'JumpingJack', 'JumpRope',
+           'Kayaking', 'Knitting', 'LongJump', 'Lunges', 'MilitaryParade',
+           'Mixing', 'MoppingFloor', 'Nunchucks', 'ParallelBars',
+           'PizzaTossing', 'PlayingCello', 'PlayingDaf', 'PlayingDhol',
+           'PlayingFlute', 'PlayingGuitar', 'PlayingPiano', 'PlayingSitar',
+           'PlayingTabla', 'PlayingViolin', 'PoleVault', 'PommelHorse',
+           'PullUps', 'Punch', 'PushUps', 'Rafting', 'RockClimbingIndoor',
+           'RopeClimbing', 'Rowing', 'SalsaSpin', 'ShavingBeard', 'Shotput',
+           'SkateBoarding', 'Skiing', 'Skijet', 'SkyDiving', 'SoccerJuggling',
+           'SoccerPenalty', 'StillRings', 'SumoWrestling', 'Surfing', 'Swing',
+           'TableTennisShot', 'TaiChi', 'TennisSwing', 'ThrowDiscus',
+           'TrampolineJumping', 'Typing', 'UnevenBars', 'VolleyballSpiking',
+           'WalkingWithDog', 'WallPushups', 'WritingOnBoard', 'YoYo']
+
 
 class UCF101(BaseDataset):
 
@@ -35,3 +60,4 @@ class UCF101(BaseDataset):
                 annotation_list.append(annotation_path)
 
         self.update(annotation_list)
+        self.update_class(classes)

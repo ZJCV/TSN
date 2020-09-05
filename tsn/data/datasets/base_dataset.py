@@ -51,6 +51,9 @@ class BaseDataset(Dataset):
         self.img_num_list = img_num_list
         self.cate_list = cate_list
 
+    def update_class(self, classes):
+        self.classes = classes
+
     def __getitem__(self, index: int):
         """
         从选定的视频文件夹中随机选取T帧
