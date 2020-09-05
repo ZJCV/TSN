@@ -15,7 +15,7 @@ from .consensus import Consensus
 
 class TSN(nn.Module):
 
-    def __init__(self, num_classes=1000, backbone='resnet', consensus='avg'):
+    def __init__(self, num_classes=1000, backbone='resnet50', consensus='avg'):
         super(TSN, self).__init__()
 
         self.backbone = self.build_backbone(backbone, num_classes=num_classes)
@@ -37,5 +37,5 @@ class TSN(nn.Module):
         return probs
 
     def build_backbone(self, name, num_classes=1000):
-        if 'resnet'.__eq__(name):
+        if 'resnet50'.__eq__(name):
             return resnet50(num_classes=num_classes)

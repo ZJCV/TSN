@@ -9,7 +9,7 @@
 
 import torchvision.transforms as transforms
 
-from tsn.data.hmdb51 import HMDB51
+from tsn.data.datasets.hmdb51 import HMDB51
 
 
 def get_transform():

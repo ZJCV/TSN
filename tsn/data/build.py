@@ -20,7 +20,7 @@ from .transforms.build import build_transform
 
 
 def build_dataloader(cfg, train=True):
-    transform, target_transform = build_transform(cfg, train=train)
+    transform = build_transform(cfg, train=train)
     dataset = build_dataset(cfg, transform=transform, is_train=train)
 
     if train:

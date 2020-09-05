@@ -11,8 +11,8 @@ _C = CN()
 # Train
 # ---------------------------------------------------------------------------- #
 _C.TRAIN = CN()
-_C.TRAIN.NAME = 'C3D.train'
-_C.TRAIN.MAX_ITER = 10000
+_C.TRAIN.NAME = 'TSN.train'
+_C.TRAIN.MAX_ITER = 100000
 _C.TRAIN.LOG_STEP = 10
 _C.TRAIN.SAVE_STEP = 2500
 _C.TRAIN.EVAL_STEP = 2500
@@ -21,13 +21,14 @@ _C.TRAIN.EVAL_STEP = 2500
 # Test
 # ---------------------------------------------------------------------------- #
 _C.INFER = CN()
-_C.INFER.NAME = 'C3D.infer'
+_C.INFER.NAME = 'TSN.infer'
 
 # ---------------------------------------------------------------------------- #
 # Model
 # ---------------------------------------------------------------------------- #
 _C.MODEL = CN()
-_C.MODEL.NAME = 'c3d'
+_C.MODEL.BACKBONE = 'resnet50'
+_C.MODEL.CONSENSUS = 'avg'
 # HxWxC
 _C.MODEL.INPUT_SIZE = (112, 112, 3)
 _C.MODEL.NUM_CLASSES = 51
@@ -44,7 +45,7 @@ _C.CRITERION.NAME = 'crossentropy'
 _C.OPTIMIZER = CN()
 _C.OPTIMIZER.NAME = 'sgd'
 _C.OPTIMIZER.LR = 1e-3
-_C.OPTIMIZER.WEIGHT_DECAY = 3e-4
+_C.OPTIMIZER.WEIGHT_DECAY = 3e-5
 # for sgd
 _C.OPTIMIZER.MOMENTUM = 0.9
 
@@ -54,28 +55,29 @@ _C.OPTIMIZER.MOMENTUM = 0.9
 _C.LR_SCHEDULER = CN()
 _C.LR_SCHEDULER.NAME = 'multistep_lr'
 # for SteLR
-_C.LR_SCHEDULER.STEP_SIZE = 400
+_C.LR_SCHEDULER.STEP_SIZE = 40000
 # for MultiStepLR
-_C.LR_SCHEDULER.MILESTONES = [2500, 6000]
+_C.LR_SCHEDULER.MILESTONES = [25000, 60000]
 
 # ---------------------------------------------------------------------------- #
 # DataSets
 # ---------------------------------------------------------------------------- #
 _C.DATASETS = CN()
+_C.DATASETS.MODALITY = ('RGB', 'RGBDiff')
 
 _C.DATASETS.TRAIN = CN()
 _C.DATASETS.TRAIN.NAME = 'HMDB51'
-_C.DATASETS.TRAIN.STEP_BETWEEN_CLIPS = 16
-_C.DATASETS.TRAIN.FRAMES_PER_CLIP = 16
-_C.DATASETS.TRAIN.VIDEO_DIR = 'data/hmdb51_org'
-_C.DATASETS.TRAIN.ANNOTATION_DIR = 'data/testTrainMulti_7030_splits'
+# for hmdb51 and ucf101
+_C.DATASETS.TRAIN.SPLITS = (1, 2, 3)
+_C.DATASETS.TRAIN.DATA_DIR = 'data/hmdb51/rawframes'
+_C.DATASETS.TRAIN.ANNOTATION_DIR = 'data/hmdb51'
 
 _C.DATASETS.TEST = CN()
 _C.DATASETS.TEST.NAME = 'HMDB51'
-_C.DATASETS.TEST.STEP_BETWEEN_CLIPS = 16
-_C.DATASETS.TEST.FRAMES_PER_CLIP = 16
-_C.DATASETS.TEST.VIDEO_DIR = 'data/hmdb51_org'
-_C.DATASETS.TEST.ANNOTATION_DIR = 'data/testTrainMulti_7030_splits'
+# for hmdb51 and ucf101
+_C.DATASETS.TEST.SPLITS = (1, 2, 3)
+_C.DATASETS.TEST.DATA_DIR = 'data/hmdb51/rawframes'
+_C.DATASETS.TEST.ANNOTATION_DIR = 'data/hmdb51'
 
 # ---------------------------------------------------------------------------- #
 # Transform
@@ -96,4 +98,4 @@ _C.DATALOADER.NUM_WORKERS = 8
 # Output
 # ---------------------------------------------------------------------------- #
 _C.OUTPUT = CN()
-_C.OUTPUT.DIR = 'outputs/hmdb51'
+_C.OUTPUT.DIR = 'outputs/resnet50_hmdb51'

@@ -25,5 +25,7 @@ def build_dataset(cfg, transform=None, is_train=True):
     elif dataset_name == 'UCF101':
         dataset = UCF101(data_dir, annotation_dir, train=is_train, modality=modality, splits=splits,
                          transform=transform)
+    else:
+        raise ValueError(f"the dataset {dataset_name} does not exist")
 
     return dataset

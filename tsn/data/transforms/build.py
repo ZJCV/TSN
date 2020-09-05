@@ -12,11 +12,12 @@ import torchvision.transforms as transforms
 
 def build_transform(cfg, train=True):
     size = cfg.MODEL.INPUT_SIZE
+    h, w, c = size
 
     if train:
         transform = transforms.Compose([
             transforms.ToPILImage(),
-            transforms.Resize(size),
+            transforms.Resize((h, w)),
             transforms.RandomHorizontalFlip(),
             transforms.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1),
             transforms.ToTensor(),
@@ -26,7 +27,7 @@ def build_transform(cfg, train=True):
     else:
         transform = transforms.Compose([
             transforms.ToPILImage(),
-            transforms.Resize(size),
+            transforms.Resize((h, w)),
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ])

@@ -10,10 +10,13 @@
 import torch.optim as optim
 
 
-def build_optimizer(model):
+def build_optimizer(cfg, model):
     return optim.SGD(model.parameters(), lr=1e-3, momentum=0.9, weight_decay=3e-4)
     # return optim.Adam(model.parameters(), lr=1e-6, weight_decay=1e-6)
 
 
-def build_lr_scheduler(optimizer):
-    return optim.lr_scheduler.StepLR(optimizer, step_size=3)
+def build_lr_scheduler(cfg, optimizer):
+    milestones = [25000, 60000]
+    gamma = 0.5
+
+    return optim.lr_scheduler.MultiStepLR(optimizer, milestones, gamma=gamma)
