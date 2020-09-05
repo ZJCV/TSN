@@ -11,10 +11,10 @@ import os
 import datetime
 import time
 import torch
-from torch.utils.tensorboard import SummaryWriter
 
 from tsn.util.metrics import topk_accuracy
 from tsn.util.metric_logger import MetricLogger
+from tsn.engine.inference import do_evaluation
 
 
 def do_train(cfg, arguments,
@@ -26,8 +26,8 @@ def do_train(cfg, arguments,
         from torch.utils.tensorboard import SummaryWriter
         summary_writer = SummaryWriter(log_dir=os.path.join(cfg.OUTPUT.DIR, 'tf_logs'))
         # 写入模型
-        images, targets = next(iter(data_loader))
-        summary_writer.add_graph(model, images.to(device))
+        # images, targets = next(iter(data_loader))
+        # summary_writer.add_graph(model, images.to(device))
     else:
         summary_writer = None
 
@@ -50,8 +50,9 @@ def do_train(cfg, arguments,
 
         outputs = model(images)
         loss = criterion(outputs, targets)
-        topk_list = topk_accuracy(outputs, targets, topk=(1,))
-        meters.update(loss=loss / len(targets), acc=topk_list[0])
+        # compute top-k accuray
+        topk_list = topk_accuracy(outputs, targets, topk=(1, 5))
+        meters.update(loss=loss / len(targets), acc_1=topk_list[0], acc_5=topk_list[1])
 
         optimizer.zero_grad()
         loss.backward()
@@ -90,12 +91,12 @@ def do_train(cfg, arguments,
 
         if iteration % save_step == 0:
             checkpointer.save("model_{:06d}".format(iteration), **arguments)
-        # if eval_step > 0 and iteration % eval_step == 0 and not iteration == max_iter:
-            # eval_results = do_evaluation(cfg, model, device)
-            # if summary_writer:
-            #     for eval_result, dataset_name in zip(eval_results, cfg.DATASETS.TEST):
-            #         summary_writer.add_scalar(f'eval/{dataset_name}', eval_result[dataset_name], global_step=iteration)
-            # model.train()  # *IMPORTANT*: change to train mode after eval.
+        if eval_step > 0 and iteration % eval_step == 0 and not iteration == max_iter:
+            eval_results = do_evaluation(cfg, model, device, iteration=iteration)
+            if summary_writer:
+                for key, value in eval_results.items():
+                    summary_writer.add_scalar(f'eval/{key}', value, global_step=iteration)
+            model.train()
 
     if summary_writer:
         summary_writer.close()

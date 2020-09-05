@@ -16,7 +16,7 @@ from tsn.data.build import build_dataloader
 from tsn.model.build import build_model, build_criterion
 from tsn.optim.build import build_optimizer, build_lr_scheduler
 from tsn.engine.trainer import do_train
-# from tsn.engine.inference import do_evaluation
+from tsn.engine.inference import do_evaluation
 from tsn.util.checkpoint import CheckPointer
 from tsn.util.logger import setup_logger
 from tsn.util.collect_env import collect_env_info
@@ -93,8 +93,8 @@ def main():
     model = train(cfg, device)
 
     logger.info('Start final evaluating...')
-    # torch.cuda.empty_cache()  # speed up evaluating after training finished
-    # do_evaluation(cfg, model, device)
+    torch.cuda.empty_cache()  # speed up evaluating after training finished
+    do_evaluation(cfg, model, device)
 
 
 if __name__ == '__main__':

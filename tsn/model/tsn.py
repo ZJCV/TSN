@@ -38,4 +38,11 @@ class TSN(nn.Module):
 
     def build_backbone(self, name, num_classes=1000):
         if 'resnet50'.__eq__(name):
-            return resnet50(num_classes=num_classes)
+            model = resnet50(pretrained=True)
+
+            fc = model.fc
+            in_features = fc.in_features
+            bias = fc.bias
+            model.fc = nn.Linear(in_features=in_features, out_features=num_classes, bias=bias)
+
+            return model
