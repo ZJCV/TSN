@@ -54,7 +54,7 @@ def compute_on_dataset(model, data_loader, device):
 
 
 def inference(cfg, model, device, **kwargs):
-    iteration = kwargs['iteration']
+    iteration = kwargs.get('iteration', None)
     logger_name = cfg.INFER.NAME
     dataset_name = cfg.DATASETS.TEST.NAME
     output_dir = cfg.OUTPUT.DIR
