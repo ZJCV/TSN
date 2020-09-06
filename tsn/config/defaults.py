@@ -58,6 +58,7 @@ _C.LR_SCHEDULER.NAME = 'multistep_lr'
 _C.LR_SCHEDULER.STEP_SIZE = 40000
 # for MultiStepLR
 _C.LR_SCHEDULER.MILESTONES = [25000, 60000]
+_C.LR_SCHEDULER.GAMMA = 0.1
 
 # ---------------------------------------------------------------------------- #
 # DataSets
