@@ -42,7 +42,6 @@ class TSN(nn.Module):
 
             fc = model.fc
             in_features = fc.in_features
-            bias = fc.bias
-            model.fc = nn.Linear(in_features=in_features, out_features=num_classes, bias=bias)
+            model.fc = nn.Linear(in_features=in_features, out_features=num_classes, bias=True)
 
             return model
