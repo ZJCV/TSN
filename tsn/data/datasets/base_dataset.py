@@ -70,6 +70,8 @@ class BaseDataset(Dataset):
         num_list = list()
         if 'RGBDiff' in self.modality:
             # 在每段中随机挑选一帧
+            # 此处使用当前帧和下一帧进行Diff计算，在实际计算过程中，应该使用前一帧和当前帧进行Diff计算
+            # 当然，当前实现也可以把下一帧看成是当前帧
             for i in range(self.num_seg):
                 # 如果使用`RGBDiff`，需要采集前后两帧进行差分
                 # random.randint(a, b) -> [a, b]

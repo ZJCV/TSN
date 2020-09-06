@@ -24,6 +24,10 @@ class TSN(nn.Module):
     def forward(self, x):
         """
         输入数据大小为NxTxCxHxW，按T维度分别计算NxCxHxW，然后按照融合策略计算最终分类概率
+        上述这一步的实现逻辑有点绕：
+        1. 按照上述的实现结果，经过Backbone计算后得到的是TxNxNum_classes，然后按第0维进行融合得到NxNum_classes
+        2. 其中可以按N维度计算TxCXHxW，得到NxTxNum_classes，然后按照第1维进行融合得到NxNum_classes
+        两者效果是一样的
         """
         assert len(x.shape) == 5
         N, T, C, H, W = x.shape[:5]
