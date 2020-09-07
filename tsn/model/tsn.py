@@ -9,17 +9,20 @@
 
 import torch
 import torch.nn as nn
-from torchvision.models import resnet50
+from .backbones.build import resnet50
 from .consensus import Consensus
 
 
 class TSN(nn.Module):
 
-    def __init__(self, num_classes=1000, backbone='resnet50', consensus='avg'):
+    def __init__(self, num_classes=1000, backbone='resnet50', consensus='avg', partial_bn=True):
         super(TSN, self).__init__()
 
         self.backbone = self.build_backbone(backbone, num_classes=num_classes)
         self.consensus = Consensus(type=consensus)
+
+        if partial_bn:
+            self.freezing_bn(self.backbone)
 
     def forward(self, x):
         """
@@ -49,3 +52,12 @@ class TSN(nn.Module):
             model.fc = nn.Linear(in_features=in_features, out_features=num_classes, bias=True)
 
             return model
+
+    def freezing_bn(self, model):
+        count = 0
+        for m in model.modules():
+            if isinstance(m, nn.BatchNorm2d):
+                count += 1
+                if count == 1:
+                    continue
+                m.requires_grad_(False)
