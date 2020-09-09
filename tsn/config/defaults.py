@@ -29,7 +29,8 @@ _C.INFER.NAME = 'TSN.infer'
 _C.MODEL = CN()
 _C.MODEL.BACKBONE = 'resnet50'
 _C.MODEL.CONSENSUS = 'avg'
-_C.MODEL.PARTIAL_BN = True
+_C.MODEL.PARTIAL_BN = False
+_C.MODEL.PRETRAINED = False
 # HxWxC
 _C.MODEL.INPUT_SIZE = (112, 112, 3)
 _C.MODEL.NUM_CLASSES = 51
@@ -60,6 +61,12 @@ _C.LR_SCHEDULER.STEP_SIZE = 40000
 # for MultiStepLR
 _C.LR_SCHEDULER.MILESTONES = [25000, 60000]
 _C.LR_SCHEDULER.GAMMA = 0.1
+# for CosineAnnlearingLR
+_C.LR_SCHEDULER.MINIMAL_LR = 1e-5
+# for Warmup
+_C.LR_SCHEDULER.WARMUP = False
+_C.LR_SCHEDULER.ITERATION = 400
+_C.LR_SCHEDULER.MULTIPLIER = 1.0
 
 # ---------------------------------------------------------------------------- #
 # DataSets

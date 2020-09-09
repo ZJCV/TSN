@@ -1,8 +1,14 @@
 TRAIN:
-  MAX_ITER: 100000
+  MAX_ITER: 30000
+MODEL:
+  PARTIAL_BN: True
+  PRETRAINED: True
+OPTIMIZER:
+  NAME: 'sgd'
+  LR: 1e-3
 LR_SCHEDULER:
-  NAME: 'multistep_lr'
-  MILESTONES: [ 40000, 80000 ]
+  NAME: 'cosine_annearling_lr'
+  WARMUP: True
 DATALOADER:
   TRAIN_BATCH_SIZE: 64
   TEST_BATCH_SIZE: 64
