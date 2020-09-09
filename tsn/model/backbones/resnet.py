@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch.nn.modules.module import T
 from torchvision.models.utils import load_state_dict_from_url
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
@@ -123,7 +124,7 @@ class ResNet(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False,
                  groups=1, width_per_group=64, replace_stride_with_dilation=None,
-                 norm_layer=None):
+                 norm_layer=None, partial_bn=False):
         super(ResNet, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
@@ -172,6 +173,8 @@ class ResNet(nn.Module):
                 elif isinstance(m, BasicBlock):
                     nn.init.constant_(m.bn2.weight, 0)
 
+        self.partial_bn = partial_bn
+
     def _make_layer(self, block, planes, blocks, stride=1, dilate=False):
         norm_layer = self._norm_layer
         downsample = None
@@ -216,6 +219,23 @@ class ResNet(nn.Module):
 
     def forward(self, x):
         return self._forward_impl(x)
+
+    def freezing_bn(self):
+        count = 0
+        for m in self.modules():
+            if isinstance(m, nn.BatchNorm2d):
+                count += 1
+                if count == 1:
+                    continue
+                m.requires_grad_(False)
+
+    def train(self: T, mode: bool = True) -> T:
+        super(ResNet, self).train(mode=mode)
+
+        if self.partial_bn:
+            self.freezing_bn()
+
+        return self
 
 
 def _resnet(arch, block, layers, pretrained, progress, **kwargs):

@@ -17,8 +17,10 @@ def build_model(cfg):
     backbone = cfg.MODEL.BACKBONE
     consensus = cfg.MODEL.CONSENSUS
     partial_bn = cfg.MODEL.PARTIAL_BN
+    pretrained = cfg.MODEL.PRETRAINED
 
-    return TSN(num_classes=num_classes, backbone=backbone, consensus=consensus, partial_bn=partial_bn)
+    return TSN(num_classes=num_classes, backbone=backbone,
+               consensus=consensus, partial_bn=partial_bn, pretrained=pretrained)
 
 
 def build_criterion(cfg):
