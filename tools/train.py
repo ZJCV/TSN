@@ -36,6 +36,9 @@ def train(cfg, arguments, device):
     if arguments['resume']:
         extra_checkpoint_data = checkpointer.load()
         arguments.update(extra_checkpoint_data)
+    if cfg.MODEL.PRETRAINED != "":
+        extra_checkpoint_data = checkpointer.load(cfg.MODEL.PRETRAINED)
+        arguments.update(extra_checkpoint_data)
 
     model = do_train(cfg, arguments,
                      data_loader, model, criterion, optimizer, lr_scheduler, checkpointer,
