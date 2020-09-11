@@ -15,4 +15,4 @@ from .tsn_head import TSNHead
 
 
 def build_head(cfg):
-    return registry.HEAD[cfg.MODEL.HEAD](cfg)
+    return registry.HEAD[cfg.MODEL.HEAD.NAME](cfg)

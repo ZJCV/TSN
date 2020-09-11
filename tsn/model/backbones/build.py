@@ -14,4 +14,5 @@ from tsn.model import registry
 
 
 def build_backbone(cfg):
-    return registry.BACKBONE[cfg.MODEL.BACKBONE](pretrained=cfg.MODEL.PRETRAINED, partial_bn=cfg.MODEL.PARTIAL_BN)
+    return registry.BACKBONE[cfg.MODEL.BACKBONE.NAME]\
+        (pretrained=cfg.MODEL.BACKBONE.TORCHVISION_PRETRAINED, partial_bn=cfg.MODEL.BACKBONE.PARTIAL_BN)

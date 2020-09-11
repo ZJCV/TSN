@@ -17,4 +17,4 @@ def build_model(cfg):
 
 
 def build_criterion(cfg):
-    return registry.CRITERION[cfg.CRITERION.NAME](cfg)
+    return registry.CRITERION[cfg.MODEL.CRITERION.NAME](cfg)

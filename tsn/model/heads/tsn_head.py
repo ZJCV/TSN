@@ -19,8 +19,8 @@ class TSNHead(nn.Module):
     def __init__(self, cfg):
         super(TSNHead, self).__init__()
 
-        in_channels = cfg.MODEL.FEATURE_DIMS
-        num_classes = cfg.MODEL.NUM_CLASSES
+        in_channels = cfg.MODEL.HEAD.FEATURE_DIMS
+        num_classes = cfg.MODEL.HEAD.NUM_CLASSES
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(in_channels, num_classes)

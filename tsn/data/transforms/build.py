@@ -11,7 +11,7 @@ import torchvision.transforms as transforms
 
 
 def build_transform(cfg, train=True):
-    size = cfg.MODEL.INPUT_SIZE
+    size = cfg.TRANSFORM.INPUT_SIZE
     h, w, c = size
     MEAN = cfg.TRANSFORM.MEAN
     STD = cfg.TRANSFORM.STD

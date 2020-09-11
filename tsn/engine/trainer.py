@@ -22,7 +22,7 @@ def do_train(cfg, arguments,
              device, logger):
     logger.info("Start training ...")
     meters = MetricLogger()
-    if cfg.TRAIN.USE_TENSORBOARD:
+    if arguments['use_tensorboard']:
         from torch.utils.tensorboard import SummaryWriter
         summary_writer = SummaryWriter(log_dir=os.path.join(cfg.OUTPUT.DIR, 'tf_logs'))
         # 写入模型
@@ -35,9 +35,9 @@ def do_train(cfg, arguments,
 
     start_iter = arguments['iteration']
     max_iter = len(data_loader)
-    log_step = cfg.TRAIN.LOG_STEP
-    save_step = cfg.TRAIN.SAVE_STEP
-    eval_step = cfg.TRAIN.EVAL_STEP
+    log_step = arguments['log_step']
+    save_step = arguments['save_step']
+    eval_step = arguments['eval_step']
 
     start_training_time = time.time()
     end = time.time()

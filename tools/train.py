@@ -22,7 +22,7 @@ from tsn.util.logger import setup_logger
 from tsn.util.collect_env import collect_env_info
 
 
-def train(cfg, device):
+def train(cfg, arguments, device):
     logger = setup_logger(cfg.TRAIN.NAME)
 
     data_loader = build_dataloader(cfg, train=True)
@@ -31,7 +31,6 @@ def train(cfg, device):
     optimizer = build_optimizer(cfg, model)
     lr_scheduler = build_lr_scheduler(cfg, optimizer)
 
-    arguments = {"iteration": 0}
     checkpointer = CheckPointer(model, optimizer=optimizer, scheduler=lr_scheduler, save_dir=cfg.OUTPUT.DIR,
                                 save_to_disk=True, logger=logger)
     extra_checkpoint_data = checkpointer.load()
@@ -60,20 +59,21 @@ def main():
     )
 
     args = parser.parse_args()
+    if args.config_file:
+        cfg.merge_from_file(args.config_file)
+    cfg.merge_from_list(args.opts)
+    cfg.freeze()
+
+    arguments = {"iteration": 0}
+    arguments['log_step'] = args.log_step
+    arguments['save_step'] = args.save_step
+    arguments['eval_step'] = args.eval_step
+    arguments['use_tensorboard'] = args.use_tensorboard
 
     if torch.cuda.is_available():
         # This flag allows you to enable the inbuilt cudnn auto-tuner to
         # find the best algorithm to use for your hardware.
         torch.backends.cudnn.benchmark = True
-
-    if args.config_file:
-        cfg.merge_from_file(args.config_file)
-    cfg.merge_from_list(args.opts)
-    cfg.TRAIN.LOG_STEP = args.log_step
-    cfg.TRAIN.SAVE_STEP = args.save_step
-    cfg.TRAIN.EVAL_STEP = args.eval_step
-    cfg.TRAIN.USE_TENSORBOARD = args.use_tensorboard
-    cfg.freeze()
 
     if not os.path.exists(cfg.OUTPUT.DIR):
         os.makedirs(cfg.OUTPUT.DIR)
@@ -90,7 +90,7 @@ def main():
     logger.info("Running with config:\n{}".format(cfg))
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    model = train(cfg, device)
+    model = train(cfg, arguments, device)
 
     logger.info('Start final evaluating...')
     torch.cuda.empty_cache()  # speed up evaluating after training finished

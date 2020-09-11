@@ -15,4 +15,4 @@ from .avg_consensus import AvgConsensus
 
 
 def build_consensus(cfg):
-    return registry.CONSENSU[cfg.MODEL.CONSENSU](cfg)
+    return registry.CONSENSU[cfg.MODEL.CONSENSU.NAME](cfg)

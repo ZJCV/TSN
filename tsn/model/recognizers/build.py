@@ -15,4 +15,4 @@ from .tsn_recognizer import TSNRecognizer
 
 
 def build_recognizer(cfg):
-    return registry.RECOGNIZER[cfg.MODEL.RECOGNIZER](cfg)
+    return registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg)
