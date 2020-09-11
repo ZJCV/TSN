@@ -39,6 +39,13 @@ def train(cfg, arguments, device):
     if cfg.MODEL.PRETRAINED != "":
         extra_checkpoint_data = checkpointer.load(cfg.MODEL.PRETRAINED)
         arguments.update(extra_checkpoint_data)
+    if cfg.LR_SCHEDULER.WARMUP:
+        if lr_scheduler.finished:
+            optimizer.load_state_dict(lr_scheduler.after_scheduler.optimizer.state_dict())
+        else:
+            optimizer.load_state_dict(lr_scheduler.optimizer.state_dict())
+        lr_scheduler.optimizer = optimizer
+        lr_scheduler.after_scheduler.optimizer = optimizer
 
     model = do_train(cfg, arguments,
                      data_loader, model, criterion, optimizer, lr_scheduler, checkpointer,
