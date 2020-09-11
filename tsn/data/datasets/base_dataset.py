@@ -21,7 +21,7 @@ from tsn.util.image import rgbdiff
 class BaseDataset(Dataset):
 
     def __init__(self, data_dir, modality=("RGB"), num_seg=3, transform=None):
-        assert modality == ('RGB') or modality == ('RGBDiff') or modality == ('RGB', 'RGBDiff')
+        assert modality == ('RGB',) or modality == ('RGBDiff',) or modality == ('RGB', 'RGBDiff')
 
         self.data_dir = data_dir
         self.transform = transform
