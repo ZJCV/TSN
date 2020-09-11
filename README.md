@@ -20,12 +20,21 @@
 
 - [内容列表](#内容列表)
 - [背景](#背景)
+- [TODO](#todo)
 - [主要维护人员](#主要维护人员)
 - [致谢](#致谢)
 - [参与贡献方式](#参与贡献方式)
 - [许可证](#许可证)
 
 ## 背景
+
+[Temporal Segment Networks: Towards Good Practices for Deep Action Recognition](https://arxiv.org/abs/1608.00859)是视频分类任务中的经典实现
+
+## TODO
+
+- [ ]  视频模式测试
+- [ ] 多GPU训练
+- [ ] 混合精度训练
 
 ## 主要维护人员
 
