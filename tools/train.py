@@ -25,7 +25,6 @@ from tsn.util.collect_env import collect_env_info
 def train(cfg, arguments, device):
     logger = setup_logger(cfg.TRAIN.NAME)
 
-    data_loader = build_dataloader(cfg, train=True)
     model = build_model(cfg).to(device)
     criterion = build_criterion(cfg)
     optimizer = build_optimizer(cfg, model)
@@ -47,6 +46,7 @@ def train(cfg, arguments, device):
         lr_scheduler.optimizer = optimizer
         lr_scheduler.after_scheduler.optimizer = optimizer
 
+    data_loader = build_dataloader(cfg, train=True, start_iter=arguments['iteration'])
     model = do_train(cfg, arguments,
                      data_loader, model, criterion, optimizer, lr_scheduler, checkpointer,
                      device, logger)

@@ -19,7 +19,7 @@ from tsn.data.datasets.ucf101 import UCF101
 from .transforms.build import build_transform
 
 
-def build_dataloader(cfg, train=True):
+def build_dataloader(cfg, train=True, start_iter=0):
     transform = build_transform(cfg, train=train)
     dataset = build_dataset(cfg, transform=transform, is_train=train)
 
@@ -33,7 +33,8 @@ def build_dataloader(cfg, train=True):
 
     batch_sampler = torch.utils.data.sampler.BatchSampler(sampler=sampler, batch_size=batch_size, drop_last=False)
     if train:
-        batch_sampler = IterationBasedBatchSampler(batch_sampler, num_iterations=cfg.TRAIN.MAX_ITER, start_iter=0)
+        batch_sampler = IterationBasedBatchSampler(batch_sampler, num_iterations=cfg.TRAIN.MAX_ITER,
+                                                   start_iter=start_iter)
 
     data_loader = DataLoader(dataset, num_workers=cfg.DATALOADER.NUM_WORKERS, batch_sampler=batch_sampler,
                              pin_memory=True)
