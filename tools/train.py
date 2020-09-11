@@ -33,8 +33,9 @@ def train(cfg, arguments, device):
 
     checkpointer = CheckPointer(model, optimizer=optimizer, scheduler=lr_scheduler, save_dir=cfg.OUTPUT.DIR,
                                 save_to_disk=True, logger=logger)
-    extra_checkpoint_data = checkpointer.load()
-    arguments.update(extra_checkpoint_data)
+    if arguments['resume']:
+        extra_checkpoint_data = checkpointer.load()
+        arguments.update(extra_checkpoint_data)
 
     model = do_train(cfg, arguments,
                      data_loader, model, criterion, optimizer, lr_scheduler, checkpointer,
@@ -49,6 +50,7 @@ def main():
     parser.add_argument('--save_step', default=2500, type=int, help='Save checkpoint every save_step')
     parser.add_argument('--eval_step', default=2500, type=int,
                         help='Evaluate dataset every eval_step, disabled when eval_step < 0')
+    parser.add_argument('--resume', default=True, type=bool)
     parser.add_argument('--use_tensorboard', default=True, type=bool)
 
     parser.add_argument(
@@ -68,6 +70,7 @@ def main():
     arguments['log_step'] = args.log_step
     arguments['save_step'] = args.save_step
     arguments['eval_step'] = args.eval_step
+    arguments['resume'] = args.resume
     arguments['use_tensorboard'] = args.use_tensorboard
 
     if torch.cuda.is_available():
