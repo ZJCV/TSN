@@ -33,12 +33,11 @@ def train(cfg, arguments, device):
     checkpointer = CheckPointer(model, optimizer=optimizer, scheduler=lr_scheduler, save_dir=cfg.OUTPUT.DIR,
                                 save_to_disk=True, logger=logger)
     if arguments['resume']:
+        logger.info('resume ...')
         extra_checkpoint_data = checkpointer.load()
         arguments.update(extra_checkpoint_data)
-    if cfg.MODEL.PRETRAINED != "":
-        extra_checkpoint_data = checkpointer.load(cfg.MODEL.PRETRAINED)
-        arguments.update(extra_checkpoint_data)
     if cfg.LR_SCHEDULER.WARMUP:
+        logger.info('warmup ...')
         if lr_scheduler.finished:
             optimizer.load_state_dict(lr_scheduler.after_scheduler.optimizer.state_dict())
         else:
@@ -62,7 +61,7 @@ def main():
     parser.add_argument('--eval_step', default=2500, type=int,
                         help='Evaluate dataset every eval_step, disabled when eval_step < 0')
     parser.add_argument('--use_eval', default=True, type=bool)
-    parser.add_argument('--resume', default=True, type=bool)
+    parser.add_argument('--resume', default=False, type=bool)
     parser.add_argument('--use_tensorboard', default=True, type=bool)
 
     parser.add_argument(
