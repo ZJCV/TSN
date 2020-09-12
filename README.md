@@ -20,6 +20,8 @@
 
 - [内容列表](#内容列表)
 - [背景](#背景)
+- [安装](#安装)
+- [使用](#使用)
 - [TODO](#todo)
 - [主要维护人员](#主要维护人员)
 - [致谢](#致谢)
@@ -29,6 +31,40 @@
 ## 背景
 
 [Temporal Segment Networks: Towards Good Practices for Deep Action Recognition](https://arxiv.org/abs/1608.00859)是视频分类任务中的经典实现
+
+## 安装
+
+通过requirements.txt安装运行所需依赖
+
+```
+$ pip install -r requirements.txt
+```
+
+处理数据时需要额外安装[denseflow](https://github.com/open-mmlab/denseflow)，可以在[innerlee/setup](https://github.com/innerlee/setup)中找到安装脚本
+
+## 使用
+
+采用单`GPU`方式进行训练和测试，首先设置`GPU`和当前位置
+
+```
+$ export CUDA_VISIBLE_DEVICES=1
+$ export PYTHONPATH=.
+```
+
+* 训练
+
+```
+# 训练HMDB51
+$ python tools/train.py --config_file=configs/tsn_resnet50_hmdb51_rgb.yaml
+# 恢复训练
+$ python tools/train.py --config_file=configs/tsn_resnet50_hmdb51_rgb.yaml --resume
+```
+
+* 测试
+
+```
+
+```
 
 ## TODO
 
