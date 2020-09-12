@@ -25,7 +25,7 @@ from tsn.util.collect_env import collect_env_info
 def train(cfg, arguments, device):
     logger = setup_logger(cfg.TRAIN.NAME)
 
-    model = build_model(cfg).to(device)
+    model = build_model(cfg, logger).to(device)
     criterion = build_criterion(cfg)
     optimizer = build_optimizer(cfg, model)
     lr_scheduler = build_lr_scheduler(cfg, optimizer)
