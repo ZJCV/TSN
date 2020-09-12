@@ -61,7 +61,7 @@ def main():
     parser.add_argument('--eval_step', default=2500, type=int,
                         help='Evaluate dataset every eval_step, disabled when eval_step < 0')
     parser.add_argument('--use_eval', default=True, type=bool)
-    parser.add_argument('--resume', default=False, type=bool)
+    parser.add_argument('--resume', default=False, action='store_false', help='Resume training')
     parser.add_argument('--use_tensorboard', default=True, type=bool)
 
     parser.add_argument(
@@ -108,9 +108,10 @@ def main():
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     model = train(cfg, arguments, device)
 
-    logger.info('Start final evaluating...')
-    torch.cuda.empty_cache()  # speed up evaluating after training finished
-    do_evaluation(cfg, model, device)
+    if arguments['use_eval']:
+        logger.info('Start final evaluating...')
+        torch.cuda.empty_cache()  # speed up evaluating after training finished
+        do_evaluation(cfg, model, device)
 
 
 if __name__ == '__main__':
