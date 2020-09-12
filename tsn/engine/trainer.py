@@ -37,7 +37,9 @@ def do_train(cfg, arguments,
     max_iter = len(data_loader)
     log_step = arguments['log_step']
     save_step = arguments['save_step']
+    use_save = arguments['use_save']
     eval_step = arguments['eval_step']
+    use_eval = arguments['use_eval']
 
     start_training_time = time.time()
     end = time.time()
@@ -89,9 +91,9 @@ def do_train(cfg, arguments,
                                               global_step=global_step)
                 summary_writer.add_scalar('lr', optimizer.param_groups[0]['lr'], global_step=global_step)
 
-        if iteration % save_step == 0:
+        if use_save and iteration % save_step == 0:
             checkpointer.save("model_{:06d}".format(iteration), **arguments)
-        if eval_step > 0 and iteration % eval_step == 0 and not iteration == max_iter:
+        if use_eval and eval_step > 0 and iteration % eval_step == 0 and not iteration == max_iter:
             eval_results = do_evaluation(cfg, model, device, iteration=iteration)
             if summary_writer:
                 for key, value in eval_results.items():
