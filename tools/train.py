@@ -35,15 +35,16 @@ def train(cfg, arguments, device):
     if arguments['resume']:
         logger.info('resume ...')
         extra_checkpoint_data = checkpointer.load()
-        arguments.update(extra_checkpoint_data)
-    if cfg.LR_SCHEDULER.WARMUP:
-        logger.info('warmup ...')
-        if lr_scheduler.finished:
-            optimizer.load_state_dict(lr_scheduler.after_scheduler.optimizer.state_dict())
-        else:
-            optimizer.load_state_dict(lr_scheduler.optimizer.state_dict())
-        lr_scheduler.optimizer = optimizer
-        lr_scheduler.after_scheduler.optimizer = optimizer
+        if extra_checkpoint_data != dict():
+            arguments['iteration'] = extra_checkpoint_data['iteration']
+            if cfg.LR_SCHEDULER.WARMUP:
+                logger.info('warmup ...')
+                if lr_scheduler.finished:
+                    optimizer.load_state_dict(lr_scheduler.after_scheduler.optimizer.state_dict())
+                else:
+                    optimizer.load_state_dict(lr_scheduler.optimizer.state_dict())
+                lr_scheduler.optimizer = optimizer
+                lr_scheduler.after_scheduler.optimizer = optimizer
 
     data_loader = build_dataloader(cfg, train=True, start_iter=arguments['iteration'])
     model = do_train(cfg, arguments,
@@ -61,7 +62,7 @@ def main():
     parser.add_argument('--eval_step', default=2500, type=int,
                         help='Evaluate dataset every eval_step, disabled when eval_step < 0')
     parser.add_argument('--use_eval', default=True, type=bool)
-    parser.add_argument('--resume', default=False, action='store_false', help='Resume training')
+    parser.add_argument('--resume', default=False, action='store_true', help='Resume training')
     parser.add_argument('--use_tensorboard', default=True, type=bool)
 
     parser.add_argument(
