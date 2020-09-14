@@ -5,12 +5,12 @@ DATASETS:
     NAME: 'UCF101'
     DATA_DIR: 'data/ucf101/rawframes'
     ANNOTATION_DIR: 'data/ucf101'
-    SPLITS: (1, 2, 3)
+    SPLIT: 1
   TEST:
     NAME: 'UCF101'
     DATA_DIR: 'data/ucf101/rawframes'
     ANNOTATION_DIR: 'data/ucf101'
-    SPLITS: (1, 2, 3)
+    SPLIT: 1
 TRANSFORM:
   INPUT_SIZE: (112, 112, 3)
   MEAN: (0.485, 0.456, 0.406)
@@ -28,7 +28,7 @@ MODEL:
   HEAD:
     NAME: 'TSNHead'
     FEATURE_DIMS: 2048
-    NUM_CLASSES: 51
+    NUM_CLASSES: 101
   RECOGNIZER:
     NAME: 'TSNRecognizer'
   CONSENSU:
@@ -47,6 +47,6 @@ LR_SCHEDULER:
   ITERATION: 400
   MULTIPLIER: 1.0
 TRAIN:
-  MAX_ITER: 10000
+  MAX_ITER: 30000
 OUTPUT:
   DIR: 'outputs/tsn_resnet50_ucf101_rgb_rgbdiff'

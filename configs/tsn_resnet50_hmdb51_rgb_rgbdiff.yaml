@@ -5,12 +5,12 @@ DATASETS:
     NAME: 'HMDB51'
     DATA_DIR: 'data/hmdb51/rawframes'
     ANNOTATION_DIR: 'data/hmdb51'
-    SPLITS: (1, 2, 3)
+    SPLIT: 1
   TEST:
     NAME: 'HMDB51'
     DATA_DIR: 'data/hmdb51/rawframes'
     ANNOTATION_DIR: 'data/hmdb51'
-    SPLITS: (1, 2, 3)
+    SPLIT: 1
 TRANSFORM:
   INPUT_SIZE: (112, 112, 3)
   MEAN: (0.485, 0.456, 0.406)
@@ -47,6 +47,6 @@ LR_SCHEDULER:
   ITERATION: 400
   MULTIPLIER: 1.0
 TRAIN:
-  MAX_ITER: 20000
+  MAX_ITER: 30000
 OUTPUT:
   DIR: 'outputs/tsn_resnet50_hmdb51_rgb_rgbdiff'

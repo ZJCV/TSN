@@ -1,5 +1,5 @@
 DATASETS:
-  MODALITY: ('RGB',)
+  MODALITY: ('RGBDiff',)
   NUM_SEGS: 8
   TRAIN:
     NAME: 'HMDB51'
