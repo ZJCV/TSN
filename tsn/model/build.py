@@ -17,7 +17,8 @@ def build_model(cfg, logger):
     model = TSN(cfg)
 
     if cfg.MODEL.PRETRAINED != "":
-        logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
+        if logger:
+            logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
         checkpointer = CheckPointer(model, logger=logger)
         checkpointer.load(cfg.MODEL.PRETRAINED)
 
