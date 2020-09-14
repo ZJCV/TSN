@@ -17,17 +17,18 @@ def build_dataset(cfg, transform=None, is_train=True):
     annotation_dir = cfg.DATASETS.TRAIN.ANNOTATION_DIR if is_train else cfg.DATASETS.TEST.ANNOTATION_DIR
 
     modality = cfg.DATASETS.MODALITY
+    num_segs = cfg.DATASETS.NUM_SEGS
 
     if dataset_name == 'HMDB51':
-        splits = cfg.DATASETS.TRAIN.SPLITS if is_train else cfg.DATASETS.TEST.SPLITS
+        split = cfg.DATASETS.TRAIN.SPLIT if is_train else cfg.DATASETS.TEST.SPLIT
 
-        dataset = HMDB51(data_dir, annotation_dir, train=is_train, modality=modality, splits=splits,
-                         transform=transform)
+        dataset = HMDB51(data_dir, annotation_dir, train=is_train, modality=modality, num_segs=num_segs,
+                         split=split, transform=transform)
     elif dataset_name == 'UCF101':
-        splits = cfg.DATASETS.TRAIN.SPLITS if is_train else cfg.DATASETS.TEST.SPLITS
+        split = cfg.DATASETS.TRAIN.SPLIT if is_train else cfg.DATASETS.TEST.SPLIT
 
-        dataset = UCF101(data_dir, annotation_dir, train=is_train, modality=modality, splits=splits,
-                         transform=transform)
+        dataset = UCF101(data_dir, annotation_dir, train=is_train, modality=modality, num_segs=num_segs,
+                         split=split, transform=transform)
     else:
         raise ValueError(f"the dataset {dataset_name} does not exist")
 
