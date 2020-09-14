@@ -14,14 +14,14 @@ _C.DATASETS.TRAIN.NAME = 'HMDB51'
 _C.DATASETS.TRAIN.DATA_DIR = 'data/hmdb51/rawframes'
 _C.DATASETS.TRAIN.ANNOTATION_DIR = 'data/hmdb51'
 # for hmdb51 and ucf101
-_C.DATASETS.TRAIN.SPLITS = (1, 2, 3)
+_C.DATASETS.TRAIN.SPLIT = 1
 # test
 _C.DATASETS.TEST = CN()
 _C.DATASETS.TEST.NAME = 'HMDB51'
 _C.DATASETS.TEST.DATA_DIR = 'data/hmdb51/rawframes'
 _C.DATASETS.TEST.ANNOTATION_DIR = 'data/hmdb51'
 # for hmdb51 and ucf101
-_C.DATASETS.TEST.SPLITS = (1, 2, 3)
+_C.DATASETS.TEST.SPLIT = 1
 
 # ---------------------------------------------------------------------------- #
 # Transform
