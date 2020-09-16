@@ -69,7 +69,7 @@ torch == 1.6.0
 # TSN/tsn/model/backbones/resnet.py: 4
 # TSN/tsn/util/collect_env.py: 11
 # TSN/tsn/util/metrics.py: 13
-torchvision == 0.5.0
+torchvision == 0.7.0
 
 # TSN/tsn/engine/inference.py: 14
 tqdm == 4.47.0
