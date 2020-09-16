@@ -37,9 +37,9 @@ def do_train(cfg, arguments,
     max_iter = len(data_loader)
     log_step = arguments['log_step']
     save_step = arguments['save_step']
-    use_save = arguments['use_save']
+    use_save = not arguments['stop_save']
     eval_step = arguments['eval_step']
-    use_eval = arguments['use_eval']
+    use_eval = not arguments['stop_eval']
 
     start_training_time = time.time()
     end = time.time()

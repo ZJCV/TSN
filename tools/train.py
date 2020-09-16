@@ -58,12 +58,12 @@ def main():
     parser.add_argument("--config_file", default="", metavar="FILE", help="path to config file", type=str)
     parser.add_argument('--log_step', default=10, type=int, help='Print logs every log_step')
     parser.add_argument('--save_step', default=2500, type=int, help='Save checkpoint every save_step')
-    parser.add_argument('--use_save', default=True, type=bool)
+    parser.add_argument('--stop_save', default=False, action='store_true')
     parser.add_argument('--eval_step', default=2500, type=int,
                         help='Evaluate dataset every eval_step, disabled when eval_step < 0')
-    parser.add_argument('--use_eval', default=True, type=bool)
+    parser.add_argument('--stop_eval', default=False, action='store_true')
     parser.add_argument('--resume', default=False, action='store_true', help='Resume training')
-    parser.add_argument('--use_tensorboard', default=True, type=bool)
+    parser.add_argument('--use_tensorboard', default=1, type=int)
 
     parser.add_argument(
         "opts",
@@ -81,9 +81,9 @@ def main():
     arguments = {"iteration": 0}
     arguments['log_step'] = args.log_step
     arguments['save_step'] = args.save_step
-    arguments['use_save'] = args.use_save
+    arguments['stop_save'] = args.stop_save
     arguments['eval_step'] = args.eval_step
-    arguments['use_eval'] = args.use_eval
+    arguments['stop_eval'] = args.stop_eval
     arguments['resume'] = args.resume
     arguments['use_tensorboard'] = args.use_tensorboard
 
