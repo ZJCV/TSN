@@ -43,19 +43,14 @@ class UCF101(BaseDataset):
         assert isinstance(split, int) and split in (1, 2, 3)
         super(UCF101, self).__init__(data_dir, modality=modality, num_segs=num_segs, transform=transform)
 
-        annotation_list = list()
         if train:
             annotation_path = os.path.join(annotation_dir, f'ucf101_train_split_{split}_rawframes.txt')
             if not os.path.isfile(annotation_path):
                 raise ValueError(f'{annotation_path}不是文件路径')
-
-            annotation_list.append(annotation_path)
         else:
             annotation_path = os.path.join(annotation_dir, f'ucf101_val_split_{split}_rawframes.txt')
             if not os.path.isfile(annotation_path):
                 raise ValueError(f'{annotation_path}不是文件路径')
 
-            annotation_list.append(annotation_path)
-
-        self.update(annotation_list)
+        self.update(annotation_path)
         self.update_class(classes)
