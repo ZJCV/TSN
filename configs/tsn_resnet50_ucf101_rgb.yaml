@@ -1,5 +1,5 @@
 DATASETS:
-  MODALITY: ('RGB', )
+  MODALITY: 'RGB'
   NUM_SEGS: 3
   TRAIN:
     NAME: 'UCF101'

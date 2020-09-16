@@ -20,8 +20,8 @@ from tsn.util.image import rgbdiff
 
 class BaseDataset(Dataset):
 
-    def __init__(self, data_dir, modality=("RGB"), num_segs=3, transform=None):
-        assert modality == ('RGB',) or modality == ('RGBDiff',) or modality == ('RGB', 'RGBDiff')
+    def __init__(self, data_dir, modality="RGB", num_segs=3, transform=None):
+        assert isinstance(modality, str) and modality in ('RGB', 'RBGDiff')
 
         self.data_dir = data_dir
         self.transform = transform
@@ -84,14 +84,14 @@ class BaseDataset(Dataset):
 
         image_list = list()
         for num in num_list:
-            if 'RGB' in self.modality:
+            if 'RGB' == self.modality:
                 image_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num))
                 img = cv2.imread(image_path)
 
                 if self.transform:
                     img = self.transform(img)
                 image_list.append(img)
-            if 'RGBDiff' in self.modality:
+            if 'RGBDiff' == self.modality:
                 img1_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num))
                 # img1 = cv2.imread(img1_path, cv2.IMREAD_COLOR)
                 img1 = np.array(Image.open(img1_path))

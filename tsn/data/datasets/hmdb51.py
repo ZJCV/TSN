@@ -24,7 +24,7 @@ classes = ['brush_hair', 'cartwheel', 'catch', 'chew', 'clap', 'climb',
 
 class HMDB51(BaseDataset):
 
-    def __init__(self, data_dir, annotation_dir, modality=("RGB"), num_segs=3, split=1, train=True, transform=None):
+    def __init__(self, data_dir, annotation_dir, modality="RGB", num_segs=3, split=1, train=True, transform=None):
         assert isinstance(split, int) and split in (1, 2, 3)
         super(HMDB51, self).__init__(data_dir, modality=modality, num_segs=num_segs, transform=transform)
 

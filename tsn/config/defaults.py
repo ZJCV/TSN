@@ -6,7 +6,7 @@ _C = CN()
 # DataSets
 # ---------------------------------------------------------------------------- #
 _C.DATASETS = CN()
-_C.DATASETS.MODALITY = ('RGB', 'RGBDiff')
+_C.DATASETS.MODALITY = 'RGB'
 _C.DATASETS.NUM_SEGS = 3
 # train
 _C.DATASETS.TRAIN = CN()
