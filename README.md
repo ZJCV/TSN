@@ -22,7 +22,6 @@
 - [背景](#背景)
 - [安装](#安装)
 - [使用](#使用)
-- [TODO](#todo)
 - [主要维护人员](#主要维护人员)
 - [致谢](#致谢)
 - [参与贡献方式](#参与贡献方式)
@@ -34,7 +33,7 @@
 
 ## 安装
 
-通过requirements.txt安装运行所需依赖
+通过`requirements.txt`安装运行所需依赖
 
 ```
 $ pip install -r requirements.txt
@@ -55,22 +54,8 @@ $ export PYTHONPATH=.
 
 ```
 # 训练HMDB51
-$ python tools/train.py --config_file=configs/tsn_resnet50_hmdb51_rgb.yaml
-# 恢复训练
-$ python tools/train.py --config_file=configs/tsn_resnet50_hmdb51_rgb.yaml --resume
+$ python tools/train.py --config_file=configs/tsn_resnet50_ucf101_rgb.yaml
 ```
-
-* 测试
-
-```
-
-```
-
-## TODO
-
-- [ ]  视频模式测试
-- [ ] 多GPU训练
-- [ ] 混合精度训练
 
 ## 主要维护人员
 
