@@ -37,56 +37,70 @@ class VideoRecord(object):
 
 class BaseDataset(Dataset):
 
-    def __init__(self, data_dir, modality="RGB", num_segs=3, transform=None):
+    def __init__(self, data_dir, train=True, modality="RGB", num_segs=3, transform=None):
         assert isinstance(modality, str) and modality in ('RGB', 'RBGDiff')
 
         self.data_dir = data_dir
         self.transform = transform
         self.num_segs = num_segs
         self.modality = modality
+        self.train = train
 
         self.video_list = None
         self.cate_list = None
         self.img_num_list = None
 
-    def update(self, annotation_path):
+        # 每个片段采集的帧数
+        if self.modality == 'RGB':
+            self.clip_length = 1
+        if self.modality == 'RGBDiff':
+            self.clip_length = 5 + 1  # Diff needs one more image to calculate diff
+
+    def _update(self, annotation_path):
         self.video_list = [VideoRecord(x.strip().split(' ')) for x in open(annotation_path)]
 
-    def update_class(self, classes):
+    def _update_class(self, classes):
         self.classes = classes
+
+    def _sample_indices(self, record):
+        """
+        :param record: VideoRecord
+        :return: list
+        """
+        average_duration = (record.num_frames - self.clip_length + 1) // self.num_segs
+        if average_duration > 0:
+            offsets = np.multiply(list(range(self.num_segs)), average_duration) + \
+                      np.random.randint(average_duration, size=self.num_segs)
+        elif record.num_frames > self.num_segs:
+            offsets = np.sort(np.random.randint(record.num_frames - self.clip_length + 1, size=self.num_segs))
+        else:
+            offsets = np.zeros((self.num_segs,))
+        return offsets
+
+    def _get_test_indices(self, record):
+
+        tick = (record.num_frames - self.clip_length + 1) / float(self.num_segs)
+
+        offsets = np.array([int(tick / 2.0 + tick * x) for x in range(self.num_segs)])
+
+        return offsets
 
     def __getitem__(self, index: int):
         """
-        从选定的视频文件夹中随机选取T帧
-        如果选择了输入模态为RGB或者RGBDiff,则返回(T, C, H, W)，其中T表示num_segs；
-        如果输入模态为(RGB, RGBDiff)，则返回(T*2, C, H, W)
+        从选定的视频文件夹中随机选取T帧，则返回(T, C, H, W)，其中T表示num_segs
         """
         assert index < len(self.video_list)
         record = self.video_list[index]
-
         target = record.label
 
-        # 视频帧数
-        video_length = record.num_frames
-        # 每一段帧数
-        seg_length = int(video_length / self.num_segs)
-        num_list = list()
-        if 'RGBDiff' == self.modality:
-            # 在每段中随机挑选一帧
-            # 此处使用当前帧和下一帧进行Diff计算，在实际计算过程中，应该使用前一帧和当前帧进行Diff计算
-            # 当然，当前实现也可以把下一帧看成是当前帧
-            for i in range(self.num_segs):
-                # 如果使用`RGBDiff`，需要采集前后两帧进行差分
-                # random.randint(a, b) -> [a, b]
-                num_list.append(random.randint(i * seg_length, (i + 1) * seg_length - 2))
+        if self.train:
+            segment_indices = self._sample_indices(record)
         else:
-            # 在每段中随机挑选一帧
-            for i in range(self.num_segs):
-                num_list.append(random.randint(i * seg_length, (i + 1) * seg_length - 1))
-        video_path = os.path.join(self.data_dir, record.path)
+            segment_indices = self._get_test_indices(record)
 
+        video_path = os.path.join(self.data_dir, record.path)
         image_list = list()
-        for num in num_list:
+        for num in segment_indices:
             if 'RGB' == self.modality:
                 image_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num))
                 img = cv2.imread(image_path)
