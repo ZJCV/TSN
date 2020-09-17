@@ -25,20 +25,12 @@ from tsn.engine.inference import do_evaluation
 from tsn.util.checkpoint import CheckPointer
 from tsn.util.logger import setup_logger
 from tsn.util.collect_env import collect_env_info
+from tsn.util.dist_util import setup, cleanup
 
 
 def train(gpu, args, cfg):
     rank = args.nr * args.gpus + gpu
-    dist.init_process_group(backend='nccl', init_method='env://', world_size=args.world_size, rank=rank)
-    torch.manual_seed(0)
-    np.random.seed(0)
-    if torch.cuda.is_available() and args.gpus == 1:
-        # This flag allows you to enable the inbuilt cudnn auto-tuner to
-        # find the best algorithm to use for your hardware.
-        torch.backends.cudnn.benchmark = True
-    else:
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
+    setup(rank, args.world_size, args.gpus)
 
     logger = setup_logger(cfg.TRAIN.NAME)
     arguments = {"iteration": 0}
@@ -86,6 +78,8 @@ def train(gpu, args, cfg):
         logger.info('Start final evaluating...')
         torch.cuda.empty_cache()  # speed up evaluating after training finished
         do_evaluation(cfg, model, device)
+
+    cleanup()
 
 
 def main():
