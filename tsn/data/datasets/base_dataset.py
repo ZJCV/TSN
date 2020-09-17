@@ -38,7 +38,7 @@ class VideoRecord(object):
 class BaseDataset(Dataset):
 
     def __init__(self, data_dir, train=True, modality="RGB", num_segs=3, transform=None):
-        assert isinstance(modality, str) and modality in ('RGB', 'RBGDiff')
+        assert isinstance(modality, str) and modality in ('RGB', 'RGBDiff')
 
         self.data_dir = data_dir
         self.transform = transform
@@ -109,19 +109,17 @@ class BaseDataset(Dataset):
                     img = self.transform(img)
                 image_list.append(img)
             if 'RGBDiff' == self.modality:
-                img1_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num))
-                # img1 = cv2.imread(img1_path, cv2.IMREAD_COLOR)
-                img1 = np.array(Image.open(img1_path))
+                tmp_list = list()
+                for clip in range(self.clip_length):
+                    img_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num + clip))
+                    img = np.array(Image.open(img_path))
 
-                img2_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num + 1))
-                # img2 = cv2.imread(img2_path, cv2.IMREAD_COLOR)
-                img2 = np.array(Image.open(img2_path))
-
-                # print(img1.shape, img2.shape)
-                img = rgbdiff(img1, img2)
-                if self.transform:
-                    img = self.transform(img)
-                image_list.append(img)
+                    tmp_list.append(img)
+                for clip in reversed(range(1, self.clip_length)):
+                    img = tmp_list[clip] - tmp_list[clip - 1]
+                    if self.transform:
+                        img = self.transform(img)
+                    image_list.append(img)
         image = torch.stack(image_list)
 
         return image, target
