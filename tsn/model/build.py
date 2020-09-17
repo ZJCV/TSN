@@ -12,8 +12,8 @@ from .tsn import TSN
 from .criterions.crossentropy import build_crossentropy
 
 
-def build_model(cfg):
-    model = TSN(cfg)
+def build_model(cfg, map_location=None):
+    model = TSN(cfg, map_location=map_location)
     return model
 
 

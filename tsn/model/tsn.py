@@ -16,12 +16,12 @@ from .consensus.build import build_consensus
 
 class TSN(nn.Module):
 
-    def __init__(self, cfg):
+    def __init__(self, cfg, map_location=None):
         super(TSN, self).__init__()
 
         self.num_segs = cfg.DATASETS.NUM_SEGS
 
-        self.recognizer = build_recognizer(cfg)
+        self.recognizer = build_recognizer(cfg, map_location=map_location)
         self.consensus = build_consensus(cfg)
 
     def forward(self, imgs):

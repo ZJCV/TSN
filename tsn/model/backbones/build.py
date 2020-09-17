@@ -13,6 +13,8 @@ from .resnet import resnet50
 from tsn.model import registry
 
 
-def build_backbone(cfg):
-    return registry.BACKBONE[cfg.MODEL.BACKBONE.NAME]\
-        (pretrained=cfg.MODEL.BACKBONE.TORCHVISION_PRETRAINED, partial_bn=cfg.MODEL.BACKBONE.PARTIAL_BN)
+def build_backbone(cfg, map_location=None):
+    return registry.BACKBONE[cfg.MODEL.BACKBONE.NAME] \
+        (pretrained=cfg.MODEL.BACKBONE.TORCHVISION_PRETRAINED,
+         partial_bn=cfg.MODEL.BACKBONE.PARTIAL_BN,
+         map_location=map_location)

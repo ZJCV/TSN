@@ -37,12 +37,13 @@ def train(gpu, args, cfg):
     arguments['rank'] = rank
 
     device = torch.device(f'cuda:{gpu}' if torch.cuda.is_available() else 'cpu')
-    model = build_model(cfg).to(device)
-    # if cfg.MODEL.PRETRAINED != "":
-    #     if logger:
-    #         logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
-    #     checkpointer = CheckPointer(model, logger=logger)
-    #     checkpointer.load(cfg.MODEL.PRETRAINED)
+    map_location = {'cuda:%d' % 0: 'cuda:%d' % rank}
+    model = build_model(cfg, map_location=map_location).to(device)
+    if cfg.MODEL.PRETRAINED != "":
+        if rank == 0 and logger:
+            logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
+        checkpointer = CheckPointer(model, logger=logger)
+        checkpointer.load(cfg.MODEL.PRETRAINED, map_location=map_location, rank=rank)
 
     if args.gpus > 1:
         model = DDP(model, device_ids=[gpu], find_unused_parameters=True)
@@ -53,13 +54,14 @@ def train(gpu, args, cfg):
     checkpointer = CheckPointer(model, optimizer=optimizer, scheduler=lr_scheduler, save_dir=cfg.OUTPUT.DIR,
                                 save_to_disk=True, logger=logger)
     if args.resume:
-        logger.info('resume ...')
-        extra_checkpoint_data = checkpointer.load()
+        if rank == 0:
+            logger.info('resume ...')
+        extra_checkpoint_data = checkpointer.load(map_location=map_location, rank=rank)
         if extra_checkpoint_data != dict():
-            # arguments['iteration'] = extra_checkpoint_data['iteration']
-            arguments.update(extra_checkpoint_data)
+            arguments['iteration'] = extra_checkpoint_data['iteration']
             if cfg.LR_SCHEDULER.WARMUP:
-                logger.info('warmup ...')
+                if rank == 0:
+                    logger.info('warmup ...')
                 if lr_scheduler.finished:
                     optimizer.load_state_dict(lr_scheduler.after_scheduler.optimizer.state_dict())
                 else:

@@ -126,7 +126,7 @@ class ResNet(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False,
                  groups=1, width_per_group=64, replace_stride_with_dilation=None,
-                 norm_layer=None, partial_bn=False):
+                 norm_layer=None, partial_bn=False, map_location=None):
         super(ResNet, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
@@ -248,7 +248,8 @@ def _resnet(arch, block, layers, pretrained, progress, **kwargs):
     model = ResNet(block, layers, **kwargs)
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls[arch],
-                                              progress=progress)
+                                              progress=progress,
+                                              map_location=kwargs.get('map_location', None))
         model.load_state_dict(state_dict)
     return model
 

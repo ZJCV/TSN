@@ -40,6 +40,7 @@ def do_train(args, cfg, arguments,
     start_training_time = time.time()
     end = time.time()
     for iteration, (images, targets) in enumerate(data_loader, start_iter):
+        dist.barrier()
         iteration = iteration + 1
         arguments["iteration"] = iteration
 
@@ -88,15 +89,14 @@ def do_train(args, cfg, arguments,
                 #                                   global_step=global_step)
                 #     summary_writer.add_scalar('lr', optimizer.param_groups[0]['lr'], global_step=global_step)
 
-            # if use_save and iteration % save_step == 0:
-            #     checkpointer.save("model_{:06d}".format(iteration), **arguments)
+            if not args.stop_save and iteration % args.save_step == 0:
+                checkpointer.save("model_{:06d}".format(iteration), **arguments)
             if not args.stop_eval and args.eval_step > 0 and iteration % args.eval_step == 0 and not iteration == max_iter:
                 eval_results = do_evaluation(cfg, model, device, iteration=iteration)
-            #     if summary_writer:
-            #         for key, value in eval_results.items():
-            #             summary_writer.add_scalar(f'eval/{key}', value, global_step=iteration)
-            #     model.train()
-
+                #     if summary_writer:
+                #         for key, value in eval_results.items():
+                #             summary_writer.add_scalar(f'eval/{key}', value, global_step=iteration)
+                model.train()
     # if summary_writer:
     #     summary_writer.close()
     # checkpointer.save("model_final", **arguments)
