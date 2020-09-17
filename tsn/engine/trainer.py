@@ -37,10 +37,10 @@ def do_train(args, cfg, arguments,
     start_iter = arguments['iteration']
     max_iter = cfg.TRAIN.MAX_ITER
 
+    dist.barrier()
     start_training_time = time.time()
     end = time.time()
     for iteration, (images, targets) in enumerate(data_loader, start_iter):
-        dist.barrier()
         iteration = iteration + 1
         arguments["iteration"] = iteration
 
@@ -97,6 +97,7 @@ def do_train(args, cfg, arguments,
                 #         for key, value in eval_results.items():
                 #             summary_writer.add_scalar(f'eval/{key}', value, global_step=iteration)
                 model.train()
+
     # if summary_writer:
     #     summary_writer.close()
     # checkpointer.save("model_final", **arguments)
