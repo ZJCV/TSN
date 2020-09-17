@@ -9,6 +9,7 @@
 
 import torch
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
 
 from .datasets.build import build_dataset
 from .samplers import IterationBasedBatchSampler
@@ -19,17 +20,22 @@ from tsn.data.datasets.ucf101 import UCF101
 from .transforms.build import build_transform
 
 
-def build_dataloader(cfg, train=True, start_iter=0):
+def build_dataloader(cfg, train=True,
+                     start_iter=0,
+                     gpus=1, world_size=1, rank=0):
     transform = build_transform(cfg, train=train)
     dataset = build_dataset(cfg, transform=transform, is_train=train)
 
     if train:
-        # 训练阶段使用随机采样器
-        sampler = torch.utils.data.RandomSampler(dataset)
         batch_size = cfg.DATALOADER.TRAIN_BATCH_SIZE
+        if gpus == 1:
+            # 训练阶段使用随机采样器
+            sampler = torch.utils.data.RandomSampler(dataset)
+        else:
+            sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank)
     else:
-        sampler = torch.utils.data.sampler.SequentialSampler(dataset)
         batch_size = cfg.DATALOADER.TEST_BATCH_SIZE
+        sampler = torch.utils.data.sampler.SequentialSampler(dataset)
 
     batch_sampler = torch.utils.data.sampler.BatchSampler(sampler=sampler, batch_size=batch_size, drop_last=False)
     if train:

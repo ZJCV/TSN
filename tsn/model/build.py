@@ -10,18 +10,10 @@
 from . import registry
 from .tsn import TSN
 from .criterions.crossentropy import build_crossentropy
-from tsn.util.checkpoint import CheckPointer
 
 
-def build_model(cfg, logger):
+def build_model(cfg):
     model = TSN(cfg)
-
-    if cfg.MODEL.PRETRAINED != "":
-        if logger:
-            logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
-        checkpointer = CheckPointer(model, logger=logger)
-        checkpointer.load(cfg.MODEL.PRETRAINED)
-
     return model
 
 

@@ -20,7 +20,6 @@ class TSN(nn.Module):
         super(TSN, self).__init__()
 
         self.num_segs = cfg.DATASETS.NUM_SEGS
-        self.modality = cfg.DATASETS.MODALITY
 
         self.recognizer = build_recognizer(cfg)
         self.consensus = build_consensus(cfg)
