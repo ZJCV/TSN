@@ -117,6 +117,7 @@ def test(args):
     rgb_cfg = get_cfg_defaults()
     rgb_cfg.merge_from_file(args.rgb_config_file)
     rgb_cfg.DATALOADER.TEST_BATCH_SIZE = 16
+    rgb_cfg.OUTPUT.DIR = args.output
     rgb_cfg.freeze()
 
     rgb_model = build_model(rgb_cfg, map_location=map_location).to(device)
@@ -130,6 +131,7 @@ def test(args):
     rgbdiff_cfg = get_cfg_defaults()
     rgbdiff_cfg.merge_from_file(args.rgbdiff_config_file)
     rgbdiff_cfg.DATALOADER.TEST_BATCH_SIZE = 16
+    rgbdiff_cfg.OUTPUT.DIR = args.output
     rgbdiff_cfg.freeze()
 
     rgbdiff_model = build_model(rgbdiff_cfg, map_location=map_location).to(device)
