@@ -9,6 +9,7 @@
 
 from .hmdb51 import HMDB51
 from .ucf101 import UCF101
+from .jester import JESTER
 
 
 def build_dataset(cfg, transform=None, is_train=True):
@@ -29,6 +30,9 @@ def build_dataset(cfg, transform=None, is_train=True):
 
         dataset = UCF101(data_dir, annotation_dir, train=is_train, modality=modality, num_segs=num_segs,
                          split=split, transform=transform)
+    elif dataset_name == 'JESTER':
+        dataset = JESTER(data_dir, annotation_dir, train=is_train, modality=modality, num_segs=num_segs,
+                         transform=transform)
     else:
         raise ValueError(f"the dataset {dataset_name} does not exist")
 

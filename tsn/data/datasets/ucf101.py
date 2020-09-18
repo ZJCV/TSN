@@ -8,7 +8,10 @@
 """
 
 import os
-
+import cv2
+import torch
+import numpy as np
+from PIL import Image
 from .base_dataset import BaseDataset
 
 classes = ['ApplyEyeMakeup', 'ApplyLipstick', 'Archery', 'BabyCrawling',
@@ -54,3 +57,42 @@ class UCF101(BaseDataset):
 
         self._update(annotation_path)
         self._update_class(classes)
+
+    def __getitem__(self, index: int):
+        """
+        从选定的视频文件夹中随机选取T帧，则返回(T, C, H, W)，其中T表示num_segs
+        """
+        assert index < len(self.video_list)
+        record = self.video_list[index]
+        target = record.label
+
+        if self.train:
+            segment_indices = self._sample_indices(record)
+        else:
+            segment_indices = self._get_test_indices(record)
+
+        video_path = os.path.join(self.data_dir, record.path)
+        image_list = list()
+        for num in segment_indices:
+            if 'RGB' == self.modality:
+                image_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num))
+                img = cv2.imread(image_path)
+
+                if self.transform:
+                    img = self.transform(img)
+                image_list.append(img)
+            if 'RGBDiff' == self.modality:
+                tmp_list = list()
+                for clip in range(self.clip_length):
+                    img_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num + clip))
+                    img = np.array(Image.open(img_path))
+
+                    tmp_list.append(img)
+                for clip in reversed(range(1, self.clip_length)):
+                    img = tmp_list[clip] - tmp_list[clip - 1]
+                    if self.transform:
+                        img = self.transform(img)
+                    image_list.append(img)
+        image = torch.stack(image_list)
+
+        return image, target
