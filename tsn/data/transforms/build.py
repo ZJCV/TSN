@@ -19,10 +19,11 @@ def build_transform(cfg, train=True):
     if train:
         transform = transforms.Compose([
             transforms.ToPILImage(),
-            transforms.Resize((h, w)),
-            transforms.RandomRotation(10),
+            transforms.Resize(h),
+            transforms.RandomCrop((h, w)),
             transforms.RandomHorizontalFlip(),
             transforms.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1),
+            transforms.RandomRotation(10),
             transforms.ToTensor(),
             transforms.Normalize(MEAN, STD),
             transforms.RandomErasing()
