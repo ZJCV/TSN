@@ -5,19 +5,17 @@ DATASETS:
     NAME: 'JESTER'
     DATA_DIR: 'data/jester/20bn-jester-v1'
     ANNOTATION_DIR: 'data/jester'
-    SPLIT: 1
   TEST:
     NAME: 'JESTER'
     DATA_DIR: 'data/jester/20bn-jester-v1'
     ANNOTATION_DIR: 'data/jester'
-    SPLIT: 1
 TRANSFORM:
   INPUT_SIZE: (224, 224, 3)
   MEAN: (0.485, 0.456, 0.406)
   STD: (0.229, 0.224, 0.225)
 DATALOADER:
-  TRAIN_BATCH_SIZE: 16
-  TEST_BATCH_SIZE: 16
+  TRAIN_BATCH_SIZE: 4
+  TEST_BATCH_SIZE: 4
   NUM_WORKERS: 8
 MODEL:
   PRETRAINED: ""
@@ -44,9 +42,9 @@ LR_SCHEDULER:
   NAME: 'cosine_annearling_lr'
   MINIMAL_LR: 3e-4
   WARMUP: True
-  ITERATION: 400
+  ITERATION: 4000
   MULTIPLIER: 1.0
 TRAIN:
-  MAX_ITER: 10000
+  MAX_ITER: 100000
 OUTPUT:
   DIR: 'outputs/tsn_resnet50_jester_rgbdiff'
