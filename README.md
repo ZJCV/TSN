@@ -43,7 +43,7 @@ $ pip install -r requirements.txt
 
 ## 使用
 
-采用单`GPU`方式进行训练和测试，首先设置`GPU`和当前位置
+首先设置`GPU`和当前位置
 
 ```
 $ export CUDA_VISIBLE_DEVICES=1
@@ -53,8 +53,30 @@ $ export PYTHONPATH=.
 * 训练
 
 ```
-# 训练HMDB51
+# 训练UCF101
+# 单GPU
 $ python tools/train.py --config_file=configs/tsn_resnet50_ucf101_rgb.yaml
+# 多GPU
+$ python tools/train.py \
+--config_file=configs/tsn_resnet50_ucf101_rgb.yaml \
+--eval_step=1000 \
+--save_step=1000 \
+-g=2
+```
+
+* 测试
+
+```
+# 单模态测试
+$ python tools/test.py <config_file> <pth_file>
+$ python tools/test.py configs/tsn_resnet50_ucf101_rgbdiff.yaml outputs/tsn_resnet50_ucf101_rgbdiff.pth
+# 多模态融合测试 - RGB + RGBDiff
+$ python tools/fusion.py <rgb_config_file> <rgb_pth_file> <rgbdiff_config_file> <rgbdiff_pth_file>
+$ python tools/fusion.py \
+configs/tsn_resnet50_ucf101_rgb.yaml \
+outputs/tsn_resnet50_ucf101_rgb.pth  \
+configs/tsn_resnet50_ucf101_rgbdiff.yaml \
+outputs/tsn_resnet50_ucf101_rgbdiff.pth
 ```
 
 ## 主要维护人员
