@@ -28,6 +28,7 @@ MODEL:
   HEAD:
     NAME: 'TSNHead'
     FEATURE_DIMS: 2048
+    DROPOUT: 0
     NUM_CLASSES: 101
   RECOGNIZER:
     NAME: 'TSNRecognizer'
