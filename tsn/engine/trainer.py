@@ -12,6 +12,7 @@ import datetime
 import time
 import torch
 import torch.distributed as dist
+from torch.utils.data.distributed import DistributedSampler
 
 from tsn.util.metrics import topk_accuracy
 from tsn.util.metric_logger import MetricLogger
@@ -40,6 +41,8 @@ def do_train(args, cfg, arguments,
     dist.barrier()
     start_training_time = time.time()
     end = time.time()
+
+    dist.barrier()
     for iteration, (images, targets) in enumerate(data_loader, start_iter):
         iteration = iteration + 1
         arguments["iteration"] = iteration
@@ -57,6 +60,10 @@ def do_train(args, cfg, arguments,
         loss.backward()
         optimizer.step()
         lr_scheduler.step()
+
+        if iteration % len(data_loader) == 0 and \
+                isinstance(data_loader.batch_sampler.batch_sampler.sampler, DistributedSampler):
+            data_loader.batch_sampler.batch_sampler.sampler.set_epoch(iteration)
 
         batch_time = time.time() - end
         end = time.time()
@@ -98,6 +105,7 @@ def do_train(args, cfg, arguments,
                         summary_writer.add_scalar(f'eval/{key}', value, global_step=iteration)
                 model.train()
 
+    dist.barrier()
     if arguments['rank'] == 0:
         if summary_writer:
             summary_writer.close()

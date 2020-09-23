@@ -73,6 +73,7 @@ def train(gpu, args, cfg):
     data_loader = build_dataloader(cfg, train=True, start_iter=arguments['iteration'],
                                    world_size=args.world_size, rank=rank)
 
+    dist.barrier()
     model = do_train(args, cfg, arguments,
                      data_loader, model, criterion, optimizer, lr_scheduler,
                      checkpointer, device, logger)
