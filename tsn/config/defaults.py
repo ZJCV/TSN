@@ -46,6 +46,7 @@ _C.DATALOADER.NUM_WORKERS = 8
 # ---------------------------------------------------------------------------- #
 _C.MODEL = CN()
 _C.MODEL.PRETRAINED = ""
+_C.MODEL.SYNC_BN = True
 
 _C.MODEL.BACKBONE = CN()
 _C.MODEL.BACKBONE.NAME = 'resnet50'

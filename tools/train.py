@@ -19,6 +19,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from tsn.config import cfg
 from tsn.data.build import build_dataloader
 from tsn.model.build import build_model, build_criterion
+from tsn.model.batchnorm_helper import simple_group_split, convert_sync_bn
 from tsn.optim.build import build_optimizer, build_lr_scheduler
 from tsn.engine.trainer import do_train
 from tsn.engine.inference import do_evaluation
@@ -40,6 +41,9 @@ def train(gpu, args, cfg):
     device = torch.device(f'cuda:{gpu}' if torch.cuda.is_available() else 'cpu')
     map_location = {'cuda:%d' % 0: 'cuda:%d' % rank}
     model = build_model(cfg, map_location=map_location).to(device)
+    if cfg.MODEL.SYNC_BN:
+        process_group = simple_group_split(args.world_size, rank, 1)
+        convert_sync_bn(model, process_group)
     if cfg.MODEL.PRETRAINED != "":
         if rank == 0 and logger:
             logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
