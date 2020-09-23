@@ -1,6 +1,6 @@
 DATASETS:
-  MODALITY: 'RGBDiff'
-  NUM_SEGS: 8
+  MODALITY: 'RGB'
+  NUM_SEGS: 3
   TRAIN:
     NAME: 'HMDB51'
     DATA_DIR: 'data/hmdb51/rawframes'
@@ -29,7 +29,7 @@ MODEL:
   HEAD:
     NAME: 'TSNHead'
     FEATURE_DIMS: 2048
-    DROPOUT: 0
+    DROPOUT: 0.0
     NUM_CLASSES: 51
   RECOGNIZER:
     NAME: 'TSNRecognizer'
@@ -46,9 +46,9 @@ LR_SCHEDULER:
   NAME: 'cosine_annearling_lr'
   MINIMAL_LR: 3e-5
   WARMUP: True
-  ITERATION: 1000
+  ITERATION: 400
   MULTIPLIER: 1.0
 TRAIN:
   MAX_ITER: 20000
 OUTPUT:
-  DIR: 'outputs/tsn_resnet50_hmdb51_rgb'
+  DIR: 'outputs/tsn_resnet50_hmdb51_rgb_224x224x3'
