@@ -36,6 +36,7 @@ def train(gpu, args, cfg):
     arguments = {"iteration": 0}
     arguments['rank'] = rank
 
+    torch.cuda.set_device(gpu)
     device = torch.device(f'cuda:{gpu}' if torch.cuda.is_available() else 'cpu')
     map_location = {'cuda:%d' % 0: 'cuda:%d' % rank}
     model = build_model(cfg, map_location=map_location).to(device)
@@ -46,7 +47,7 @@ def train(gpu, args, cfg):
         checkpointer.load(cfg.MODEL.PRETRAINED, map_location=map_location, rank=rank)
 
     if args.gpus > 1:
-        model = DDP(model, device_ids=[gpu], find_unused_parameters=True)
+        model = DDP(model, device_ids=[gpu], output_device=gpu, find_unused_parameters=True)
     criterion = build_criterion(cfg)
     optimizer = build_optimizer(cfg, model)
     lr_scheduler = build_lr_scheduler(cfg, optimizer)
