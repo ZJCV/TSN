@@ -20,6 +20,7 @@ DATALOADER:
   NUM_WORKERS: 8
 MODEL:
   PRETRAINED: ""
+  SYNC_BN: True
   BACKBONE:
     NAME: 'resnet50'
     PARTIAL_BN: False
@@ -39,7 +40,8 @@ OPTIMIZER:
   NAME: 'sgd'
   LR: 1e-2
   WEIGHT_DECAY: 3e-4
-  MOMENTUM: 0.9
+  SGD:
+    MOMENTUM: 0.9
 LR_SCHEDULER:
   NAME: 'cosine_annearling_lr'
   MINIMAL_LR: 3e-4
@@ -47,6 +49,6 @@ LR_SCHEDULER:
   ITERATION: 1000
   MULTIPLIER: 1.0
 TRAIN:
-  MAX_ITER: 50000
+  MAX_ITER: 100000
 OUTPUT:
   DIR: 'outputs/tsn_resnet50_jester_rgb_224x224x3'

@@ -22,6 +22,7 @@ DATALOADER:
   NUM_WORKERS: 8
 MODEL:
   PRETRAINED: ""
+  SYNC_BN: True
   BACKBONE:
     NAME: 'resnet50'
     PARTIAL_BN: False
@@ -41,7 +42,8 @@ OPTIMIZER:
   NAME: 'sgd'
   LR: 1e-2
   WEIGHT_DECAY: 3e-4
-  MOMENTUM: 0.9
+  SGD:
+    MOMENTUM: 0.9
 LR_SCHEDULER:
   NAME: 'cosine_annearling_lr'
   MINIMAL_LR: 3e-4
