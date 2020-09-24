@@ -124,6 +124,7 @@ def main():
     if args.config_file:
         cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
+    cfg.OPTIMIZER.LR *= args.gpus
     cfg.freeze()
 
     if not os.path.exists(cfg.OUTPUT.DIR):
