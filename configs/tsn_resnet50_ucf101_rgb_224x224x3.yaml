@@ -39,16 +39,14 @@ MODEL:
   CRITERION:
     NAME: 'crossentropy'
 OPTIMIZER:
-  NAME: 'sgd'
-  LR: 1e-2
-  WEIGHT_DECAY: 3e-4
-  SGD:
-    MOMENTUM: 0.9
+  NAME: 'adam'
+  LR: 3e-4
+  WEIGHT_DECAY: 3e-5
 LR_SCHEDULER:
   NAME: 'cosine_annearling_lr'
   IS_WARMUP: True
   COSINE_ANNEALING_LR:
-    MINIMAL_LR: 3e-4
+    MINIMAL_LR: 3e-5
   WARMUP:
     ITERATION: 1000
     MULTIPLIER: 1.0
