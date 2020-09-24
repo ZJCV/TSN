@@ -17,7 +17,7 @@ from tsn.optim import registry
 def build_multistep_lr(cfg, optimizer):
     assert isinstance(optimizer, Optimizer)
 
-    milestones = cfg.LR_SCHEDULER.MILESTONES
+    milestones = cfg.LR_SCHEDULER.MULTISTEP_LR.MILESTONES
     gamma = cfg.LR_SCHEDULER.GAMMA
 
     return optim.lr_scheduler.MultiStepLR(optimizer, milestones=milestones, gamma=gamma)

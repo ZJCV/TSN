@@ -29,10 +29,10 @@ def build_lr_scheduler(cfg, optimizer):
     assert isinstance(optimizer, Optimizer)
     lr_scheduler = registry.LR_SCHEDULERS[cfg.LR_SCHEDULER.NAME](cfg, optimizer)
 
-    if cfg.LR_SCHEDULER.WARMUP:
+    if cfg.LR_SCHEDULER.IS_WARMUP:
         lr_scheduler = GradualWarmupScheduler(optimizer,
-                                              multiplier=cfg.LR_SCHEDULER.MULTIPLIER,
-                                              total_epoch=cfg.LR_SCHEDULER.ITERATION,
+                                              multiplier=cfg.LR_SCHEDULER.WARMUP.MULTIPLIER,
+                                              total_epoch=cfg.LR_SCHEDULER.WARMUP.ITERATION,
                                               after_scheduler=lr_scheduler)
 
         optimizer.zero_grad()

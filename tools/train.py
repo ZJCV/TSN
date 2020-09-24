@@ -64,7 +64,7 @@ def train(gpu, args, cfg):
         extra_checkpoint_data = checkpointer.load(map_location=map_location, rank=rank)
         if extra_checkpoint_data != dict():
             arguments['iteration'] = extra_checkpoint_data['iteration']
-            if cfg.LR_SCHEDULER.WARMUP:
+            if cfg.LR_SCHEDULER.IS_WARMUP:
                 if rank == 0:
                     logger.info('warmup ...')
                 if lr_scheduler.finished:

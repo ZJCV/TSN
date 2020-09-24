@@ -17,7 +17,7 @@ from tsn.optim import registry
 def build_step_lr(cfg, optimizer):
     assert isinstance(optimizer, Optimizer)
 
-    step_size = cfg.LR_SCHEDULER.STEP_SIZE
+    step_size = cfg.LR_SCHEDULER.STEP_LR.STEP_SIZE
     gamma = cfg.LR_SCHEDULER.GAMMA
 
     return optim.lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=gamma)
