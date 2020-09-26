@@ -11,7 +11,7 @@ DATASETS:
     ANNOTATION_DIR: 'data/jester'
 TRANSFORM:
   INPUT_SIZE: (224, 224, 3)
-  SMALLER_EDGE: 256
+  RANDOM_RESIZE_RANGE: (256, 320)
   MEAN: (0.485, 0.456, 0.406)
   STD: (0.229, 0.224, 0.225)
 DATALOADER:
@@ -37,9 +37,11 @@ MODEL:
   CRITERION:
     NAME: 'crossentropy'
 OPTIMIZER:
-  NAME: 'adam'
-  LR: 3e-4
-  WEIGHT_DECAY: 3e-5
+  NAME: 'sgd'
+  LR: 2e-3
+  WEIGHT_DECAY: 3e-4
+  SGD:
+    MOMENTUM: 0.9
 LR_SCHEDULER:
   NAME: 'cosine_annearling_lr'
   IS_WARMUP: True
@@ -49,6 +51,6 @@ LR_SCHEDULER:
     ITERATION: 1000
     MULTIPLIER: 1.0
 TRAIN:
-  MAX_ITER: 100000
+  MAX_ITER: 30000
 OUTPUT:
   DIR: 'outputs/tsn_resnet50_jester_rgb_224x224x3'

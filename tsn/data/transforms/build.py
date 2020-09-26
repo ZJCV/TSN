@@ -8,12 +8,13 @@
 """
 
 import torchvision.transforms as transforms
+from .random_resize import RandomResize
 
 
 def build_transform(cfg, train=True):
     size = cfg.TRANSFORM.INPUT_SIZE
     h, w, c = size
-    smaller_edge = cfg.TRANSFORM.SMALLER_EDGE
+    min, max = cfg.TRANSFORM.RANDOM_RESIZE_RANGE
 
     MEAN = cfg.TRANSFORM.MEAN
     STD = cfg.TRANSFORM.STD
@@ -21,7 +22,7 @@ def build_transform(cfg, train=True):
     if train:
         transform = transforms.Compose([
             transforms.ToPILImage(),
-            transforms.Resize(smaller_edge),
+            RandomResize(min, max),
             transforms.RandomCrop((h, w)),
             transforms.RandomHorizontalFlip(),
             transforms.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1),
