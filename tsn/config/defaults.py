@@ -45,6 +45,7 @@ _C.DATALOADER.NUM_WORKERS = 8
 # Model
 # ---------------------------------------------------------------------------- #
 _C.MODEL = CN()
+_C.MODEL.NAME = "TSN"
 _C.MODEL.PRETRAINED = ""
 _C.MODEL.SYNC_BN = True
 
@@ -126,3 +127,9 @@ def get_cfg_defaults():
     # Return a clone so that the defaults will not be altered
     # This is for the "local variable" use pattern
     return _C.clone()
+
+
+from . import custom_config
+
+# Add custom config with default values.
+custom_config.add_custom_config(_C)

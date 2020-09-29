@@ -2,15 +2,13 @@ DATASETS:
   MODALITY: 'RGBDiff'
   NUM_SEGS: 3
   TRAIN:
-    NAME: 'UCF101'
-    DATA_DIR: 'data/ucf101/rawframes'
-    ANNOTATION_DIR: 'data/ucf101'
-    SPLIT: 1
+    NAME: 'JESTER'
+    DATA_DIR: 'data/jester/20bn-jester-v1'
+    ANNOTATION_DIR: 'data/jester'
   TEST:
-    NAME: 'UCF101'
-    DATA_DIR: 'data/ucf101/rawframes'
-    ANNOTATION_DIR: 'data/ucf101'
-    SPLIT: 1
+    NAME: 'JESTER'
+    DATA_DIR: 'data/jester/20bn-jester-v1'
+    ANNOTATION_DIR: 'data/jester'
 TRANSFORM:
   INPUT_SIZE: (224, 224, 3)
   RANDOM_RESIZE_RANGE: (256, 320)
@@ -21,6 +19,7 @@ DATALOADER:
   TEST_BATCH_SIZE: 8
   NUM_WORKERS: 8
 MODEL:
+  NAME: 'TSN'
   PRETRAINED: ""
   SYNC_BN: True
   BACKBONE:
@@ -31,7 +30,7 @@ MODEL:
     NAME: 'TSNHead'
     FEATURE_DIMS: 2048
     DROPOUT: 0.0
-    NUM_CLASSES: 101
+    NUM_CLASSES: 27
   RECOGNIZER:
     NAME: 'TSNRecognizer'
   CONSENSU:
@@ -53,6 +52,6 @@ LR_SCHEDULER:
     ITERATION: 1000
     MULTIPLIER: 1.0
 TRAIN:
-  MAX_ITER: 20000
+  MAX_ITER: 50000
 OUTPUT:
-  DIR: 'outputs/tsn_resnet50_ucf101_rgbdiff_224x224x3'
+  DIR: 'outputs/tsn_r50_jester_rgbdiff_224x224x3'

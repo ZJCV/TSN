@@ -21,6 +21,7 @@ DATALOADER:
   TEST_BATCH_SIZE: 32
   NUM_WORKERS: 8
 MODEL:
+  NAME: 'TSN'
   PRETRAINED: ""
   SYNC_BN: True
   BACKBONE:
@@ -55,4 +56,4 @@ LR_SCHEDULER:
 TRAIN:
   MAX_ITER: 20000
 OUTPUT:
-  DIR: 'outputs/tsn_resnet50_ucf101_rgb_224x224x3'
+  DIR: 'outputs/tsn_r50_ucf101_rgb_224x224x3'
