@@ -11,8 +11,3 @@ import torch.nn as nn
 
 from tsn.model import registry
 
-from .tsn_recognizer import TSNRecognizer
-
-
-def build_recognizer(cfg, map_location=None):
-    return registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg, map_location=map_location)

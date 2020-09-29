@@ -8,13 +8,12 @@
 """
 
 from . import registry
-from .tsn import TSN
+from .recognizers.tsn_recognizer import TSNRecognizer
 from .criterions.crossentropy import build_crossentropy
 
 
 def build_model(cfg, map_location=None):
-    model = TSN(cfg, map_location=map_location)
-    return model
+    return registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg, map_location=map_location)
 
 
 def build_criterion(cfg):

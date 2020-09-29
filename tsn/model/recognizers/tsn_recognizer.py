@@ -13,6 +13,7 @@ import torch.nn as nn
 from tsn.model import registry
 from tsn.model.backbones.build import build_backbone
 from tsn.model.heads.build import build_head
+from tsn.model.consensus.build import build_consensus
 
 
 @registry.RECOGNIZER.register('TSNRecognizer')
@@ -23,9 +24,14 @@ class TSNRecognizer(nn.Module):
 
         self.backbone = build_backbone(cfg, map_location=map_location)
         self.head = build_head(cfg)
+        self.consensus = build_consensus(cfg)
 
     def forward(self, imgs):
-        features = self.backbone(imgs)
-        outputs = self.head(features)
+        assert len(imgs.shape) == 5
+        N, T, C, H, W = imgs.shape[:5]
 
-        return outputs
+        input_data = imgs.reshape(-1, C, H, W)
+        features = self.backbone(input_data)
+        probs = self.head(features).reshape(N, T, -1)
+
+        return self.consensus(probs, dim=1)
