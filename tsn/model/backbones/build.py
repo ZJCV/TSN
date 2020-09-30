@@ -9,7 +9,7 @@
 
 import torch.nn as nn
 
-from .resnet import resnet50
+from .resnet.build_resnet import resnet50
 from tsn.model import registry
 
 
