@@ -120,16 +120,3 @@ _C.INFER.NAME = 'TSN.infer'
 # ---------------------------------------------------------------------------- #
 _C.OUTPUT = CN()
 _C.OUTPUT.DIR = 'outputs/'
-
-
-def get_cfg_defaults():
-    """Get a yacs CfgNode object with default values for my_project."""
-    # Return a clone so that the defaults will not be altered
-    # This is for the "local variable" use pattern
-    return _C.clone()
-
-
-from . import custom_config
-
-# Add custom config with default values.
-custom_config.add_custom_config(_C)
