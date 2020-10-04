@@ -16,7 +16,7 @@ from torch.utils.data.distributed import DistributedSampler
 
 from tsn.util.metrics import topk_accuracy
 from tsn.util.metric_logger import MetricLogger
-from tsn.util.distributed import is_master_proc
+from tsn.util.distributed import is_master_proc, synchronize
 
 from tsn.engine.inference import do_evaluation
 
@@ -40,11 +40,11 @@ def do_train(args, cfg, arguments,
     start_iter = arguments['iteration']
     max_iter = cfg.TRAIN.MAX_ITER
 
-    dist.barrier()
+    synchronize()
     start_training_time = time.time()
     end = time.time()
 
-    dist.barrier()
+    synchronize()
     for iteration, (images, targets) in enumerate(data_loader, start_iter):
         iteration = iteration + 1
         arguments["iteration"] = iteration
@@ -107,7 +107,7 @@ def do_train(args, cfg, arguments,
                         summary_writer.add_scalar(f'eval/{key}', value, global_step=iteration)
                 model.train()
 
-    dist.barrier()
+    synchronize()
     if is_master_proc():
         if summary_writer:
             summary_writer.close()

@@ -45,3 +45,18 @@ def is_master_proc(num_gpus=8):
         return dist.get_rank() % num_gpus == 0
     else:
         return True
+
+
+def synchronize():
+    """
+    Helper function to synchronize (barrier) among all processes when
+    using distributed training
+    """
+    if not dist.is_available():
+        return
+    if not dist.is_initialized():
+        return
+    world_size = dist.get_world_size()
+    if world_size == 1:
+        return
+    dist.barrier()

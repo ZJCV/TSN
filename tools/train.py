@@ -20,7 +20,7 @@ from tsn.engine.inference import do_evaluation
 from tsn.util.checkpoint import CheckPointer
 from tsn.util.logger import setup_logger
 from tsn.util.collect_env import collect_env_info
-from tsn.util.distributed import setup, cleanup, is_master_proc
+from tsn.util.distributed import setup, cleanup, is_master_proc, synchronize
 from tsn.util.parser import parse_train_args, load_config
 from tsn.util.misc import launch_job
 
@@ -73,8 +73,7 @@ def train(gpu, args, cfg):
     data_loader = build_dataloader(cfg, train=True, start_iter=arguments['iteration'],
                                    world_size=args.world_size, rank=rank)
 
-    dist.barrier()
-
+    synchronize()
     model = do_train(args, cfg, arguments,
                      data_loader, model, criterion, optimizer, lr_scheduler,
                      checkpointer, device, logger)
