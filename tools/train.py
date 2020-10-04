@@ -8,15 +8,12 @@
 """
 
 import os
-import numpy as np
 import torch
-import argparse
 
 import torch.multiprocessing as mp
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 
-from tsn.config import cfg
 from tsn.data.build import build_dataloader
 from tsn.model.build import build_model, build_criterion
 from tsn.model.batchnorm_helper import simple_group_split, convert_sync_bn
@@ -27,6 +24,7 @@ from tsn.util.checkpoint import CheckPointer
 from tsn.util.logger import setup_logger
 from tsn.util.collect_env import collect_env_info
 from tsn.util.dist_util import setup, cleanup
+from tsn.util.parser import parse_train_args, load_config
 
 
 def train(gpu, args, cfg):
@@ -91,44 +89,9 @@ def train(gpu, args, cfg):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='TSN Training With PyTorch')
-    parser.add_argument("--config_file", default="", metavar="FILE",
-                        help="path to config file", type=str)
-    parser.add_argument('--log_step', default=10, type=int,
-                        help='Print logs every log_step')
-    parser.add_argument('--save_step', default=2500, type=int,
-                        help='Save checkpoint every save_step')
-    parser.add_argument('--stop_save', default=False, action='store_true')
-    parser.add_argument('--eval_step', default=2500, type=int,
-                        help='Evaluate dataset every eval_step, disabled when eval_step < 0')
-    parser.add_argument('--stop_eval', default=False, action='store_true')
-    parser.add_argument('--resume', default=False, action='store_true',
-                        help='Resume training')
-    parser.add_argument('--use_tensorboard', default=1, type=int)
+    args = parse_train_args()
+    cfg = load_config(args)
 
-    parser.add_argument('-n', '--nodes', default=1, type=int, metavar='N',
-                        help='number of machines (default: 1)')
-    parser.add_argument('-g', '--gpus', default=1, type=int,
-                        help='number of gpus per node')
-    parser.add_argument('-nr', '--nr', default=0, type=int,
-                        help='ranking within the nodes')
-
-    parser.add_argument(
-        "opts",
-        help="Modify config options using the command-line",
-        default=None,
-        nargs=argparse.REMAINDER,
-    )
-
-    args = parser.parse_args()
-    if args.config_file:
-        cfg.merge_from_file(args.config_file)
-    cfg.merge_from_list(args.opts)
-    cfg.OPTIMIZER.LR *= args.gpus
-    cfg.freeze()
-
-    if not os.path.exists(cfg.OUTPUT.DIR):
-        os.makedirs(cfg.OUTPUT.DIR)
     logger = setup_logger("TSN", save_dir=cfg.OUTPUT.DIR)
     logger.info(args)
 
