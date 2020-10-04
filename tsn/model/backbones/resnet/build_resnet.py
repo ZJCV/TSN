@@ -38,7 +38,7 @@ def _resnet(arch, block, layers, pretrained, progress, **kwargs):
         state_dict = load_state_dict_from_url(model_urls[arch],
                                               progress=progress,
                                               map_location=kwargs.get('map_location', None))
-        model.load_state_dict(state_dict)
+        model.load_state_dict(state_dict, strict=False)
     return model
 
 
