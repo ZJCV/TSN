@@ -12,10 +12,10 @@ import torch.multiprocessing as mp
 
 
 def launch_job(args, cfg, func):
+    args.world_size = args.gpus * args.nodes
     if args.gpus > 1:
-        args.world_size = args.gpus * args.nodes
         os.environ['MASTER_ADDR'] = '127.0.0.1'
         os.environ['MASTER_PORT'] = '17928'
         mp.spawn(func, nprocs=args.gpus, args=(args, cfg))
     else:
-        func(cfg=cfg)
+        func(gpu=1, cfg=cfg, args=args)

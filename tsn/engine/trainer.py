@@ -24,17 +24,17 @@ from tsn.engine.inference import do_evaluation
 def do_train(args, cfg, arguments,
              data_loader, model, criterion, optimizer, lr_scheduler,
              checkpointer, device, logger):
+    meters = MetricLogger()
+    summary_writer = None
+
     if is_master_proc():
         logger.info("Start training ...")
-    meters = MetricLogger()
-    if arguments['rank'] == 0 and args.use_tensorboard:
-        from torch.utils.tensorboard import SummaryWriter
-        summary_writer = SummaryWriter(log_dir=os.path.join(cfg.OUTPUT.DIR, 'tf_logs'))
-        # 写入模型
-        # images, targets = next(iter(data_loader))
-        # summary_writer.add_graph(model, images.to(device))
-    else:
-        summary_writer = None
+        if args.use_tensorboard:
+            from torch.utils.tensorboard import SummaryWriter
+            summary_writer = SummaryWriter(log_dir=os.path.join(cfg.OUTPUT.DIR, 'tf_logs'))
+            # 写入模型
+            # images, targets = next(iter(data_loader))
+            # summary_writer.add_graph(model, images.to(device))
 
     model.train()
     start_iter = arguments['iteration']

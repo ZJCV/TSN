@@ -27,7 +27,7 @@ from tsn.util.misc import launch_job
 
 def train(gpu, args, cfg):
     rank = args.nr * args.gpus + gpu
-    setup(rank, args.world_size, args.gpus)
+    setup(rank, args.world_size)
 
     logger = setup_logger(cfg.TRAIN.NAME)
     arguments = {"iteration": 0}
@@ -37,7 +37,7 @@ def train(gpu, args, cfg):
     device = torch.device(f'cuda:{gpu}' if torch.cuda.is_available() else 'cpu')
     map_location = {'cuda:%d' % 0: 'cuda:%d' % rank}
     model = build_model(cfg, map_location=map_location).to(device)
-    if cfg.MODEL.SYNC_BN:
+    if cfg.MODEL.SYNC_BN and args.world_size > 1:
         process_group = simple_group_split(args.world_size, rank, 1)
         convert_sync_bn(model, process_group)
     if cfg.MODEL.PRETRAINED != "":
@@ -46,7 +46,7 @@ def train(gpu, args, cfg):
         checkpointer = CheckPointer(model, logger=logger)
         checkpointer.load(cfg.MODEL.PRETRAINED, map_location=map_location, rank=rank)
 
-    if args.gpus > 1:
+    if args.world_size > 1:
         model = DDP(model, device_ids=[gpu], output_device=gpu, find_unused_parameters=True)
     criterion = build_criterion(cfg)
     optimizer = build_optimizer(cfg, model)
