@@ -10,7 +10,6 @@
 import os
 import torch
 
-import torch.multiprocessing as mp
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 
@@ -25,6 +24,7 @@ from tsn.util.logger import setup_logger
 from tsn.util.collect_env import collect_env_info
 from tsn.util.dist_util import setup, cleanup
 from tsn.util.parser import parse_train_args, load_config
+from tsn.util.misc import launch_job
 
 
 def train(gpu, args, cfg):
@@ -76,6 +76,7 @@ def train(gpu, args, cfg):
                                    world_size=args.world_size, rank=rank)
 
     dist.barrier()
+
     model = do_train(args, cfg, arguments,
                      data_loader, model, criterion, optimizer, lr_scheduler,
                      checkpointer, device, logger)
@@ -103,10 +104,7 @@ def main():
             logger.info(config_str)
     logger.info("Running with config:\n{}".format(cfg))
 
-    args.world_size = args.gpus * args.nodes
-    os.environ['MASTER_ADDR'] = '127.0.0.1'
-    os.environ['MASTER_PORT'] = '17928'
-    mp.spawn(train, nprocs=args.gpus, args=(args, cfg))
+    launch_job(args, cfg, train)
 
 
 if __name__ == '__main__':
