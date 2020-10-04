@@ -2,7 +2,7 @@
 
 """
 @date: 2020/9/17 下午2:13
-@file: dist_util.py
+@file: distributed.py
 @author: zj
 @description: 
 """
@@ -35,3 +35,13 @@ def setup(rank, world_size, gpus, backend='nccl'):
 
 def cleanup():
     dist.destroy_process_group()
+
+
+def is_master_proc(num_gpus=8):
+    """
+    Determines if the current process is the master process.
+    """
+    if torch.distributed.is_initialized():
+        return dist.get_rank() % num_gpus == 0
+    else:
+        return True

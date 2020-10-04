@@ -16,13 +16,15 @@ from torch.utils.data.distributed import DistributedSampler
 
 from tsn.util.metrics import topk_accuracy
 from tsn.util.metric_logger import MetricLogger
+from tsn.util.distributed import is_master_proc
+
 from tsn.engine.inference import do_evaluation
 
 
 def do_train(args, cfg, arguments,
              data_loader, model, criterion, optimizer, lr_scheduler,
              checkpointer, device, logger):
-    if arguments['rank'] == 0:
+    if is_master_proc():
         logger.info("Start training ...")
     meters = MetricLogger()
     if arguments['rank'] == 0 and args.use_tensorboard:
@@ -68,7 +70,7 @@ def do_train(args, cfg, arguments,
         batch_time = time.time() - end
         end = time.time()
         meters.update(time=batch_time)
-        if arguments['rank'] == 0:
+        if is_master_proc():
             if iteration % args.log_step == 0:
                 eta_seconds = meters.time.global_avg * (max_iter - iteration)
                 eta_string = str(datetime.timedelta(seconds=int(eta_seconds)))
@@ -106,13 +108,13 @@ def do_train(args, cfg, arguments,
                 model.train()
 
     dist.barrier()
-    if arguments['rank'] == 0:
+    if is_master_proc():
         if summary_writer:
             summary_writer.close()
         checkpointer.save("model_final", **arguments)
     # compute training time
     total_training_time = int(time.time() - start_training_time)
     total_time_str = str(datetime.timedelta(seconds=total_training_time))
-    if arguments['rank'] == 0:
+    if is_master_proc():
         logger.info("Total training time: {} ({:.4f} s / it)".format(total_time_str, total_training_time / max_iter))
     return model

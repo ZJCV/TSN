@@ -7,9 +7,7 @@
 @description: 
 """
 
-import os
 import torch
-
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 
@@ -22,7 +20,7 @@ from tsn.engine.inference import do_evaluation
 from tsn.util.checkpoint import CheckPointer
 from tsn.util.logger import setup_logger
 from tsn.util.collect_env import collect_env_info
-from tsn.util.dist_util import setup, cleanup
+from tsn.util.distributed import setup, cleanup, is_master_proc
 from tsn.util.parser import parse_train_args, load_config
 from tsn.util.misc import launch_job
 
@@ -43,7 +41,7 @@ def train(gpu, args, cfg):
         process_group = simple_group_split(args.world_size, rank, 1)
         convert_sync_bn(model, process_group)
     if cfg.MODEL.PRETRAINED != "":
-        if rank == 0 and logger:
+        if is_master_proc() and logger:
             logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
         checkpointer = CheckPointer(model, logger=logger)
         checkpointer.load(cfg.MODEL.PRETRAINED, map_location=map_location, rank=rank)
@@ -57,13 +55,13 @@ def train(gpu, args, cfg):
     checkpointer = CheckPointer(model, optimizer=optimizer, scheduler=lr_scheduler, save_dir=cfg.OUTPUT.DIR,
                                 save_to_disk=True, logger=logger)
     if args.resume:
-        if rank == 0:
+        if is_master_proc():
             logger.info('resume ...')
         extra_checkpoint_data = checkpointer.load(map_location=map_location, rank=rank)
         if extra_checkpoint_data != dict():
             arguments['iteration'] = extra_checkpoint_data['iteration']
             if cfg.LR_SCHEDULER.IS_WARMUP:
-                if rank == 0:
+                if is_master_proc():
                     logger.info('warmup ...')
                 if lr_scheduler.finished:
                     optimizer.load_state_dict(lr_scheduler.after_scheduler.optimizer.state_dict())
@@ -81,7 +79,7 @@ def train(gpu, args, cfg):
                      data_loader, model, criterion, optimizer, lr_scheduler,
                      checkpointer, device, logger)
 
-    if rank == 0 and not args.stop_eval:
+    if is_master_proc() and not args.stop_eval:
         logger.info('Start final evaluating...')
         torch.cuda.empty_cache()  # speed up evaluating after training finished
         do_evaluation(cfg, model, device)
