@@ -31,7 +31,6 @@ def train(gpu, args, cfg):
 
     logger = setup_logger(cfg.TRAIN.NAME)
     arguments = {"iteration": 0}
-    arguments['rank'] = rank
 
     torch.cuda.set_device(gpu)
     device = torch.device(f'cuda:{gpu}' if torch.cuda.is_available() else 'cpu')
@@ -83,6 +82,7 @@ def train(gpu, args, cfg):
         torch.cuda.empty_cache()  # speed up evaluating after training finished
         do_evaluation(cfg, model, device)
 
+    synchronize()
     cleanup()
 
 

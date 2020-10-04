@@ -12,18 +12,16 @@ from .random_resize import RandomResize
 
 
 def build_transform(cfg, train=True):
-    size = cfg.TRANSFORM.INPUT_SIZE
-    h, w, c = size
-    min, max = cfg.TRANSFORM.RANDOM_RESIZE_RANGE
-
+    min, max = cfg.TRANSFORM.JITTER_SCALES
     MEAN = cfg.TRANSFORM.MEAN
     STD = cfg.TRANSFORM.STD
 
     if train:
+        crop_size = cfg.TRANSFORM.TRAIN_CROP_SIZE
         transform = transforms.Compose([
             transforms.ToPILImage(),
             RandomResize(min, max),
-            transforms.RandomCrop((h, w)),
+            transforms.RandomCrop(crop_size),
             transforms.RandomHorizontalFlip(),
             transforms.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1),
             transforms.RandomRotation(10),
@@ -32,10 +30,11 @@ def build_transform(cfg, train=True):
             transforms.RandomErasing()
         ])
     else:
+        crop_size = cfg.TRANSFORM.TEST_CROP_SIZE
         transform = transforms.Compose([
             transforms.ToPILImage(),
-            transforms.Resize(h),
-            transforms.CenterCrop((h, w)),
+            transforms.Resize(min),
+            transforms.CenterCrop(crop_size),
             transforms.ToTensor(),
             transforms.Normalize(MEAN, STD)
         ])
