@@ -77,12 +77,11 @@ def train(gpu, args, cfg):
                      data_loader, model, criterion, optimizer, lr_scheduler,
                      checkpointer, device, logger)
 
+    synchronize()
     if is_master_proc() and not args.stop_eval:
         logger.info('Start final evaluating...')
         torch.cuda.empty_cache()  # speed up evaluating after training finished
         do_evaluation(cfg, model, device)
-
-    synchronize()
     cleanup()
 
 
