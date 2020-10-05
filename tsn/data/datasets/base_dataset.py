@@ -75,7 +75,7 @@ class BaseDataset(Dataset):
             offsets = np.sort(np.random.randint(record.num_frames - self.clip_length + 1, size=self.num_segs))
         else:
             offsets = np.zeros((self.num_segs,))
-        return offsets
+        return offsets.astype(np.int)
 
     def _get_test_indices(self, record):
 
@@ -83,7 +83,7 @@ class BaseDataset(Dataset):
 
         offsets = np.array([int(tick / 2.0 + tick * x) for x in range(self.num_segs)])
 
-        return offsets
+        return offsets.astype(np.int)
 
     def __len__(self) -> int:
         return len(self.video_list)
