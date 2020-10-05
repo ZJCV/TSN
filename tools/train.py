@@ -38,7 +38,7 @@ def train(gpu, args, cfg):
     model = build_model(cfg, map_location=map_location).to(device)
     if cfg.MODEL.SYNC_BN and args.world_size > 1:
         process_group = simple_group_split(args.world_size, rank, 1)
-        convert_sync_bn(model, process_group)
+        convert_sync_bn(model, process_group, gpu=gpu)
     if cfg.MODEL.PRETRAINED != "":
         if is_master_proc() and logger:
             logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
