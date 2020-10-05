@@ -24,6 +24,8 @@
 - [使用](#使用)
 - [主要维护人员](#主要维护人员)
 - [致谢](#致谢)
+  - [仓库](#仓库)
+  - [论文](#论文)
 - [参与贡献方式](#参与贡献方式)
 - [许可证](#许可证)
 
@@ -85,8 +87,24 @@ outputs/tsn_resnet50_ucf101_rgbdiff.pth
 
 ## 致谢
 
+### 仓库
+
 * [yjxiong/tsn-pytorch](https://github.com/yjxiong/tsn-pytorch)
 * [open-mmlab/mmaction2](https://github.com/open-mmlab/mmaction2)
+* [ facebookresearch/SlowFast](https://github.com/facebookresearch/SlowFast)
+
+### 论文
+
+```
+@misc{wang2016temporal,
+      title={Temporal Segment Networks: Towards Good Practices for Deep Action Recognition}, 
+      author={Limin Wang and Yuanjun Xiong and Zhe Wang and Yu Qiao and Dahua Lin and Xiaoou Tang and Luc Van Gool},
+      year={2016},
+      eprint={1608.00859},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
 
 ## 参与贡献方式
 
