@@ -63,9 +63,8 @@ def do_train(args, cfg, arguments,
         optimizer.step()
         lr_scheduler.step()
 
-        if iteration % len(data_loader) == 0 and \
-                isinstance(data_loader.batch_sampler.batch_sampler.sampler, DistributedSampler):
-            data_loader.batch_sampler.batch_sampler.sampler.set_epoch(iteration)
+        if iteration % len(data_loader) == 0 and hasattr(data_loader.batch_sampler, "set_epoch"):
+            data_loader.batch_sampler.set_epoch(iteration)
 
         batch_time = time.time() - end
         end = time.time()
