@@ -1,6 +1,6 @@
 DATASETS:
   MODALITY: 'RGB'
-  SAMPLE_STRATEGY: 'SegSample'
+  SAMPLE_STRATEGY: 'DenseSample'
   CLIP_LEN: 1
   FRAME_INTERVAL: 1
   NUM_CLIPS: 3
@@ -27,7 +27,7 @@ DATALOADER:
 MODEL:
   NAME: 'TSN'
   PRETRAINED: ""
-  SYNC_BN: True
+  SYNC_BN: False
   INPUT_SIZE: (224, 224, 3)
   BACKBONE:
     NAME: 'resnet50'
@@ -46,7 +46,7 @@ MODEL:
     NAME: 'crossentropy'
 OPTIMIZER:
   NAME: 'sgd'
-  LR: 1e-3
+  LR: 2e-3
   WEIGHT_DECAY: 3e-4
   SGD:
     MOMENTUM: 0.9
@@ -59,6 +59,6 @@ LR_SCHEDULER:
     ITERATION: 400
     MULTIPLIER: 1.0
 TRAIN:
-  MAX_ITER: 30000
+  MAX_ITER: 20000
 OUTPUT:
   DIR: 'outputs/tsn_r50_ucf101_rgb_224x224x3'

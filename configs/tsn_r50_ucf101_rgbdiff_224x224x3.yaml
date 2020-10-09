@@ -46,7 +46,7 @@ MODEL:
     NAME: 'crossentropy'
 OPTIMIZER:
   NAME: 'sgd'
-  LR: 2e-3
+  LR: 1e-3
   WEIGHT_DECAY: 3e-4
   SGD:
     MOMENTUM: 0.9
@@ -59,6 +59,6 @@ LR_SCHEDULER:
     ITERATION: 1000
     MULTIPLIER: 1.0
 TRAIN:
-  MAX_ITER: 20000
+  MAX_ITER: 30000
 OUTPUT:
   DIR: 'outputs/tsn_r50_ucf101_rgbdiff_224x224x3'
