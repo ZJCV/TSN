@@ -28,6 +28,7 @@ class TSNRecognizer(nn.Module):
 
     def forward(self, imgs):
         assert len(imgs.shape) == 5
+        imgs = imgs.transpose(1, 2)
         N, T, C, H, W = imgs.shape[:5]
 
         input_data = imgs.reshape(-1, C, H, W)
