@@ -7,7 +7,10 @@ _C = CN()
 # ---------------------------------------------------------------------------- #
 _C.DATASETS = CN()
 _C.DATASETS.MODALITY = 'RGB'
-_C.DATASETS.NUM_SEGS = 3
+_C.DATASETS.SAMPLE_STRATEGY = 'SegSample'
+_C.DATASETS.CLIP_LEN = 1
+_C.DATASETS.FRAME_INTERVAL = 1
+_C.DATASETS.NUM_CLIPS = 3
 # train
 _C.DATASETS.TRAIN = CN()
 _C.DATASETS.TRAIN.NAME = 'HMDB51'

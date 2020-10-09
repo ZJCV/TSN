@@ -1,6 +1,9 @@
 DATASETS:
   MODALITY: 'RGB'
-  NUM_SEGS: 3
+  SAMPLE_STRATEGY: 'SegSample'
+  CLIP_LEN: 1
+  FRAME_INTERVAL: 1
+  NUM_CLIPS: 3
   TRAIN:
     NAME: 'UCF101'
     DATA_DIR: 'data/ucf101/rawframes'

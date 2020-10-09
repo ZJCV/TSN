@@ -1,6 +1,9 @@
 DATASETS:
   MODALITY: 'RGBDiff'
-  NUM_SEGS: 3
+  SAMPLE_STRATEGY: 'SegSample'
+  CLIP_LEN: 5
+  FRAME_INTERVAL: 1
+  NUM_CLIPS: 3
   TRAIN:
     NAME: 'JESTER'
     DATA_DIR: 'data/jester/20bn-jester-v1'

@@ -8,12 +8,8 @@
 """
 
 import os
-import cv2
-import torch
-from PIL import Image
-import numpy as np
 
-from .base_dataset import BaseDataset
+from .base_dataset import VideoRecord, BaseDataset
 
 classes = ['brush_hair', 'cartwheel', 'catch', 'chew', 'clap', 'climb',
            'climb_stairs', 'dive', 'draw_sword', 'dribble', 'drink', 'eat',
@@ -28,56 +24,27 @@ classes = ['brush_hair', 'cartwheel', 'catch', 'chew', 'clap', 'climb',
 
 class HMDB51(BaseDataset):
 
-    def __init__(self, data_dir, annotation_dir, modality="RGB", num_segs=3, split=1, train=True, transform=None):
+    def __init__(self,
+                 *args,
+                 split=1,
+                 **kwargs):
         assert isinstance(split, int) and split in (1, 2, 3)
-        super(HMDB51, self).__init__(data_dir, train=train, modality=modality, num_segs=num_segs, transform=transform)
 
-        if train:
-            annotation_path = os.path.join(annotation_dir, f'hmdb51_train_split_{split}_rawframes.txt')
-            if not os.path.isfile(annotation_path):
-                raise ValueError(f'{annotation_path}不是文件路径')
+        self.split = split
+        super(HMDB51, self).__init__(*args, **kwargs)
+        self.base_index = 0
+        self.img_prefix = 'img_'
+
+    def _update_video(self, annotation_dir, is_train=True):
+        if is_train:
+            annotation_path = os.path.join(annotation_dir, f'hmdb51_train_split_{self.split}_rawframes.txt')
         else:
-            annotation_path = os.path.join(annotation_dir, f'hmdb51_val_split_{split}_rawframes.txt')
-            if not os.path.isfile(annotation_path):
-                raise ValueError(f'{annotation_path}不是文件路径')
-        self._update(annotation_path)
-        self._update_class(classes)
+            annotation_path = os.path.join(annotation_dir, f'hmdb51_val_split_{self.split}_rawframes.txt')
 
-    def __getitem__(self, index: int):
-        """
-        从选定的视频文件夹中随机选取T帧，则返回(T, C, H, W)，其中T表示num_segs
-        """
-        assert index < len(self.video_list)
-        record = self.video_list[index]
-        target = record.label
+        if not os.path.isfile(annotation_path):
+            raise ValueError(f'{annotation_path}不是文件路径')
 
-        if self.train:
-            segment_indices = self._sample_indices(record)
-        else:
-            segment_indices = self._get_test_indices(record)
+        self.video_list = [VideoRecord(x.strip().split(' ')) for x in open(annotation_path)]
 
-        video_path = os.path.join(self.data_dir, record.path)
-        image_list = list()
-        for num in segment_indices:
-            if 'RGB' == self.modality:
-                image_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num))
-                img = cv2.imread(image_path)
-
-                if self.transform:
-                    img = self.transform(img)
-                image_list.append(img)
-            if 'RGBDiff' == self.modality:
-                tmp_list = list()
-                for clip in range(self.clip_length):
-                    img_path = os.path.join(video_path, 'img_{:0>5d}.jpg'.format(num + clip))
-                    img = np.array(Image.open(img_path))
-
-                    tmp_list.append(img)
-                for clip in reversed(range(1, self.clip_length)):
-                    img = tmp_list[clip] - tmp_list[clip - 1]
-                    if self.transform:
-                        img = self.transform(img)
-                    image_list.append(img)
-        image = torch.stack(image_list)
-
-        return image, target
+    def _update_class(self):
+        self.classes = classes
