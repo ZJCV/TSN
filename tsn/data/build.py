@@ -13,16 +13,14 @@ from torch.utils.data.distributed import DistributedSampler
 
 from .datasets.build import build_dataset
 from .samplers import IterationBasedBatchSampler
-
-from tsn.data.datasets.hmdb51 import HMDB51
-from tsn.data.datasets.ucf101 import UCF101
-
 from .transforms.build import build_transform
 
 
-def build_dataloader(cfg, train=True,
+def build_dataloader(cfg,
+                     train=True,
                      start_iter=0,
-                     world_size=1, rank=0):
+                     world_size=1,
+                     rank=0):
     transform = build_transform(cfg, train=train)
     dataset = build_dataset(cfg, transform=transform, is_train=train)
 

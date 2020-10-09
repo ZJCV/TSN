@@ -7,15 +7,9 @@
 @description: 
 """
 
-import cv2
-from PIL import Image
-import random
-import os
 import numpy as np
 
-import torch
 from torch.utils.data import Dataset
-from tsn.util.image import rgbdiff
 
 
 class VideoRecord(object):
