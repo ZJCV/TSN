@@ -57,13 +57,13 @@ $ export PYTHONPATH=.
 ```
 # 训练UCF101
 # 单GPU
-$ python tools/train.py --config_file=configs/tsn_resnet50_ucf101_rgb.yaml
+$ python tools/train.py --config_file=configs/tsn_r50_ucf101_rgb_224x3_seg.yaml
 # 多GPU
 $ python tools/train.py \
---config_file=configs/tsn_resnet50_ucf101_rgb.yaml \
+--config_file=configs/tsn_r50_ucf101_rgb_224x3_seg.yaml \
 --eval_step=1000 \
 --save_step=1000 \
--g=2
+-g=<N>
 ```
 
 * 测试
@@ -71,14 +71,14 @@ $ python tools/train.py \
 ```
 # 单模态测试
 $ python tools/test.py <config_file> <pth_file>
-$ python tools/test.py configs/tsn_resnet50_ucf101_rgbdiff.yaml outputs/tsn_resnet50_ucf101_rgbdiff.pth
+$ python tools/test.py configs/tsn_r50_ucf101_rgb_224x3_seg.yaml outputs/tsn_r50_ucf101_rgb_224x3_seg.pth
 # 多模态融合测试 - RGB + RGBDiff
 $ python tools/fusion.py <rgb_config_file> <rgb_pth_file> <rgbdiff_config_file> <rgbdiff_pth_file>
 $ python tools/fusion.py \
-configs/tsn_resnet50_ucf101_rgb.yaml \
-outputs/tsn_resnet50_ucf101_rgb.pth  \
-configs/tsn_resnet50_ucf101_rgbdiff.yaml \
-outputs/tsn_resnet50_ucf101_rgbdiff.pth
+configs/tsn_r50_ucf101_rgb_224x3_seg.yaml \
+outputs/tsn_r50_ucf101_rgb_224x3_seg.pth  \
+configs/tsn_r50_ucf101_rgbdiff_224x3_seg.yaml \
+outputs/tsn_r50_ucf101_rgbdiff_224x3_seg.pth
 ```
 
 ## 主要维护人员
@@ -89,9 +89,12 @@ outputs/tsn_resnet50_ucf101_rgbdiff.pth
 
 ### 仓库
 
-* [yjxiong/tsn-pytorch](https://github.com/yjxiong/tsn-pytorch)
-* [open-mmlab/mmaction2](https://github.com/open-mmlab/mmaction2)
-* [ facebookresearch/SlowFast](https://github.com/facebookresearch/SlowFast)
+* `CodeBase`
+  * [lufficc/SSD](https://github.com/lufficc/SSD)
+  * [yjxiong/tsn-pytorch](https://github.com/yjxiong/tsn-pytorch)
+* `Enhance`
+  * [open-mmlab/mmaction2](https://github.com/open-mmlab/mmaction2)
+  * [ facebookresearch/SlowFast](https://github.com/facebookresearch/SlowFast)
 
 ### 论文
 
