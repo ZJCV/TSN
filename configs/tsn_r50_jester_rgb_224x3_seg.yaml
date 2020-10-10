@@ -33,6 +33,7 @@ MODEL:
     NAME: 'resnet50'
     PARTIAL_BN: False
     TORCHVISION_PRETRAINED: True
+    ZERO_INIT_RESIDUAL: True
   HEAD:
     NAME: 'TSNHead'
     FEATURE_DIMS: 2048
