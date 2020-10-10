@@ -89,12 +89,10 @@ outputs/tsn_r50_ucf101_rgbdiff_224x3_seg.pth
 
 ### 仓库
 
-* `CodeBase`
-  * [lufficc/SSD](https://github.com/lufficc/SSD)
-  * [yjxiong/tsn-pytorch](https://github.com/yjxiong/tsn-pytorch)
-* `Enhance`
-  * [open-mmlab/mmaction2](https://github.com/open-mmlab/mmaction2)
-  * [ facebookresearch/SlowFast](https://github.com/facebookresearch/SlowFast)
+* [lufficc/SSD](https://github.com/lufficc/SSD)
+* [yjxiong/tsn-pytorch](https://github.com/yjxiong/tsn-pytorch)
+* [open-mmlab/mmaction2](https://github.com/open-mmlab/mmaction2)
+* [ facebookresearch/SlowFast](https://github.com/facebookresearch/SlowFast)
 
 ### 论文
 
