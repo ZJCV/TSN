@@ -32,7 +32,7 @@ def train(gpu, args, cfg):
     device = torch.device(f'cuda:{gpu}' if torch.cuda.is_available() else 'cpu')
     map_location = {'cuda:%d' % 0: 'cuda:%d' % rank}
 
-    model = build_model(cfg, gpu, map_location=map_location).to(device)
+    model = build_model(cfg, gpu, map_location=map_location)
     criterion = build_criterion(cfg)
     optimizer = build_optimizer(cfg, model)
     lr_scheduler = build_lr_scheduler(cfg, optimizer)

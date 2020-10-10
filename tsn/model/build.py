@@ -21,7 +21,7 @@ def build_model(cfg,
                 gpu,
                 map_location=None,
                 logger=None):
-    model = registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg, map_location=map_location)
+    model = registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg, map_location=map_location).cuda(gpu)
 
     world_size = du.get_world_size()
     rank = du.get_rank()
