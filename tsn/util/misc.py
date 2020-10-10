@@ -18,4 +18,4 @@ def launch_job(args, cfg, func):
         os.environ['MASTER_PORT'] = '17928'
         mp.spawn(func, nprocs=args.gpus, args=(args, cfg))
     else:
-        func(gpu=1, cfg=cfg, args=args)
+        func(gpu=0, cfg=cfg, args=args)

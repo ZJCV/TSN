@@ -10,6 +10,7 @@
 import os
 
 from .base_dataset import VideoRecord, BaseDataset
+from .clipsample import SegmentedSample, DenseSample
 
 classes = ['ApplyEyeMakeup', 'ApplyLipstick', 'Archery', 'BabyCrawling',
            'BalanceBeam', 'BandMarching', 'BaseballPitch', 'Basketball',
@@ -44,11 +45,15 @@ class UCF101(BaseDataset):
                  split=1,
                  **kwargs):
         assert isinstance(split, int) and split in (1, 2, 3)
+        super(UCF101, self).__init__(*args, **kwargs)
 
         self.split = split
-        super(UCF101, self).__init__(*args, **kwargs)
-        self.base_index = 0
+        self.start_index = 0
         self.img_prefix = 'img_'
+
+        self._update_video(self.annotation_dir, is_train=self.is_train)
+        self._update_class()
+        self._sample_frames()
 
     def _update_video(self, annotation_dir, is_train=True):
         if is_train:

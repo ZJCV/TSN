@@ -5,14 +5,14 @@ DATASETS:
   FRAME_INTERVAL: 1
   NUM_CLIPS: 3
   TRAIN:
-    NAME: 'HMDB51'
-    DATA_DIR: 'data/hmdb51/rawframes'
-    ANNOTATION_DIR: 'data/hmdb51'
+    NAME: 'UCF101'
+    DATA_DIR: 'data/ucf101/rawframes'
+    ANNOTATION_DIR: 'data/ucf101'
     SPLIT: 1
   TEST:
-    NAME: 'HMDB51'
-    DATA_DIR: 'data/hmdb51/rawframes'
-    ANNOTATION_DIR: 'data/hmdb51'
+    NAME: 'UCF101'
+    DATA_DIR: 'data/ucf101/rawframes'
+    ANNOTATION_DIR: 'data/ucf101'
     SPLIT: 1
 TRANSFORM:
   TRAIN_CROP_SIZE: 224
@@ -27,7 +27,7 @@ DATALOADER:
 MODEL:
   NAME: 'TSN'
   PRETRAINED: ""
-  SYNC_BN: False
+  SYNC_BN: True
   INPUT_SIZE: (224, 224, 3)
   BACKBONE:
     NAME: 'resnet50'
@@ -37,7 +37,7 @@ MODEL:
     NAME: 'TSNHead'
     FEATURE_DIMS: 2048
     DROPOUT: 0.0
-    NUM_CLASSES: 51
+    NUM_CLASSES: 101
   RECOGNIZER:
     NAME: 'TSNRecognizer'
   CONSENSU:
@@ -46,19 +46,19 @@ MODEL:
     NAME: 'crossentropy'
 OPTIMIZER:
   NAME: 'sgd'
-  LR: 2e-3
-  WEIGHT_DECAY: 3e-4
+  LR: 1e-3
+  WEIGHT_DECAY: 1e-4
   SGD:
     MOMENTUM: 0.9
 LR_SCHEDULER:
   NAME: 'cosine_annearling_lr'
   IS_WARMUP: True
   COSINE_ANNEALING_LR:
-    MINIMAL_LR: 3e-4
+    MINIMAL_LR: 1e-4
   WARMUP:
     ITERATION: 400
     MULTIPLIER: 1.0
 TRAIN:
-  MAX_ITER: 10000
+  MAX_ITER: 100
 OUTPUT:
-  DIR: 'outputs/tsn_r50_hmdb51_rgb_224x224x3'
+  DIR: 'outputs/tsn_r50_ucf101_rgb_224x3_seg'

@@ -83,9 +83,10 @@ def load_config(args):
         cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
 
-    cfg.OPTIMIZER.LR *= args.gpus
-    cfg.OPTIMIZER.WEIGHT_DECAY *= args.gpus
-    cfg.LR_SCHEDULER.COSINE_ANNEALING_LR.MINIMAL_LR *= args.gpus
+    if args.gpus > 1:
+        cfg.OPTIMIZER.LR *= args.gpus
+        cfg.OPTIMIZER.WEIGHT_DECAY *= args.gpus
+        cfg.LR_SCHEDULER.COSINE_ANNEALING_LR.MINIMAL_LR *= args.gpus
 
     cfg.freeze()
 

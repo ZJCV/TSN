@@ -59,4 +59,4 @@ LR_SCHEDULER:
 TRAIN:
   MAX_ITER: 50000
 OUTPUT:
-  DIR: 'outputs/tsn_r50_jester_rgbdiff_224x224x3'
+  DIR: 'outputs/tsn_r50_jester_rgbdiff_224x3_seg'

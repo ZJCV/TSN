@@ -13,10 +13,10 @@ from tsn.data.transforms.build import build_transform
 
 
 def test_ucf101_rgb():
-    cfg.merge_from_file('configs/tsn_r50_ucf101_rgb_224x224x3.yaml')
+    cfg.merge_from_file('configs/tsn_r50_ucf101_rgb_224x3_seg.yaml')
     cfg.DATASETS.NUM_CLIPS = 8
 
-    transform = build_transform(cfg, train=True)
+    transform = build_transform(cfg, is_train=True)
     dataset = build_dataset(cfg, transform=transform, is_train=True)
     image, target = dataset.__getitem__(20)
     print(image.shape)
@@ -26,9 +26,9 @@ def test_ucf101_rgb():
 
 
 def test_ucf101_rgbdiff():
-    cfg.merge_from_file('configs/tsn_r50_ucf101_rgbdiff_224x224x3.yaml')
+    cfg.merge_from_file('configs/tsn_r50_ucf101_rgbdiff_224x3_seg.yaml')
 
-    transform = build_transform(cfg, train=True)
+    transform = build_transform(cfg, is_train=True)
     dataset = build_dataset(cfg, transform=transform, is_train=True)
     image, target = dataset.__getitem__(20)
     print(image.shape)
@@ -38,10 +38,10 @@ def test_ucf101_rgbdiff():
 
 
 def test_hmdb51_rgb():
-    cfg.merge_from_file('configs/tsn_r50_hmdb51_rgb_224x224x3.yaml')
+    cfg.merge_from_file('configs/tsn_r50_hmdb51_rgb_224x3_seg.yaml')
     cfg.DATASETS.NUM_CLIPS = 8
 
-    transform = build_transform(cfg, train=True)
+    transform = build_transform(cfg, is_train=True)
     dataset = build_dataset(cfg, transform=transform, is_train=True)
     image, target = dataset.__getitem__(20)
     print(image.shape)
@@ -51,9 +51,9 @@ def test_hmdb51_rgb():
 
 
 def test_hmdb51_rgbdiff():
-    cfg.merge_from_file('configs/tsn_r50_hmdb51_rgbdiff_224x224x3.yaml')
+    cfg.merge_from_file('configs/tsn_r50_hmdb51_rgbdiff_224x3_seg.yaml')
 
-    transform = build_transform(cfg, train=True)
+    transform = build_transform(cfg, is_train=True)
     dataset = build_dataset(cfg, transform=transform, is_train=True)
     image, target = dataset.__getitem__(20)
     print(image.shape)
@@ -63,10 +63,10 @@ def test_hmdb51_rgbdiff():
 
 
 def test_jester_rgb():
-    cfg.merge_from_file('configs/tsn_r50_jester_rgb_224x224x3.yaml')
+    cfg.merge_from_file('configs/tsn_r50_jester_rgb_224x3_seg.yaml')
     cfg.DATASETS.NUM_CLIPS = 8
 
-    transform = build_transform(cfg, train=True)
+    transform = build_transform(cfg, is_train=True)
     dataset = build_dataset(cfg, transform=transform, is_train=True)
     image, target = dataset.__getitem__(20)
     print(image.shape)
@@ -76,9 +76,9 @@ def test_jester_rgb():
 
 
 def test_jester_rgbdiff():
-    cfg.merge_from_file('configs/tsn_r50_jester_rgbdiff_224x224x3.yaml')
+    cfg.merge_from_file('configs/tsn_r50_jester_rgbdiff_224x3_seg.yaml')
 
-    transform = build_transform(cfg, train=True)
+    transform = build_transform(cfg, is_train=True)
     dataset = build_dataset(cfg, transform=transform, is_train=True)
     image, target = dataset.__getitem__(20)
     print(image.shape)

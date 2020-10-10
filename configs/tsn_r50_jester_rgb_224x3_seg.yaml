@@ -1,19 +1,17 @@
 DATASETS:
   MODALITY: 'RGB'
-  SAMPLE_STRATEGY: 'DenseSample'
+  SAMPLE_STRATEGY: 'SegSample'
   CLIP_LEN: 1
   FRAME_INTERVAL: 1
   NUM_CLIPS: 3
   TRAIN:
-    NAME: 'UCF101'
-    DATA_DIR: 'data/ucf101/rawframes'
-    ANNOTATION_DIR: 'data/ucf101'
-    SPLIT: 1
+    NAME: 'JESTER'
+    DATA_DIR: 'data/jester/20bn-jester-v1'
+    ANNOTATION_DIR: 'data/jester'
   TEST:
-    NAME: 'UCF101'
-    DATA_DIR: 'data/ucf101/rawframes'
-    ANNOTATION_DIR: 'data/ucf101'
-    SPLIT: 1
+    NAME: 'JESTER'
+    DATA_DIR: 'data/jester/20bn-jester-v1'
+    ANNOTATION_DIR: 'data/jester'
 TRANSFORM:
   TRAIN_CROP_SIZE: 224
   TEST_CROP_SIZE: 256
@@ -37,7 +35,7 @@ MODEL:
     NAME: 'TSNHead'
     FEATURE_DIMS: 2048
     DROPOUT: 0.0
-    NUM_CLASSES: 101
+    NUM_CLASSES: 27
   RECOGNIZER:
     NAME: 'TSNRecognizer'
   CONSENSU:
@@ -56,9 +54,9 @@ LR_SCHEDULER:
   COSINE_ANNEALING_LR:
     MINIMAL_LR: 3e-4
   WARMUP:
-    ITERATION: 400
+    ITERATION: 1000
     MULTIPLIER: 1.0
 TRAIN:
-  MAX_ITER: 20000
+  MAX_ITER: 30000
 OUTPUT:
-  DIR: 'outputs/tsn_r50_ucf101_rgb_224x224x3'
+  DIR: 'outputs/tsn_r50_jester_rgb_224x3_seg'

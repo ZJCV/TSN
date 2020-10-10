@@ -59,7 +59,7 @@ def inference(cfg, model, device, **kwargs):
     dataset_name = cfg.DATASETS.TEST.NAME
     output_dir = cfg.OUTPUT.DIR
 
-    data_loader = build_dataloader(cfg, train=False)
+    data_loader = build_dataloader(cfg, is_train=False)
     dataset = data_loader.dataset
 
     logger = setup_logger(logger_name)

@@ -70,8 +70,8 @@ def inference(rgb_cfg, rgb_model, rgbdiff_cfg, rgbdiff_model, device):
     dataset_name = rgb_cfg.DATASETS.TEST.NAME
     output_dir = rgb_cfg.OUTPUT.DIR
 
-    rgb_data_loader = build_dataloader(rgb_cfg, train=False)
-    rgbdiff_data_loader = build_dataloader(rgbdiff_cfg, train=False)
+    rgb_data_loader = build_dataloader(rgb_cfg, is_train=False)
+    rgbdiff_data_loader = build_dataloader(rgbdiff_cfg, is_train=False)
     dataset = rgb_data_loader.dataset
 
     logger = setup_logger(logger_name)

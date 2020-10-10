@@ -11,8 +11,6 @@ import os
 import datetime
 import time
 import torch
-import torch.distributed as dist
-from torch.utils.data.distributed import DistributedSampler
 
 from tsn.util.metrics import topk_accuracy
 from tsn.util.metric_logger import MetricLogger
@@ -32,9 +30,6 @@ def do_train(args, cfg, arguments,
         if args.use_tensorboard:
             from torch.utils.tensorboard import SummaryWriter
             summary_writer = SummaryWriter(log_dir=os.path.join(cfg.OUTPUT.DIR, 'tf_logs'))
-            # 写入模型
-            # images, targets = next(iter(data_loader))
-            # summary_writer.add_graph(model, images.to(device))
 
     model.train()
     start_iter = arguments['iteration']
@@ -44,8 +39,8 @@ def do_train(args, cfg, arguments,
     start_training_time = time.time()
     end = time.time()
 
-    synchronize()
     for iteration, (images, targets) in enumerate(data_loader, start_iter):
+        synchronize()
         iteration = iteration + 1
         arguments["iteration"] = iteration
 
@@ -106,9 +101,14 @@ def do_train(args, cfg, arguments,
                         summary_writer.add_scalar(f'eval/{key}', value, global_step=iteration)
                 model.train()
 
-    synchronize()
-    if is_master_proc():
+    if is_master_proc() and not args.stop_eval:
+        logger.info('Start final evaluating...')
+        torch.cuda.empty_cache()  # speed up evaluating after training finished
+        eval_results = do_evaluation(cfg, model, device)
+
         if summary_writer:
+            for key, value in eval_results.items():
+                summary_writer.add_scalar(f'eval/{key}', value, global_step=iteration)
             summary_writer.close()
         checkpointer.save("model_final", **arguments)
     # compute training time

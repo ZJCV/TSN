@@ -14,18 +14,20 @@ from torch.utils.data.distributed import DistributedSampler
 from .datasets.build import build_dataset
 from .samplers import IterationBasedBatchSampler
 from .transforms.build import build_transform
+import tsn.util.distributed as du
 
 
 def build_dataloader(cfg,
-                     train=True,
-                     start_iter=0,
-                     world_size=1,
-                     rank=0):
-    transform = build_transform(cfg, train=train)
-    dataset = build_dataset(cfg, transform=transform, is_train=train)
+                     is_train=True,
+                     start_iter=0):
+    transform = build_transform(cfg, is_train=is_train)
+    dataset = build_dataset(cfg, transform=transform, is_train=is_train)
 
-    if train:
+    if is_train:
         batch_size = cfg.DATALOADER.TRAIN_BATCH_SIZE
+
+        world_size = du.get_world_size()
+        rank = du.get_rank()
         if world_size != 1 and rank == 0:
             sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank)
         else:
@@ -36,7 +38,7 @@ def build_dataloader(cfg,
         sampler = torch.utils.data.sampler.SequentialSampler(dataset)
 
     batch_sampler = torch.utils.data.sampler.BatchSampler(sampler=sampler, batch_size=batch_size, drop_last=False)
-    if train:
+    if is_train:
         batch_sampler = IterationBasedBatchSampler(batch_sampler, num_iterations=cfg.TRAIN.MAX_ITER,
                                                    start_iter=start_iter)
 
