@@ -19,7 +19,7 @@ from tsn.data.build import build_dataloader
 from tsn.model.build import build_model
 from tsn.util.metrics import topk_accuracy
 from tsn.util.checkpoint import CheckPointer
-from tsn.util.logger import setup_logger
+from tsn.util import logging
 from tsn.util.collect_env import collect_env_info
 
 
@@ -66,7 +66,6 @@ def compute_on_dataset(rgb_model, rgb_data_loader, rgbdiff_model, rgbdiff_data_l
 
 
 def inference(rgb_cfg, rgb_model, rgbdiff_cfg, rgbdiff_model, device):
-    logger_name = rgb_cfg.INFER.NAME
     dataset_name = rgb_cfg.DATASETS.TEST.NAME
     output_dir = rgb_cfg.OUTPUT.DIR
 
@@ -74,7 +73,7 @@ def inference(rgb_cfg, rgb_model, rgbdiff_cfg, rgbdiff_model, device):
     rgbdiff_data_loader = build_dataloader(rgbdiff_cfg, is_train=False)
     dataset = rgb_data_loader.dataset
 
-    logger = setup_logger(logger_name)
+    logger = logging.setup_logging()
     logger.info("Evaluating {} dataset({} video clips):".format(dataset_name, len(dataset)))
 
     results_dict, cate_acc_dict, acc_top1, acc_top5 = \
@@ -109,7 +108,7 @@ def inference(rgb_cfg, rgb_model, rgbdiff_cfg, rgbdiff_model, device):
 
 def test(args):
     torch.backends.cudnn.benchmark = True
-    logger = setup_logger('TEST')
+    logger = logging.setup_logging()
     device = torch.device(f'cuda:0' if torch.cuda.is_available() else 'cpu')
     map_location = {'cuda:%d' % 0: 'cuda:%d' % 0}
 
@@ -162,7 +161,7 @@ def main():
 
     if not os.path.exists(args.output):
         os.makedirs(args.output)
-    logger = setup_logger("TSN", save_dir=args.output)
+    logger = logging.setup_logging(output_dir=args.output)
     logger.info(args)
     logger.info("Environment info:\n" + collect_env_info())
 

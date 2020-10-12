@@ -8,24 +8,21 @@
 """
 
 import os
-import numpy as np
 import torch
 import argparse
 
 from tsn.config import cfg
-from tsn.data.build import build_dataloader
 from tsn.model.build import build_model
-from tsn.engine.trainer import do_train
 from tsn.engine.inference import do_evaluation
 from tsn.util.checkpoint import CheckPointer
-from tsn.util.logger import setup_logger
 from tsn.util.collect_env import collect_env_info
+from tsn.util import logging
 
 
 def test(cfg):
     torch.backends.cudnn.benchmark = True
 
-    logger = setup_logger('TEST')
+    logger = logging.get_logger('TEST')
     device = torch.device(f'cuda:0' if torch.cuda.is_available() else 'cpu')
     map_location = {'cuda:%d' % 0: 'cuda:%d' % 0}
 
@@ -65,7 +62,7 @@ def main():
 
     if not os.path.exists(cfg.OUTPUT.DIR):
         os.makedirs(cfg.OUTPUT.DIR)
-    logger = setup_logger("TSN", save_dir=cfg.OUTPUT.DIR)
+    logger = logging.setup_logging(output_dir=cfg.OUTPUT.DIR)
     logger.info(args)
 
     logger.info("Environment info:\n" + collect_env_info())
