@@ -12,12 +12,12 @@ import torch
 import torch.distributed as dist
 
 
-def setup(rank, world_size, backend='nccl'):
+def setup(rank, world_size, backend='nccl', seed=0):
     if world_size > 1:
         # initialize the process group
         dist.init_process_group(backend=backend, init_method='env://', world_size=world_size, rank=rank)
-    torch.manual_seed(0)
-    np.random.seed(0)
+    torch.manual_seed(seed)
+    np.random.seed(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 

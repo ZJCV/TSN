@@ -15,19 +15,26 @@ import torch
 from tsn.util.metrics import topk_accuracy
 from tsn.util.metric_logger import MetricLogger
 from tsn.util.distributed import is_master_proc, synchronize
+from tsn.util import logging
 
 from tsn.engine.inference import do_evaluation
 
 
-def do_train(args, cfg, arguments,
+def do_train(cfg, arguments,
              data_loader, model, criterion, optimizer, lr_scheduler,
-             checkpointer, device, logger):
+             checkpointer, device):
     meters = MetricLogger()
     summary_writer = None
 
+    use_tensorboard = cfg.TRAIN.USE_TENSORBOARD
+    log_step = cfg.TRAIN.LOG_STEP
+    save_step = cfg.TRAIN.SAVE_STEP
+    eval_step = cfg.TRAIN.EVAL_STEP
+
+    logger = logging.setup_logging()
+    logger.info("Start training ...")
     if is_master_proc():
-        logger.info("Start training ...")
-        if args.use_tensorboard:
+        if use_tensorboard:
             from torch.utils.tensorboard import SummaryWriter
             summary_writer = SummaryWriter(log_dir=os.path.join(cfg.OUTPUT.DIR, 'tf_logs'))
 
@@ -38,9 +45,7 @@ def do_train(args, cfg, arguments,
     synchronize()
     start_training_time = time.time()
     end = time.time()
-
     for iteration, (images, targets) in enumerate(data_loader, start_iter):
-        synchronize()
         iteration = iteration + 1
         arguments["iteration"] = iteration
 
@@ -65,7 +70,7 @@ def do_train(args, cfg, arguments,
         end = time.time()
         meters.update(time=batch_time)
         if is_master_proc():
-            if iteration % args.log_step == 0:
+            if iteration % log_step == 0:
                 eta_seconds = meters.time.global_avg * (max_iter - iteration)
                 eta_string = str(datetime.timedelta(seconds=int(eta_seconds)))
                 logger.info(
@@ -92,16 +97,16 @@ def do_train(args, cfg, arguments,
                                                   global_step=global_step)
                     summary_writer.add_scalar('lr', optimizer.param_groups[0]['lr'], global_step=global_step)
 
-            if not args.stop_save and iteration % args.save_step == 0:
+            if save_step > 0 and iteration % save_step == 0:
                 checkpointer.save("model_{:06d}".format(iteration), **arguments)
-            if not args.stop_eval and args.eval_step > 0 and iteration % args.eval_step == 0 and not iteration == max_iter:
+            if eval_step > 0 and eval_step > 0 and iteration % eval_step == 0 and not iteration == max_iter:
                 eval_results = do_evaluation(cfg, model, device, iteration=iteration)
                 if summary_writer:
                     for key, value in eval_results.items():
                         summary_writer.add_scalar(f'eval/{key}', value, global_step=iteration)
                 model.train()
 
-    if is_master_proc() and not args.stop_eval:
+    if is_master_proc() and eval_step > 0:
         logger.info('Start final evaluating...')
         torch.cuda.empty_cache()  # speed up evaluating after training finished
         eval_results = do_evaluation(cfg, model, device)
@@ -114,6 +119,6 @@ def do_train(args, cfg, arguments,
     # compute training time
     total_training_time = int(time.time() - start_training_time)
     total_time_str = str(datetime.timedelta(seconds=total_training_time))
-    if is_master_proc():
-        logger.info("Total training time: {} ({:.4f} s / it)".format(total_time_str, total_training_time / max_iter))
+    # if is_master_proc():
+    logger.info("Total training time: {} ({:.4f} s / it)".format(total_time_str, total_training_time / max_iter))
     return model

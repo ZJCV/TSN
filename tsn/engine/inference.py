@@ -8,14 +8,13 @@
 """
 
 import os
-import logging
 from datetime import datetime
 import torch
 from tqdm import tqdm
 import numpy as np
 
 from tsn.util.metrics import topk_accuracy
-from tsn.util.logger import setup_logger
+import tsn.util.logging as logging
 from tsn.data.build import build_dataloader
 
 
@@ -55,14 +54,13 @@ def compute_on_dataset(model, data_loader, device):
 
 def inference(cfg, model, device, **kwargs):
     iteration = kwargs.get('iteration', None)
-    logger_name = cfg.INFER.NAME
     dataset_name = cfg.DATASETS.TEST.NAME
     output_dir = cfg.OUTPUT.DIR
 
     data_loader = build_dataloader(cfg, is_train=False)
     dataset = data_loader.dataset
 
-    logger = setup_logger(logger_name)
+    logger = logging.setup_logging()
     logger.info("Evaluating {} dataset({} video clips):".format(dataset_name, len(dataset)))
 
     results_dict, cate_acc_dict, acc_top1, acc_top5 = compute_on_dataset(model, data_loader, device)
@@ -90,9 +88,6 @@ def inference(cfg, model, device, **kwargs):
         result_path = os.path.join(output_dir, 'result_{}.txt'.format(datetime.now().strftime('%Y-%m-%d_%H-%M-%S')))
     with open(result_path, "w") as f:
         f.write(result_str)
-
-    for handler in logger.handlers:
-        logger.removeHandler(handler)
 
     return {'top1': top1_acc, 'top5': top5_acc}
 
