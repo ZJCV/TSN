@@ -52,7 +52,7 @@ class DenseSample(SegmentedSample):
             np.ndarray: Sampled frame indices in train mode.
         """
         total_clip_len = self.clip_len * self.frame_interval * self.num_clips
-        start_range = num_frames - total_clip_len + 1
+        start_range = num_frames - total_clip_len
 
         if start_range > 0:
             start_idx = np.random.randint(start_range)
@@ -82,7 +82,7 @@ class DenseSample(SegmentedSample):
             np.ndarray: Sampled frame indices in train mode.
         """
         total_clip_len = self.clip_len * self.frame_interval * self.num_clips
-        start_range = num_frames - total_clip_len + 1
+        start_range = num_frames - total_clip_len
 
         if start_range > 0:
             start_idx = start_range // 2
