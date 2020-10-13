@@ -77,6 +77,7 @@ LR_SCHEDULER:
     MULTIPLIER: 1.0
 DEMO:
   ENABLE: True
-  INPUT_VIDEO: './data/ucf101/videos/YoYo/v_YoYo_g18_c04.avi'
-#  OUTPUT_FILE: './outputs/YoYo_output.avi'
+  INPUT_VIDEO: './demo/v_Rowing_g15_c04.avi'
+  OUTPUT_FILE: './demo/v_Rowing_g15_c04.avi'
   LABEL_FILE_PATH: './data/ucf101/annotations/class2idx.json'
+  BUFFER_SIZE: 32
