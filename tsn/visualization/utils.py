@@ -40,10 +40,11 @@ def get_class_names(path, parent_path=None, subset_path=None):
         return
 
     max_key = max(class2idx.values())
-    class_names = [None] * (max_key + 1)
+    class_names = [None] * max_key
+    # class_names = [None] * (max_key + 1)
 
     for k, i in class2idx.items():
-        class_names[i] = k
+        class_names[i - 1] = k
 
     class_parent = None
     if parent_path is not None and parent_path != "":

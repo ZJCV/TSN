@@ -12,7 +12,6 @@ class TaskInfo:
     def __init__(self):
         self.frames = None
         self.id = -1
-        self.bboxes = None
         self.action_preds = None
         self.num_buffer_frames = 0
         self.img_height = -1
@@ -29,12 +28,6 @@ class TaskInfo:
         """
         self.frames = frames
         self.id = idx
-
-    def add_bboxes(self, bboxes):
-        """
-        Add correspondding bounding boxes.
-        """
-        self.bboxes = bboxes
 
     def add_action_preds(self, preds):
         """

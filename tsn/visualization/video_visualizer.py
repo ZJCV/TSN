@@ -415,11 +415,13 @@ class VideoVisualizer:
             logger.error("Unsupported type of prediction input.")
             return
 
+        for i in range(len(preds)):
+            preds[i] = torch.softmax(preds[i], dim=0)
+
         top_scores, top_classes = [], []
         for pred in preds:
             mask = pred >= self.thres
             top_scores.append(pred[mask].tolist())
-            # top_class = torch.squeeze(torch.nonzero(mask), dim=-1).tolist()
             top_class = torch.where(mask)[0].tolist()
             top_classes.append(top_class)
 
