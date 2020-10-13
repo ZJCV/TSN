@@ -33,7 +33,6 @@ class Predictor:
         self.model = build_model(cfg, gpu_id)
         self.model.eval()
         self.cfg = cfg
-        # self.transform = build_transform(cfg, is_train=False)
 
     def __call__(self, task):
         """
@@ -66,7 +65,8 @@ class Predictor:
                     device=torch.device(self.gpu_id), non_blocking=True
                 )
 
-        preds = self.model(inputs)
+        with torch.no_grad():
+            preds = self.model(inputs)
 
         if self.cfg.NUM_GPUS:
             preds = preds.cpu()

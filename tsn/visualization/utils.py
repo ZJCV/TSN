@@ -161,3 +161,58 @@ def process_cv2_inputs(frames, cfg):
     image = torch.stack(image_list).transpose(0, 1)
     inputs = image.unsqueeze(0)
     return inputs
+
+
+def draw_predictions(task, video_vis):
+    """
+    Draw prediction for the given task.
+    Args:
+        task (TaskInfo object): task object that contain
+            the necessary information for visualization. (e.g. frames, preds)
+            All attributes must lie on CPU devices.
+        video_vis (VideoVisualizer object): the video visualizer object.
+    """
+    frames = task.frames
+    preds = task.action_preds
+
+    for i in range(len(preds)):
+        preds[i] = torch.softmax(preds[i], dim=0)
+
+    draw_range = [
+        task.num_buffer_frames,
+        len(frames)
+    ]
+    buffer = frames[: task.num_buffer_frames]
+    frames = frames[task.num_buffer_frames:]
+
+    # frames = video_vis.draw_clip_range(
+    #     frames, preds, draw_range=draw_range, text_alpha=1
+    # )
+    frames = video_vis.draw_clip(frames, preds, text_alpha=1)
+    del task
+
+    return buffer + frames
+
+
+def create_text_labels(classes, scores, class_names):
+    """
+    Create text labels.
+    Args:
+        classes (list[int]): a list of class ids for each example.
+        scores (list[float] or None): list of scores for each example.
+        class_names (list[str]): a list of class names, ordered by their ids.
+    Returns:
+        labels (list[str]): formatted text labels.
+    """
+    try:
+        labels = [class_names[i] for i in classes]
+    except IndexError:
+        logger.error("Class indices get out of range: {}".format(classes))
+        return None
+
+    if scores is not None:
+        assert len(classes) == len(scores)
+        labels = [
+            "[{:.2f}] {}".format(s, label) for s, label in zip(scores, labels)
+        ]
+    return labels

@@ -7,11 +7,12 @@ import torch
 import tqdm
 
 from tsn.util.parser import parse_train_args, load_config
-from tsn.visualization.async_predictor import AsyncDemo, AsyncVis
+from tsn.visualization.visalize.async_vis import AsyncVis
 
-from tsn.visualization.demo_loader import ThreadVideoManager, VideoManager
+from tsn.visualization.video.video_manager import VideoManager
 from tsn.visualization.predictor import ActionPredictor
-from tsn.visualization.video_visualizer import VideoVisualizer
+from tsn.visualization.predict.async_demo import AsyncDemo
+from tsn.visualization.visalize.video_visualizer import VideoVisualizer
 
 from tsn.util import logging
 
@@ -58,11 +59,6 @@ def run_demo(cfg, frame_provider):
     else:
         model = AsyncDemo(cfg=cfg, async_vis=async_vis)
 
-    seq_len = cfg.DATASETS.CLIP_LEN * cfg.DATASETS.NUM_CLIPS * cfg.DATASETS.FRAME_INTERVAL
-
-    assert (
-            cfg.DEMO.BUFFER_SIZE <= seq_len // 2
-    ), "Buffer size cannot be greater than half of sequence length."
     num_task = 0
     # Start reading frames.
     frame_provider.start()
@@ -99,13 +95,13 @@ def demo(cfg):
             tsn/config/defaults.py
     """
     start = time.time()
-    if cfg.DEMO.THREAD_ENABLE:
-        frame_provider = ThreadVideoManager(cfg)
-    else:
-        frame_provider = VideoManager(cfg)
+    # if cfg.DEMO.THREAD_ENABLE:
+    #     frame_provider = ThreadVideoManager(cfg)
+    # else:
+    frame_provider = VideoManager(cfg)
 
     for task in tqdm.tqdm(run_demo(cfg, frame_provider)):
-    # for task in run_demo(cfg, frame_provider):
+        # for task in run_demo(cfg, frame_provider):
         frame_provider.display(task)
 
     frame_provider.join()
@@ -115,7 +111,7 @@ def demo(cfg):
 
 def main():
     """
-    Main function to spawn the train and test process.
+    Main function to spawn the train and test predict.
     """
     args = parse_train_args()
     cfg = load_config(args)
