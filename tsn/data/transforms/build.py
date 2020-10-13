@@ -12,7 +12,7 @@ from .random_resize import RandomResize
 
 
 def build_transform(cfg, is_train=True):
-    min, max = cfg.TRANSFORM.JITTER_SCALES
+    min, max = cfg.TRANSFORM.SCALE_JITTER
     MEAN = cfg.TRANSFORM.MEAN
     STD = cfg.TRANSFORM.STD
     RANDOM_ROTATION = cfg.TRANSFORM.RANDOM_ROTATION

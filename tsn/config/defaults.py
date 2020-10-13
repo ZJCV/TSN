@@ -58,7 +58,7 @@ _C.DATASETS.TEST.SPLIT = 1
 # Transform
 # ---------------------------------------------------------------------------- #
 _C.TRANSFORM = CN()
-_C.TRANSFORM.JITTER_SCALES = (256, 320)
+_C.TRANSFORM.SCALE_JITTER = (256, 320)
 _C.TRANSFORM.TRAIN_CROP_SIZE = 224
 _C.TRANSFORM.TEST_CROP_SIZE = 256
 _C.TRANSFORM.MEAN = (0.485, 0.456, 0.406)  # (0.5, 0.5, 0.5)
