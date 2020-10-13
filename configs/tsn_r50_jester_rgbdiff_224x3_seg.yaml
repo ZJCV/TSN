@@ -1,3 +1,17 @@
+RNG_SEED: 0
+NUM_GPUS: 1
+NODES: 1
+RANK: 0
+WORLD_SIZE: 1
+TRAIN:
+  MAX_ITER: 50000
+  LOG_STEP: 10
+  SAVE_STEP: 1000
+  EVAL_STEP: 1000
+  RESUME: False
+  USE_TENSORBOARD: True
+OUTPUT:
+  DIR: 'outputs/tsn_r50_jester_rgbdiff_224x3_seg'
 DATASETS:
   MODALITY: 'RGBDiff'
   SAMPLE_STRATEGY: 'SegSample'
@@ -59,7 +73,3 @@ LR_SCHEDULER:
   WARMUP:
     ITERATION: 1000
     MULTIPLIER: 1.0
-TRAIN:
-  MAX_ITER: 50000
-OUTPUT:
-  DIR: 'outputs/tsn_r50_jester_rgbdiff_224x3_seg'

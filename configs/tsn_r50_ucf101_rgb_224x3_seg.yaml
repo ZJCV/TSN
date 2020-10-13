@@ -1,3 +1,17 @@
+RNG_SEED: 0
+NUM_GPUS: 1
+NODES: 1
+RANK: 0
+WORLD_SIZE: 1
+TRAIN:
+  MAX_ITER: 30000
+  LOG_STEP: 10
+  SAVE_STEP: 1000
+  EVAL_STEP: 1000
+  RESUME: False
+  USE_TENSORBOARD: True
+OUTPUT:
+  DIR: 'outputs/tsn_r50_ucf101_rgb_224x3_seg'
 DATASETS:
   MODALITY: 'RGB'
   SAMPLE_STRATEGY: 'SegSample'
@@ -28,7 +42,7 @@ DATALOADER:
   NUM_WORKERS: 8
 MODEL:
   NAME: 'TSN'
-  PRETRAINED: ""
+  PRETRAINED: ''
   SYNC_BN: True
   INPUT_SIZE: (224, 224, 3)
   BACKBONE:
@@ -61,7 +75,8 @@ LR_SCHEDULER:
   WARMUP:
     ITERATION: 400
     MULTIPLIER: 1.0
-TRAIN:
-  MAX_ITER: 100
-OUTPUT:
-  DIR: 'outputs/tsn_r50_ucf101_rgb_224x3_seg'
+DEMO:
+  ENABLE: True
+  INPUT_VIDEO: './data/ucf101/videos/YoYo/v_YoYo_g18_c04.avi'
+  #  OUTPUT_FILE: './outputs/YoYo_output.avi'
+  LABEL_FILE_PATH: './data/ucf101/annotations/class2idx.json'

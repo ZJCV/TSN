@@ -11,13 +11,13 @@ TRAIN:
   RESUME: False
   USE_TENSORBOARD: True
 OUTPUT:
-  DIR: 'outputs/tsn_r50_ucf101_rgbdiff_224x3_seg'
+  DIR: 'outputs/tsn_r50_ucf101_rgb_224x4_dense'
 DATASETS:
-  MODALITY: 'RGBDiff'
-  SAMPLE_STRATEGY: 'SegSample'
-  CLIP_LEN: 5
-  FRAME_INTERVAL: 1
-  NUM_CLIPS: 3
+  MODALITY: 'RGB'
+  SAMPLE_STRATEGY: 'DenseSample'
+  CLIP_LEN: 1
+  FRAME_INTERVAL: 16
+  NUM_CLIPS: 4
   TRAIN:
     NAME: 'UCF101'
     DATA_DIR: 'data/ucf101/rawframes'
@@ -37,12 +37,12 @@ TRANSFORM:
   RANDOM_ROTATION: 10
   COLOR_JITTER: (0.1, 0.1, 0.1, 0.1)
 DATALOADER:
-  TRAIN_BATCH_SIZE: 6
-  TEST_BATCH_SIZE: 6
+  TRAIN_BATCH_SIZE: 24
+  TEST_BATCH_SIZE: 48
   NUM_WORKERS: 8
 MODEL:
   NAME: 'TSN'
-  PRETRAINED: ""
+  PRETRAINED: ''
   SYNC_BN: True
   INPUT_SIZE: (224, 224, 3)
   BACKBONE:
@@ -53,7 +53,7 @@ MODEL:
   HEAD:
     NAME: 'TSNHead'
     FEATURE_DIMS: 2048
-    DROPOUT: 0.0
+    DROPOUT: 0.5
     NUM_CLASSES: 101
   RECOGNIZER:
     NAME: 'TSNRecognizer'
@@ -63,15 +63,20 @@ MODEL:
     NAME: 'crossentropy'
 OPTIMIZER:
   NAME: 'sgd'
-  LR: 5e-3
-  WEIGHT_DECAY: 3e-4
+  LR: 1e-3
+  WEIGHT_DECAY: 1e-4
   SGD:
     MOMENTUM: 0.9
 LR_SCHEDULER:
   NAME: 'cosine_annearling_lr'
   IS_WARMUP: True
   COSINE_ANNEALING_LR:
-    MINIMAL_LR: 3e-4
+    MINIMAL_LR: 1e-4
   WARMUP:
-    ITERATION: 1000
+    ITERATION: 400
     MULTIPLIER: 1.0
+DEMO:
+  ENABLE: True
+  INPUT_VIDEO: './data/ucf101/videos/YoYo/v_YoYo_g18_c04.avi'
+#  OUTPUT_FILE: './outputs/YoYo_output.avi'
+  LABEL_FILE_PATH: './data/ucf101/annotations/class2idx.json'
