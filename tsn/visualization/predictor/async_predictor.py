@@ -69,7 +69,7 @@ class AsyncPredictor:
         cfg.NUM_GPUS = 1
         for gpu_id in range(num_workers):
             self.procs.append(
-                AsycnActionPredictor._Predictor(
+                AsyncPredictor._Predictor(
                     cfg, self.task_queue, self.result_queue, gpu_id
                 )
             )
