@@ -31,7 +31,6 @@ def train(gpu, cfg):
 
     torch.cuda.set_device(gpu)
     device = torch.device(f'cuda:{gpu}' if torch.cuda.is_available() else 'cpu')
-    rank = get_rank()
     map_location = {'cuda:%d' % 0: 'cuda:%d' % rank}
 
     model = build_model(cfg, gpu)
