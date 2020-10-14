@@ -6,13 +6,10 @@ import time
 import torch
 import tqdm
 
+from tsn.visualization.manager import VideoManager, ThreadVideoManager
+from tsn.visualization.visalizer import AsyncVis
+from tsn.visualization.predictor import ActionPredictor, AsyncActionPredictor
 from tsn.util.parser import parse_train_args, load_config
-from tsn.visualization.visalize.async_vis import AsyncVis
-
-from tsn.visualization.video.video_manager import VideoManager
-from tsn.visualization.predictor import ActionPredictor
-from tsn.visualization.predict.async_demo import AsyncDemo
-from tsn.visualization.visalize.video_visualizer import VideoVisualizer
 
 from tsn.util import logging
 
@@ -37,27 +34,13 @@ def run_demo(cfg, frame_provider):
     # Print config.
     logger.info("Run demo with config:")
     logger.info(cfg)
-    common_classes = (
-        cfg.DEMO.COMMON_CLASS_NAMES
-        if len(cfg.DEMO.LABEL_FILE_PATH) != 0
-        else None
-    )
 
-    video_vis = VideoVisualizer(
-        num_classes=cfg.MODEL.HEAD.NUM_CLASSES,
-        class_names_path=cfg.DEMO.LABEL_FILE_PATH,
-        colormap=cfg.DEMO.COLORMAP,
-        thres=cfg.DEMO.COMMON_CLASS_THRES,
-        lower_thres=cfg.DEMO.UNCOMMON_CLASS_THRES,
-        common_class_names=common_classes,
-    )
-
-    async_vis = AsyncVis(video_vis, n_workers=cfg.DEMO.NUM_VIS_INSTANCES)
+    async_vis = AsyncVis(cfg, n_workers=cfg.DEMO.NUM_VIS_INSTANCES)
 
     if cfg.NUM_GPUS <= 1:
         model = ActionPredictor(cfg=cfg, async_vis=async_vis)
     else:
-        model = AsyncDemo(cfg=cfg, async_vis=async_vis)
+        model = AsyncActionPredictor(cfg=cfg, async_vis=async_vis)
 
     num_task = 0
     # Start reading frames.
@@ -95,10 +78,10 @@ def demo(cfg):
             tsn/config/defaults.py
     """
     start = time.time()
-    # if cfg.DEMO.THREAD_ENABLE:
-    #     frame_provider = ThreadVideoManager(cfg)
-    # else:
-    frame_provider = VideoManager(cfg)
+    if cfg.DEMO.THREAD_ENABLE:
+        frame_provider = ThreadVideoManager(cfg)
+    else:
+        frame_provider = VideoManager(cfg)
 
     for task in tqdm.tqdm(run_demo(cfg, frame_provider)):
         # for task in run_demo(cfg, frame_provider):

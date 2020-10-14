@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
-import queue
 import cv2
 import torch
 
 from tsn.model.build import build_model
 from tsn.util import logging
-from tsn.visualization.utils import process_cv2_inputs
+from tsn.visualization.predictor.util import process_cv2_inputs
 
 logger = logging.get_logger(__name__)
 
@@ -29,7 +28,7 @@ class Predictor:
                 torch.cuda.current_device() if gpu_id is None else gpu_id
             )
 
-        # Build the video model and print model statistics.
+        # Build the manager model and print model statistics.
         self.model = build_model(cfg, gpu_id)
         self.model.eval()
         self.cfg = cfg
@@ -73,44 +72,5 @@ class Predictor:
 
         preds = preds.detach()
         task.add_action_preds(preds)
-
-        return task
-
-
-class ActionPredictor:
-    """
-    Synchronous Action Prediction and Visualization pipeline with AsyncVis.
-    """
-
-    def __init__(self, cfg, async_vis=None, gpu_id=None):
-        """
-        Args:
-            cfg (CfgNode): configs. Details can be found in
-                slowfast/config/defaults.py
-            async_vis (AsyncVis object): asynchronous visualizer.
-            gpu_id (Optional[int]): GPU id.
-        """
-        self.predictor = Predictor(cfg=cfg, gpu_id=gpu_id)
-        self.async_vis = async_vis
-
-    def put(self, task):
-        """
-        Make prediction and put the results in `async_vis` task queue.
-        Args:
-            task (TaskInfo object): task object that contain
-                the necessary information for action prediction. (e.g. frames, boxes)
-        """
-        task = self.predictor(task)
-        self.async_vis.get_indices_ls.append(task.id)
-        self.async_vis.put(task)
-
-    def get(self):
-        """
-        Get the visualized clips if any.
-        """
-        try:
-            task = self.async_vis.get()
-        except (queue.Empty, IndexError):
-            raise IndexError("Results are not available yet.")
 
         return task

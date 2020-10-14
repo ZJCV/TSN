@@ -17,7 +17,7 @@ logger = logging.get_logger(__name__)
 
 class VideoManager:
     """
-    VideoManager object for getting frames from video source for inference.
+    VideoManager object for getting frames from manager source for inference.
     """
 
     def __init__(self, cfg):
@@ -98,9 +98,9 @@ class VideoManager:
 
     def get_output_file(self, path, fps=30):
         """
-        Return a video writer object.
+        Return a manager writer object.
         Args:
-            path (str): path to the output video file.
+            path (str): path to the output manager file.
             fps (int or float): frames per second.
         """
         return cv2.VideoWriter(
@@ -129,7 +129,7 @@ class VideoManager:
 
     def clean(self):
         """
-        Clean up open video files and windows.
+        Clean up open manager files and windows.
         """
         self.cap.release()
         if self.output_file is None:

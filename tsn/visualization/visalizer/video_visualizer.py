@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import torch
 
 import tsn.util.logging as logging
-from tsn.visualization.utils import get_class_names, create_text_labels
-from tsn.visualization.visalize.img_visualizer import ImgVisualizer
+from .util import get_class_names, create_text_labels
+from .img_visualizer import ImgVisualizer
 
 logger = logging.get_logger(__name__)
 log.getLogger("matplotlib").setLevel(log.ERROR)
@@ -43,7 +43,7 @@ class VideoVisualizer:
 
         """
         self.num_classes = num_classes
-        self.class_names, _, _ = get_class_names(class_names_path, None, None)
+        self.class_names = get_class_names(class_names_path)
         self.thres = thres
         self.lower_thres = lower_thres
 
@@ -123,40 +123,6 @@ class VideoVisualizer:
 
         return frame_visualizer.output.get_image()
 
-    def draw_clip_range(
-            self,
-            frames,
-            preds,
-            text_alpha=0.5,
-            draw_range=None,
-            repeat_frame=1,
-    ):
-        """
-            Draw predicted labels to clip.
-            Args:
-                frames (array-like): video data in the shape (T, H, W, C).
-                preds (tensor): For recognition task, input shape can be (num_classes,).
-                text_alpha (float): transparency label of the box wrapped around text labels.
-                draw_range (Optional[list[ints]): only draw frames in range [start_idx, end_idx] inclusively in the clip.
-                    If None, draw on the entire clip.
-                repeat_frame (int): repeat each frame in draw_range for `repeat_frame` time for slow-motion effect.
-        """
-        if draw_range is None:
-            draw_range = [0, len(frames) - 1]
-
-        draw_range[0] = max(0, draw_range[0])
-        left_frames = frames[: draw_range[0]]
-        right_frames = frames[draw_range[1] + 1:]
-
-        draw_frames = frames[draw_range[0]: draw_range[1] + 1]
-        img_ls = (list(left_frames) + self.draw_clip(draw_frames,
-                                                     preds,
-                                                     text_alpha=text_alpha,
-                                                     repeat_frame=repeat_frame, )
-                  + list(right_frames))
-
-        return img_ls
-
     def draw_clip(
             self,
             frames,
@@ -167,7 +133,7 @@ class VideoVisualizer:
         """
             Draw predicted labels to clip.
             Args:
-                frames (array-like): video data in the shape (T, H, W, C).
+                frames (array-like): manager data in the shape (T, H, W, C).
                 preds (tensor): For recognition task, input shape can be (num_classes,).
                 text_alpha (float): transparency label of the box wrapped around text labels.
                 repeat_frame (int): repeat each frame in draw_range for `repeat_frame` time for slow-motion effect.
@@ -201,7 +167,7 @@ class VideoVisualizer:
 
     def _adjust_frames_type(self, frames):
         """
-            Modify video data to have dtype of uint8 and values range in [0, 255].
+            Modify manager data to have dtype of uint8 and values range in [0, 255].
             Args:
                 frames (array-like): 4D array of shape (T, H, W, C).
             Returns:

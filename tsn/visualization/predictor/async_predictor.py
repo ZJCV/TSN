@@ -2,7 +2,7 @@
 
 """
 @date: 2020/10/13 下午3:12
-@file: async_action_predictor.py
+@file: async_predictor.py
 @author: zj
 @description: 
 """
@@ -12,13 +12,13 @@ import torch
 import torch.multiprocessing as mp
 
 import tsn.util.logging as logging
-from tsn.visualization.predictor import Predictor
+from tsn.visualization.predictor.predictor import Predictor
 from tsn.visualization.stop_token import _StopToken
 
 logger = logging.get_logger(__name__)
 
 
-class AsycnActionPredictor:
+class AsyncPredictor:
     class _Predictor(mp.Process):
         def __init__(self, cfg, task_queue, result_queue, gpu_id=None):
             """
@@ -28,7 +28,7 @@ class AsycnActionPredictor:
                     slowfast/config/defaults.py
                 task_queue (mp.Queue): a shared queue for incoming task.
                 result_queue (mp.Queue): a shared queue for predicted results.
-                gpu_id (int): index of the GPU device for the current child predict.
+                gpu_id (int): index of the GPU device for the current child predictor.
             """
             super().__init__()
             self.cfg = cfg
@@ -46,7 +46,7 @@ class AsycnActionPredictor:
             """
             Run prediction asynchronously.
             """
-            # Build the video model and print model statistics.
+            # Build the manager model and print model statistics.
             model = Predictor(self.cfg, gpu_id=self.gpu_id)
             while True:
                 task = self.task_queue.get()

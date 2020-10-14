@@ -6,8 +6,9 @@ import numpy as np
 import torch.multiprocessing as mp
 
 import tsn.util.logging as logging
-from tsn.visualization.utils import draw_predictions
 from tsn.visualization.stop_token import _StopToken
+from .video_visualizer import VideoVisualizer
+from .util import draw_predictions
 
 logger = logging.get_logger(__name__)
 
@@ -40,16 +41,30 @@ class AsyncVis:
                 task.frames = np.array(frames)
                 self.result_queue.put(task)
 
-    def __init__(self, video_vis, n_workers=None):
+    def __init__(self, cfg, n_workers=None):
         """
         Args:
             cfg (CfgNode): configs. Details can be found in
                 slowfast/config/defaults.py
-            n_workers (Optional[int]): number of CPUs for running video visualizer.
+            n_workers (Optional[int]): number of CPUs for running manager visualizer.
                 If not given, use all CPUs.
         """
 
         num_workers = mp.cpu_count() if n_workers is None else n_workers
+
+        common_classes = (
+            cfg.DEMO.COMMON_CLASS_NAMES
+            if len(cfg.DEMO.LABEL_FILE_PATH) != 0
+            else None
+        )
+        video_vis = VideoVisualizer(
+            num_classes=cfg.MODEL.HEAD.NUM_CLASSES,
+            class_names_path=cfg.DEMO.LABEL_FILE_PATH,
+            colormap=cfg.DEMO.COLORMAP,
+            thres=cfg.DEMO.COMMON_CLASS_THRES,
+            lower_thres=cfg.DEMO.UNCOMMON_CLASS_THRES,
+            common_class_names=common_classes,
+        )
 
         self.task_queue = mp.Queue()
         self.result_queue = mp.Queue()

@@ -6,3 +6,5 @@
 @author: zj
 @description: 
 """
+
+from .async_vis import AsyncVis

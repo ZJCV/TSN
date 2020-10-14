@@ -16,7 +16,7 @@ logger = logging.get_logger(__name__)
 
 class ThreadVideoManager:
     """
-    VideoManager object for getting frames from video source for inference
+    VideoManager object for getting frames from manager source for inference
     using multithreading for read and write frames.
     """
 
@@ -80,9 +80,9 @@ class ThreadVideoManager:
 
     def get_output_file(self, path, fps=30):
         """
-        Return a video writer object.
+        Return a manager writer object.
         Args:
-            path (str): path to the output video file.
+            path (str): path to the output manager file.
             fps (int or float): frames per second.
         """
         return cv2.VideoWriter(
@@ -143,7 +143,7 @@ class ThreadVideoManager:
             with self.put_id_lock:
                 put_id = self.put_id
             was_read, task = None, None
-            # If mode is to predict most recent read clip.
+            # If mode is to predictor most recent read clip.
             if self.num_skip == 0:
                 # Write all previous clips to write queue.
                 with self.write_lock:
@@ -154,7 +154,7 @@ class ThreadVideoManager:
                         self.write_queue[task.id] = (was_read, task)
             else:
                 was_read, task = self.read_queue.get()
-            # If we reach the end of the video.
+            # If we reach the end of the manager.
             if not was_read:
                 # Put to write queue.
                 with self.write_lock:
@@ -169,7 +169,7 @@ class ThreadVideoManager:
                 not_end = self.not_end
 
             with self.write_lock:
-                # If video ended and we have display all frames.
+                # If manager ended and we have display all frames.
                 if not not_end and self.get_id == put_id:
                     break
                 # If the next frames are not available, wait.
@@ -222,7 +222,7 @@ class ThreadVideoManager:
 
     def clean(self):
         """
-        Clean up open video files and windows.
+        Clean up open manager files and windows.
         """
         self.stopped = True
         self.input_lock.acquire()

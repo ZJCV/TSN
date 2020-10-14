@@ -6,3 +6,6 @@
 @author: zj
 @description: 
 """
+
+from .action_predictor import ActionPredictor
+from .async_action_predictor import AsyncActionPredictor

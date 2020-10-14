@@ -2,7 +2,7 @@
 
 """
 @date: 2020/10/13 下午3:10
-@file: async_demo.py
+@file: async_action_predictor.py
 @author: zj
 @description: 
 """
@@ -10,12 +10,12 @@
 import queue
 
 import tsn.util.logging as logging
-from .async_action_predictor import AsycnActionPredictor
+from .async_predictor import AsyncPredictor
 
 logger = logging.get_logger(__name__)
 
 
-class AsyncDemo:
+class AsyncActionPredictor:
     """
     Asynchronous Action Prediction and Visualization pipeline with AsyncVis.
     """
@@ -27,7 +27,7 @@ class AsyncDemo:
                 slowfast/config/defaults.py
             async_vis (AsyncVis object): asynchronous visualizer.
         """
-        self.model = AsycnActionPredictor(
+        self.model = AsyncPredictor(
             cfg=cfg, result_queue=async_vis.task_queue
         )
         self.async_vis = async_vis
