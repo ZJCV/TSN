@@ -18,7 +18,7 @@ from tsn.util import logging
 from tsn.util.collect_env import collect_env_info
 from tsn.util.parser import parse_train_args, load_config
 from tsn.util.misc import launch_job
-from tsn.util.distributed import setup, cleanup, get_rank, is_master_proc
+from tsn.util.distributed import setup, cleanup, is_master_proc, get_device
 
 
 def train(gpu, cfg):
@@ -30,11 +30,10 @@ def train(gpu, cfg):
     arguments = {"iteration": 0}
 
     torch.cuda.set_device(gpu)
-    device = torch.device(f'cuda:{gpu}' if torch.cuda.is_available() else 'cpu')
     map_location = {'cuda:%d' % 0: 'cuda:%d' % rank}
 
     model = build_model(cfg, gpu)
-    criterion = build_criterion(cfg)
+    criterion = build_criterion(cfg, gpu)
     optimizer = build_optimizer(cfg, model)
     lr_scheduler = build_lr_scheduler(cfg, optimizer)
 
@@ -60,7 +59,7 @@ def train(gpu, cfg):
 
     do_train(cfg, arguments,
              data_loader, model, criterion, optimizer, lr_scheduler,
-             checkpointer, device)
+             checkpointer)
     cleanup()
 
 

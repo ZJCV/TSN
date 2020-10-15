@@ -22,7 +22,7 @@ from tsn.engine.inference import do_evaluation
 
 def do_train(cfg, arguments,
              data_loader, model, criterion, optimizer, lr_scheduler,
-             checkpointer, device):
+             checkpointer):
     meters = MetricLogger()
     summary_writer = None
 
@@ -49,14 +49,14 @@ def do_train(cfg, arguments,
         iteration = iteration + 1
         arguments["iteration"] = iteration
 
-        images = images.to(device)
-        targets = targets.to(device)
+        images = images.cuda(non_blocking=True)
+        targets = targets.cuda(non_blocking=True)
 
         outputs = model(images)
         loss = criterion(outputs, targets)
         # compute top-k accuray
         topk_list = topk_accuracy(outputs, targets, topk=(1, 5))
-        meters.update(loss=loss / len(targets), acc_1=topk_list[0], acc_5=topk_list[1])
+        meters.update(loss=loss, acc_1=topk_list[0], acc_5=topk_list[1])
 
         optimizer.zero_grad()
         loss.backward()
@@ -100,7 +100,7 @@ def do_train(cfg, arguments,
             if save_step > 0 and iteration % save_step == 0:
                 checkpointer.save("model_{:06d}".format(iteration), **arguments)
             if eval_step > 0 and eval_step > 0 and iteration % eval_step == 0 and not iteration == max_iter:
-                eval_results = do_evaluation(cfg, model, device, iteration=iteration)
+                eval_results = do_evaluation(cfg, model, iteration=iteration)
                 if summary_writer:
                     for key, value in eval_results.items():
                         summary_writer.add_scalar(f'eval/{key}', value, global_step=iteration)
@@ -109,7 +109,7 @@ def do_train(cfg, arguments,
     if is_master_proc() and eval_step > 0:
         logger.info('Start final evaluating...')
         torch.cuda.empty_cache()  # speed up evaluating after training finished
-        eval_results = do_evaluation(cfg, model, device)
+        eval_results = do_evaluation(cfg, model)
 
         if summary_writer:
             for key, value in eval_results.items():

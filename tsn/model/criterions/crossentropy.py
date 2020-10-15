@@ -13,4 +13,4 @@ from tsn.model import registry
 
 @registry.CRITERION.register('crossentropy')
 def build_crossentropy(cfg):
-    return nn.CrossEntropyLoss()
+    return nn.CrossEntropyLoss(reduction='mean')

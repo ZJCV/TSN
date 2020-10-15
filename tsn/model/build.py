@@ -7,6 +7,7 @@
 @description: 
 """
 
+import torch
 from torch.nn.parallel import DistributedDataParallel as DDP
 
 from tsn.model.batchnorm_helper import simple_group_split, convert_sync_bn
@@ -19,8 +20,9 @@ from .criterions.crossentropy import build_crossentropy
 
 
 def build_model(cfg, gpu):
+    device = du.get_device(gpu)
     map_location = {'cuda:%d' % 0: 'cuda:%d' % du.get_rank()}
-    model = registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg, map_location=map_location).cuda(gpu)
+    model = registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg, map_location=map_location).to(device)
 
     world_size = du.get_world_size()
     rank = du.get_rank()
@@ -39,5 +41,6 @@ def build_model(cfg, gpu):
     return model
 
 
-def build_criterion(cfg):
-    return registry.CRITERION[cfg.MODEL.CRITERION.NAME](cfg)
+def build_criterion(cfg, gpu=None):
+    device = du.get_device(gpu)
+    return registry.CRITERION[cfg.MODEL.CRITERION.NAME](cfg).to(device)

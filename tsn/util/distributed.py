@@ -59,6 +59,16 @@ def get_rank():
     return dist.get_rank()
 
 
+def get_device(gpu=None):
+    if not torch.cuda.is_available():
+        device = torch.device('cpu')
+    elif gpu is None:
+        device = torch.cuda.current_device()
+    else:
+        device = torch.device(f'cuda:{gpu}')
+    return device
+
+
 def synchronize():
     """
     Helper function to synchronize (barrier) among all processes when
