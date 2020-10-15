@@ -34,11 +34,17 @@ _C.OUTPUT.DIR = 'outputs/'
 # DataSets
 # ---------------------------------------------------------------------------- #
 _C.DATASETS = CN()
+_C.DATASETS.TYPE = 'RawFrame'
 _C.DATASETS.MODALITY = 'RGB'
 _C.DATASETS.SAMPLE_STRATEGY = 'SegSample'
 _C.DATASETS.CLIP_LEN = 1
 _C.DATASETS.FRAME_INTERVAL = 1
 _C.DATASETS.NUM_CLIPS = 3
+# for vidoe decode
+# Enable multi thread decoding.
+_C.DATASETS.ENABLE_MULTI_THREAD_DECODE = False
+# Decoding backend, options include `pyav` or `torchvision`
+_C.DATASETS.DECODING_BACKEND = "pyav"
 # train
 _C.DATASETS.TRAIN = CN()
 _C.DATASETS.TRAIN.NAME = 'HMDB51'

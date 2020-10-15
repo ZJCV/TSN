@@ -10,8 +10,11 @@
 import os
 
 from .base_dataset import VideoRecord, BaseDataset
-from .clipsample import SegmentedSample, DenseSample
+from .video import video_container as container
+from .video import decoder
+from tsn.util import logging
 
+logger = logging.get_logger(__name__)
 classes = ['ApplyEyeMakeup', 'ApplyLipstick', 'Archery', 'BabyCrawling',
            'BalanceBeam', 'BandMarching', 'BaseballPitch', 'Basketball',
            'BasketballDunk', 'BenchPress', 'Biking', 'Billiards',
@@ -54,17 +57,46 @@ class UCF101(BaseDataset):
         self._update_video(self.annotation_dir, is_train=self.is_train)
         self._update_class()
         self._sample_frames()
+        self._update_dataset()
 
     def _update_video(self, annotation_dir, is_train=True):
+        dataset_type = 'rawframes' if self.type == 'RawFrame' else 'videos'
         if is_train:
-            annotation_path = os.path.join(annotation_dir, f'ucf101_train_split_{self.split}_rawframes.txt')
+            annotation_path = os.path.join(annotation_dir, f'ucf101_train_split_{self.split}_{dataset_type}.txt')
         else:
-            annotation_path = os.path.join(annotation_dir, f'ucf101_val_split_{self.split}_rawframes.txt')
+            annotation_path = os.path.join(annotation_dir, f'ucf101_val_split_{self.split}_{dataset_type}.txt')
 
         if not os.path.isfile(annotation_path):
             raise ValueError(f'{annotation_path}不是文件路径')
 
-        self.video_list = [VideoRecord(x.strip().split(' ')) for x in open(annotation_path)]
+        if self.type == 'RawFrame':
+            self.video_list = [VideoRecord(x.strip().split(' ')) for x in open(annotation_path)]
+        elif self.type == 'Video':
+            video_list = list()
+            for x in open(annotation_path):
+                video_path, cate = x.strip().split(' ')
+                video_path = os.path.join(self.data_dir, video_path)
+
+                # Try to decode and sample a clip from a video.
+                video_container = None
+                try:
+                    video_container = container.get_video_container(
+                        video_path,
+                        self.enable_multithread_decode,
+                        self.decoding_backend,
+                    )
+                except Exception as e:
+                    logger.info(
+                        "Failed to load video from {} with error {}".format(
+                            video_path, e
+                        )
+                    )
+
+                frames_length = decoder.get_video_length(video_container)
+                video_list.append(VideoRecord([video_path, frames_length, cate]))
+            self.video_list = video_list
+        else:
+            raise ValueError(f'{self.type} does not exist')
 
     def _update_class(self):
         self.classes = classes

@@ -4,6 +4,7 @@
 import torch
 import numpy as np
 
+from tsn.data.transforms.build import build_transform
 import tsn.util.logging as logging
 
 logger = logging.get_logger(__name__)
@@ -18,7 +19,6 @@ def process_cv2_inputs(frames, cfg):
         cfg (CfgNode): configs. Details can be found in
             slowfast/config/defaults.py
     """
-    from tsn.data.transforms.build import build_transform
     transform = build_transform(cfg, is_train=False)
 
     num_clips = cfg.DATASETS.NUM_CLIPS

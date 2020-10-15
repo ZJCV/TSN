@@ -11,16 +11,27 @@ import os
 import numpy as np
 
 from .base_dataset import VideoRecord, BaseDataset
-from .clipsample import SegmentedSample, DenseSample
 
 
 class JESTER(BaseDataset):
 
     def __init__(self,
-                 data_dir,
-                 annotation_dir,
-                 is_train=True,
+                 *args,
                  **kwargs):
+        super(JESTER, self).__init__(*args, **kwargs)
+
+        self.start_index = 1
+        self.img_prefix = ''
+
+        self._update_video(self.annotation_dir, is_train=self.is_train)
+        self._update_class()
+        self._sample_frames()
+        self._update_dataset()
+
+    def _update_video(self, annotation_dir, is_train=True):
+        if self.type == 'Video':
+            raise ValueError('Jester supports only RawFrame')
+
         label_path = os.path.join(annotation_dir, 'jester-v1-labels.csv')
         classes = list(np.loadtxt(label_path, dtype=np.str, delimiter=','))
 
@@ -36,23 +47,13 @@ class JESTER(BaseDataset):
             label_name = anno[1]
             label = classes.index(label_name)
 
-            data_path = os.path.join(data_dir, path)
+            data_path = os.path.join(self.data_dir, path)
             num_frames = len(os.listdir(data_path))
 
             video_list.append(VideoRecord([path, num_frames, label]))
 
-        super(JESTER, self).__init__(data_dir, annotation_dir, is_train=is_train, **kwargs)
-        self.video_list = video_list
         self.classes = classes
-        self.start_index = 1
-        self.img_prefix = ''
-
-        self._update_video(self.annotation_dir, is_train=self.is_train)
-        self._update_class()
-        self._sample_frames()
-
-    def _update_video(self, annotation_dir, is_train=True):
-        super()._update_video(annotation_dir, is_train)
+        self.video_list = video_list
 
     def _update_class(self):
         super()._update_class()
