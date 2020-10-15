@@ -27,7 +27,7 @@ def train(gpu, cfg):
     setup(rank, world_size, seed=cfg.RNG_SEED)
 
     logger = logging.setup_logging()
-    arguments = {"iteration": 0}
+    arguments = {"iteration": 0, 'gpu': gpu}
 
     torch.cuda.set_device(gpu)
     map_location = {'cuda:%d' % 0: 'cuda:%d' % rank}

@@ -14,7 +14,7 @@ import torch
 
 from tsn.util.metrics import topk_accuracy
 from tsn.util.metric_logger import MetricLogger
-from tsn.util.distributed import is_master_proc, synchronize
+from tsn.util.distributed import is_master_proc, synchronize, get_device
 from tsn.util import logging
 
 from tsn.engine.inference import do_evaluation
@@ -25,6 +25,7 @@ def do_train(cfg, arguments,
              checkpointer):
     meters = MetricLogger()
     summary_writer = None
+    device = get_device(arguments['gpu'])
 
     use_tensorboard = cfg.TRAIN.USE_TENSORBOARD
     log_step = cfg.TRAIN.LOG_STEP
@@ -49,8 +50,8 @@ def do_train(cfg, arguments,
         iteration = iteration + 1
         arguments["iteration"] = iteration
 
-        images = images.cuda(non_blocking=True)
-        targets = targets.cuda(non_blocking=True)
+        images = images.cuda(device=device, non_blocking=True)
+        targets = targets.cuda(device=device, non_blocking=True)
 
         outputs = model(images)
         loss = criterion(outputs, targets)
@@ -100,7 +101,7 @@ def do_train(cfg, arguments,
             if save_step > 0 and iteration % save_step == 0:
                 checkpointer.save("model_{:06d}".format(iteration), **arguments)
             if eval_step > 0 and eval_step > 0 and iteration % eval_step == 0 and not iteration == max_iter:
-                eval_results = do_evaluation(cfg, model, iteration=iteration)
+                eval_results = do_evaluation(cfg, model, device, iteration=iteration)
                 if summary_writer:
                     for key, value in eval_results.items():
                         summary_writer.add_scalar(f'eval/{key}', value, global_step=iteration)
@@ -109,7 +110,7 @@ def do_train(cfg, arguments,
     if is_master_proc() and eval_step > 0:
         logger.info('Start final evaluating...')
         torch.cuda.empty_cache()  # speed up evaluating after training finished
-        eval_results = do_evaluation(cfg, model)
+        eval_results = do_evaluation(cfg, model, device)
 
         if summary_writer:
             for key, value in eval_results.items():

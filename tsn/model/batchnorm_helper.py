@@ -8,6 +8,7 @@
 """
 
 import numpy as np
+import torch
 import torch.nn as nn
 import torch.distributed as dist
 
@@ -35,7 +36,7 @@ def convert_sync_bn(model, process_group, gpu=None):
         if isinstance(child, nn.modules.batchnorm._BatchNorm):
             m = nn.SyncBatchNorm.convert_sync_batchnorm(child, process_group)
             if (gpu is not None):
-                m = m.cuda(gpu)
+                m = m.cuda(device=torch.device(gpu))
             setattr(model, child_name, m)
         else:
             convert_sync_bn(child, process_group, gpu)

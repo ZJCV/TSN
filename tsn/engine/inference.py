@@ -18,7 +18,7 @@ import tsn.util.logging as logging
 from tsn.data.build import build_dataloader
 
 
-def compute_on_dataset(model, data_loader):
+def compute_on_dataset(model, data_loader, device):
     results_dict = {}
     cate_acc_dict = {}
     acc_top1 = list()
@@ -29,7 +29,7 @@ def compute_on_dataset(model, data_loader):
         cpu_device = torch.device("cpu")
 
         with torch.no_grad():
-            outputs = model(images.cuda(non_blocking=True)).to(cpu_device)
+            outputs = model(images.cuda(device=device, non_blocking=True)).to(cpu_device)
 
             topk_list = topk_accuracy(outputs, targets, topk=(1, 5))
             acc_top1.append(topk_list[0].item())
@@ -51,7 +51,7 @@ def compute_on_dataset(model, data_loader):
     return results_dict, cate_acc_dict, acc_top1, acc_top5
 
 
-def inference(cfg, model, **kwargs):
+def inference(cfg, model, device, **kwargs):
     iteration = kwargs.get('iteration', None)
     dataset_name = cfg.DATASETS.TEST.NAME
     output_dir = cfg.OUTPUT.DIR
@@ -62,7 +62,7 @@ def inference(cfg, model, **kwargs):
     logger = logging.setup_logging()
     logger.info("Evaluating {} dataset({} video clips):".format(dataset_name, len(dataset)))
 
-    results_dict, cate_acc_dict, acc_top1, acc_top5 = compute_on_dataset(model, data_loader)
+    results_dict, cate_acc_dict, acc_top1, acc_top5 = compute_on_dataset(model, data_loader, device)
 
     top1_acc = np.mean(acc_top1)
     top5_acc = np.mean(acc_top5)
@@ -92,7 +92,7 @@ def inference(cfg, model, **kwargs):
 
 
 @torch.no_grad()
-def do_evaluation(cfg, model, **kwargs):
+def do_evaluation(cfg, model, device, **kwargs):
     model.eval()
 
-    return inference(cfg, model, **kwargs)
+    return inference(cfg, model, device, **kwargs)

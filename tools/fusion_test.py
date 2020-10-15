@@ -37,11 +37,11 @@ def compute_on_dataset(rgb_model, rgb_data_loader, rgbdiff_model, rgbdiff_data_l
         outputs_list = list()
 
         images, targets = next(rgb_data_loader_iter)
-        outputs = rgb_model(images.to(device)).to(cpu_device)
+        outputs = rgb_model(images.cuda(device=device, non_blocking=True)).to(cpu_device)
         outputs_list.append(outputs)
 
         images, targets = next(rgbdiff_data_loader_iter)
-        outputs = rgbdiff_model(images.to(device)).to(cpu_device)
+        outputs = rgbdiff_model(images.cuda(device=device, non_blocking=True)).to(cpu_device)
         outputs_list.append(outputs)
         outputs = torch.mean(torch.stack(outputs_list), dim=0)
 
@@ -119,7 +119,7 @@ def test(args):
     rgb_cfg.OUTPUT.DIR = args.output
     rgb_cfg.freeze()
 
-    rgb_model = build_model(rgb_cfg, map_location=map_location).to(device)
+    rgb_model = build_model(rgb_cfg, 0)
     rgb_model.eval()
     checkpointer = CheckPointer(rgb_model, logger=logger)
     checkpointer.load(args.rgb_pretrained, map_location=map_location)
@@ -133,7 +133,7 @@ def test(args):
     rgbdiff_cfg.OUTPUT.DIR = args.output
     rgbdiff_cfg.freeze()
 
-    rgbdiff_model = build_model(rgbdiff_cfg, map_location=map_location).to(device)
+    rgbdiff_model = build_model(rgbdiff_cfg, 0)
     rgbdiff_model.eval()
     checkpointer = CheckPointer(rgbdiff_model, logger=logger)
     checkpointer.load(args.rgbdiff_pretrained, map_location=map_location)
