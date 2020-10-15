@@ -11,9 +11,10 @@ TRAIN:
   RESUME: False
   USE_TENSORBOARD: True
 OUTPUT:
-  DIR: 'outputs/tsn_r50_ucf101_rgbdiff_224x3_seg'
+  DIR: 'outputs/tsn_r50_ucf101_rgbdiff_raw_seg_1x1x3'
 DATASETS:
   MODALITY: 'RGBDiff'
+  TYPE: 'RawFrame'
   SAMPLE_STRATEGY: 'SegSample'
   CLIP_LEN: 5
   FRAME_INTERVAL: 1

@@ -4,30 +4,29 @@ NODES: 1
 RANK: 0
 WORLD_SIZE: 1
 TRAIN:
-  MAX_ITER: 30000
+  MAX_ITER: 50000
   LOG_STEP: 10
   SAVE_STEP: 1000
   EVAL_STEP: 1000
   RESUME: False
   USE_TENSORBOARD: True
 OUTPUT:
-  DIR: 'outputs/tsn_r50_ucf101_rgb_224x3_seg'
+  DIR: 'outputs/tsn_r50_jester_rgbdiff_raw_seg_1x1x3'
 DATASETS:
-  MODALITY: 'RGB'
+  MODALITY: 'RGBDiff'
+  TYPE: 'RawFrame'
   SAMPLE_STRATEGY: 'SegSample'
-  CLIP_LEN: 1
+  CLIP_LEN: 5
   FRAME_INTERVAL: 1
   NUM_CLIPS: 3
   TRAIN:
-    NAME: 'UCF101'
-    DATA_DIR: 'data/ucf101/rawframes'
-    ANNOTATION_DIR: 'data/ucf101'
-    SPLIT: 1
+    NAME: 'JESTER'
+    DATA_DIR: 'data/jester/20bn-jester-v1'
+    ANNOTATION_DIR: 'data/jester'
   TEST:
-    NAME: 'UCF101'
-    DATA_DIR: 'data/ucf101/rawframes'
-    ANNOTATION_DIR: 'data/ucf101'
-    SPLIT: 1
+    NAME: 'JESTER'
+    DATA_DIR: 'data/jester/20bn-jester-v1'
+    ANNOTATION_DIR: 'data/jester'
 TRANSFORM:
   TRAIN_CROP_SIZE: 224
   TEST_CROP_SIZE: 256
@@ -37,12 +36,12 @@ TRANSFORM:
   RANDOM_ROTATION: 10
   COLOR_JITTER: (0.1, 0.1, 0.1, 0.1)
 DATALOADER:
-  TRAIN_BATCH_SIZE: 32
-  TEST_BATCH_SIZE: 32
+  TRAIN_BATCH_SIZE: 8
+  TEST_BATCH_SIZE: 8
   NUM_WORKERS: 8
 MODEL:
   NAME: 'TSN'
-  PRETRAINED: ''
+  PRETRAINED: ""
   SYNC_BN: True
   INPUT_SIZE: (224, 224, 3)
   BACKBONE:
@@ -54,7 +53,7 @@ MODEL:
     NAME: 'TSNHead'
     FEATURE_DIMS: 2048
     DROPOUT: 0.0
-    NUM_CLASSES: 101
+    NUM_CLASSES: 27
   RECOGNIZER:
     NAME: 'TSNRecognizer'
   CONSENSU:
@@ -63,20 +62,15 @@ MODEL:
     NAME: 'crossentropy'
 OPTIMIZER:
   NAME: 'sgd'
-  LR: 1e-3
-  WEIGHT_DECAY: 1e-4
+  LR: 2e-3
+  WEIGHT_DECAY: 3e-4
   SGD:
     MOMENTUM: 0.9
 LR_SCHEDULER:
   NAME: 'cosine_annearling_lr'
   IS_WARMUP: True
   COSINE_ANNEALING_LR:
-    MINIMAL_LR: 1e-4
+    MINIMAL_LR: 3e-4
   WARMUP:
-    ITERATION: 400
+    ITERATION: 1000
     MULTIPLIER: 1.0
-DEMO:
-  ENABLE: True
-  INPUT_VIDEO: './data/ucf101/videos/YoYo/v_YoYo_g18_c04.avi'
-  #  OUTPUT_FILE: './outputs/YoYo_output.avi'
-  LABEL_FILE_PATH: './data/ucf101/annotations/class2idx.json'

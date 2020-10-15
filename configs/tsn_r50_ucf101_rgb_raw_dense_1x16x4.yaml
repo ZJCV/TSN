@@ -4,29 +4,30 @@ NODES: 1
 RANK: 0
 WORLD_SIZE: 1
 TRAIN:
-  MAX_ITER: 20000
+  MAX_ITER: 30000
   LOG_STEP: 10
   SAVE_STEP: 1000
   EVAL_STEP: 1000
   RESUME: False
   USE_TENSORBOARD: True
 OUTPUT:
-  DIR: 'outputs/tsn_r50_hmdb51_rgb_224x3_seg'
+  DIR: 'outputs/tsn_r50_ucf101_rgb_raw_dense_1x16x4'
 DATASETS:
   MODALITY: 'RGB'
-  SAMPLE_STRATEGY: 'SegSample'
+  TYPE: 'RawFrame'
+  SAMPLE_STRATEGY: 'DenseSample'
   CLIP_LEN: 1
-  FRAME_INTERVAL: 1
-  NUM_CLIPS: 3
+  FRAME_INTERVAL: 16
+  NUM_CLIPS: 4
   TRAIN:
-    NAME: 'HMDB51'
-    DATA_DIR: 'data/hmdb51/rawframes'
-    ANNOTATION_DIR: 'data/hmdb51'
+    NAME: 'UCF101'
+    DATA_DIR: 'data/ucf101/rawframes'
+    ANNOTATION_DIR: 'data/ucf101'
     SPLIT: 1
   TEST:
-    NAME: 'HMDB51'
-    DATA_DIR: 'data/hmdb51/rawframes'
-    ANNOTATION_DIR: 'data/hmdb51'
+    NAME: 'UCF101'
+    DATA_DIR: 'data/ucf101/rawframes'
+    ANNOTATION_DIR: 'data/ucf101'
     SPLIT: 1
 TRANSFORM:
   TRAIN_CROP_SIZE: 224
@@ -37,13 +38,13 @@ TRANSFORM:
   RANDOM_ROTATION: 10
   COLOR_JITTER: (0.1, 0.1, 0.1, 0.1)
 DATALOADER:
-  TRAIN_BATCH_SIZE: 32
-  TEST_BATCH_SIZE: 32
+  TRAIN_BATCH_SIZE: 24
+  TEST_BATCH_SIZE: 48
   NUM_WORKERS: 8
 MODEL:
   NAME: 'TSN'
-  PRETRAINED: ""
-  SYNC_BN: False
+  PRETRAINED: ''
+  SYNC_BN: True
   INPUT_SIZE: (224, 224, 3)
   BACKBONE:
     NAME: 'resnet50'
@@ -53,8 +54,8 @@ MODEL:
   HEAD:
     NAME: 'TSNHead'
     FEATURE_DIMS: 2048
-    DROPOUT: 0.0
-    NUM_CLASSES: 51
+    DROPOUT: 0.5
+    NUM_CLASSES: 101
   RECOGNIZER:
     NAME: 'TSNRecognizer'
   CONSENSU:
@@ -63,15 +64,21 @@ MODEL:
     NAME: 'crossentropy'
 OPTIMIZER:
   NAME: 'sgd'
-  LR: 2e-3
-  WEIGHT_DECAY: 3e-4
+  LR: 1e-3
+  WEIGHT_DECAY: 1e-4
   SGD:
     MOMENTUM: 0.9
 LR_SCHEDULER:
   NAME: 'cosine_annearling_lr'
   IS_WARMUP: True
   COSINE_ANNEALING_LR:
-    MINIMAL_LR: 3e-4
+    MINIMAL_LR: 1e-4
   WARMUP:
     ITERATION: 400
     MULTIPLIER: 1.0
+DEMO:
+  ENABLE: True
+  INPUT_VIDEO: './demo/v_Rowing_g15_c04.avi'
+  #  OUTPUT_FILE: './demo/v_Rowing_g15_c04_out.avi'
+  LABEL_FILE_PATH: './data/ucf101/annotations/class2idx.json'
+  NUM_VIS_INSTANCES: 8
