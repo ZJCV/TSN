@@ -59,13 +59,13 @@ def get_rank():
     return dist.get_rank()
 
 
-def get_device(gpu=None):
+def get_device(gpu_id=None):
     if not torch.cuda.is_available():
         device = torch.device('cpu')
-    elif gpu is None:
+    elif gpu_id is None:
         device = torch.cuda.current_device()
     else:
-        device = torch.device(f'cuda:{gpu}')
+        device = torch.device(f'cuda:{gpu_id}')
     return device
 
 

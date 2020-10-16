@@ -25,7 +25,7 @@ def do_train(cfg, arguments,
              checkpointer):
     meters = MetricLogger()
     summary_writer = None
-    device = get_device(arguments['gpu'])
+    device = get_device(arguments['gpu_id'])
 
     use_tensorboard = cfg.TRAIN.USE_TENSORBOARD
     log_step = cfg.TRAIN.LOG_STEP
@@ -50,8 +50,8 @@ def do_train(cfg, arguments,
         iteration = iteration + 1
         arguments["iteration"] = iteration
 
-        images = images.cuda(device=device, non_blocking=True)
-        targets = targets.cuda(device=device, non_blocking=True)
+        images = images.to(device=device, non_blocking=True)
+        targets = targets.to(device=device, non_blocking=True)
 
         outputs = model(images)
         loss = criterion(outputs, targets)

@@ -37,11 +37,11 @@ def compute_on_dataset(rgb_model, rgb_data_loader, rgbdiff_model, rgbdiff_data_l
         outputs_list = list()
 
         images, targets = next(rgb_data_loader_iter)
-        outputs = rgb_model(images.cuda(device=device, non_blocking=True)).to(cpu_device)
+        outputs = rgb_model(images.to(device=device, non_blocking=True)).to(cpu_device)
         outputs_list.append(outputs)
 
         images, targets = next(rgbdiff_data_loader_iter)
-        outputs = rgbdiff_model(images.cuda(device=device, non_blocking=True)).to(cpu_device)
+        outputs = rgbdiff_model(images.to(device=device, non_blocking=True)).to(cpu_device)
         outputs_list.append(outputs)
         outputs = torch.mean(torch.stack(outputs_list), dim=0)
 

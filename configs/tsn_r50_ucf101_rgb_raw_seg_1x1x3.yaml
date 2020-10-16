@@ -72,12 +72,7 @@ LR_SCHEDULER:
   NAME: 'cosine_annearling_lr'
   IS_WARMUP: True
   COSINE_ANNEALING_LR:
-    MINIMAL_LR: 1e-4
+    MINIMAL_LR: 3e-4
   WARMUP:
     ITERATION: 400
     MULTIPLIER: 1.0
-DEMO:
-  ENABLE: True
-  INPUT_VIDEO: './data/ucf101/videos/YoYo/v_YoYo_g18_c04.avi'
-  #  OUTPUT_FILE: './outputs/YoYo_output.avi'
-  LABEL_FILE_PATH: './data/ucf101/annotations/class2idx.json'

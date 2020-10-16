@@ -56,11 +56,11 @@ class Predictor:
             # Transfer the data to the current GPU device.
             if isinstance(inputs, (list,)):
                 for i in range(len(inputs)):
-                    inputs[i] = inputs[i].cuda(
+                    inputs[i] = inputs[i].to(
                         device=torch.device(self.gpu_id), non_blocking=True
                     )
             else:
-                inputs = inputs.cuda(
+                inputs = inputs.to(
                     device=torch.device(self.gpu_id), non_blocking=True
                 )
 

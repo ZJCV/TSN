@@ -29,7 +29,7 @@ def compute_on_dataset(model, data_loader, device):
         cpu_device = torch.device("cpu")
 
         with torch.no_grad():
-            outputs = model(images.cuda(device=device, non_blocking=True)).to(cpu_device)
+            outputs = model(images.to(device=device, non_blocking=True)).to(cpu_device)
 
             topk_list = topk_accuracy(outputs, targets, topk=(1, 5))
             acc_top1.append(topk_list[0].item())

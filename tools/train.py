@@ -21,19 +21,19 @@ from tsn.util.misc import launch_job
 from tsn.util.distributed import setup, cleanup, is_master_proc, get_device
 
 
-def train(gpu, cfg):
-    rank = cfg.RANK * cfg.NUM_GPUS + gpu
+def train(gpu_id, cfg):
+    rank = cfg.RANK * cfg.NUM_GPUS + gpu_id
     world_size = cfg.WORLD_SIZE
     setup(rank, world_size, seed=cfg.RNG_SEED)
 
     logger = logging.setup_logging()
-    arguments = {"iteration": 0, 'gpu': gpu}
+    arguments = {"iteration": 0, 'gpu_id': gpu_id}
 
-    torch.cuda.set_device(gpu)
+    torch.cuda.set_device(gpu_id)
     map_location = {'cuda:%d' % 0: 'cuda:%d' % rank}
 
-    model = build_model(cfg, gpu)
-    criterion = build_criterion(cfg, gpu)
+    model = build_model(cfg, gpu_id)
+    criterion = build_criterion(cfg, gpu_id)
     optimizer = build_optimizer(cfg, model)
     lr_scheduler = build_lr_scheduler(cfg, optimizer)
 

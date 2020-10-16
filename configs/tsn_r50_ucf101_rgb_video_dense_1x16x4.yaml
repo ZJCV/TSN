@@ -43,7 +43,7 @@ DATALOADER:
   NUM_WORKERS: 8
 MODEL:
   NAME: 'TSN'
-  PRETRAINED: './outputs/tsn_r50_ucf101_rgb_224x4_dense/model_012000.pth'
+  PRETRAINED: ''
   SYNC_BN: True
   INPUT_SIZE: (224, 224, 3)
   BACKBONE:
@@ -72,13 +72,7 @@ LR_SCHEDULER:
   NAME: 'cosine_annearling_lr'
   IS_WARMUP: True
   COSINE_ANNEALING_LR:
-    MINIMAL_LR: 1e-4
+    MINIMAL_LR: 3e-4
   WARMUP:
     ITERATION: 400
     MULTIPLIER: 1.0
-DEMO:
-  ENABLE: True
-  INPUT_VIDEO: './demo/v_Rowing_g15_c04.avi'
-#  OUTPUT_FILE: './demo/v_Rowing_g15_c04_out.avi'
-  LABEL_FILE_PATH: './data/ucf101/annotations/class2idx.json'
-  NUM_VIS_INSTANCES: 8

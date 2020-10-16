@@ -18,16 +18,16 @@ from .recognizers.tsn_recognizer import TSNRecognizer
 from .criterions.crossentropy import build_crossentropy
 
 
-def build_model(cfg, gpu):
-    device = du.get_device(gpu)
+def build_model(cfg, gpu_id):
+    device = du.get_device(gpu_id)
     map_location = {'cuda:%d' % 0: 'cuda:%d' % du.get_rank()}
-    model = registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg, map_location=map_location).cuda(device=device)
+    model = registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg, map_location=map_location).to(device=device)
 
     world_size = du.get_world_size()
     rank = du.get_rank()
     if cfg.MODEL.SYNC_BN and world_size > 1:
         process_group = simple_group_split(world_size, rank, 1)
-        convert_sync_bn(model, process_group, gpu=gpu)
+        convert_sync_bn(model, process_group, gpu_id=gpu_id)
     if cfg.MODEL.PRETRAINED != "":
         logger = logging.setup_logging()
         logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
@@ -35,11 +35,11 @@ def build_model(cfg, gpu):
         checkpointer.load(cfg.MODEL.PRETRAINED, map_location=map_location, rank=rank)
 
     if du.get_world_size() > 1:
-        model = DDP(model, device_ids=[gpu], output_device=gpu, find_unused_parameters=True)
+        model = DDP(model, device_ids=[device], output_device=device, find_unused_parameters=True)
 
     return model
 
 
-def build_criterion(cfg, gpu=None):
-    device = du.get_device(gpu)
-    return registry.CRITERION[cfg.MODEL.CRITERION.NAME](cfg).cuda(device=device)
+def build_criterion(cfg, gpu_id=None):
+    device = du.get_device(gpu_id)
+    return registry.CRITERION[cfg.MODEL.CRITERION.NAME](cfg).to(device=device)
