@@ -11,44 +11,24 @@ import os
 from datetime import datetime
 import torch
 from tqdm import tqdm
-import numpy as np
 
-from tsn.util.metrics import topk_accuracy
 import tsn.util.logging as logging
 from tsn.data.build import build_dataloader
 
 
+@torch.no_grad()
 def compute_on_dataset(model, data_loader, device):
-    results_dict = {}
-    cate_acc_dict = {}
-    acc_top1 = list()
-    acc_top5 = list()
+    evaluator = data_loader.dataset.evaluator
+    evaluator.clean()
+    for images, targets in tqdm(data_loader):
+        images = images.to(device=device, non_blocking=True)
+        targets = targets.to(device=device, non_blocking=True)
 
-    for batch in tqdm(data_loader):
-        images, targets = batch
-        cpu_device = torch.device("cpu")
+        outputs = model(images)
+        evaluator.evaluate(outputs, targets, topk=(1, 5), once=False)
 
-        with torch.no_grad():
-            outputs = model(images.to(device=device, non_blocking=True)).to(cpu_device)
-
-            topk_list = topk_accuracy(outputs, targets, topk=(1, 5))
-            acc_top1.append(topk_list[0].item())
-            acc_top5.append(topk_list[1].item())
-
-            outputs = outputs.numpy()
-            preds = np.argmax(outputs, 1)
-            targets = targets.numpy()
-            for target, pred in zip(targets, preds):
-                results_dict.update({
-                    str(target):
-                        results_dict.get(str(target), 0) + 1
-                })
-                cate_acc_dict.update({
-                    str(target):
-                        cate_acc_dict.get(str(target), 0) + int(target == pred)
-                })
-
-    return results_dict, cate_acc_dict, acc_top1, acc_top5
+    topk_list, cate_topk_dict = evaluator.get()
+    return topk_list, cate_topk_dict
 
 
 def inference(cfg, model, device, **kwargs):
@@ -62,23 +42,20 @@ def inference(cfg, model, device, **kwargs):
     logger = logging.setup_logging()
     logger.info("Evaluating {} dataset({} video clips):".format(dataset_name, len(dataset)))
 
-    results_dict, cate_acc_dict, acc_top1, acc_top5 = compute_on_dataset(model, data_loader, device)
+    topk_list, cate_topk_dict = compute_on_dataset(model, data_loader, device)
 
-    top1_acc = np.mean(acc_top1)
-    top5_acc = np.mean(acc_top5)
+    top1_acc, top5_acc = topk_list
     result_str = '\ntotal - top_1 acc: {:.3f}, top_5 acc: {:.3f}\n'.format(top1_acc, top5_acc)
 
     classes = dataset.classes
-    for key in sorted(results_dict.keys(), key=lambda x: int(x)):
-        total_num = results_dict[key]
-        acc_num = cate_acc_dict[key]
+    for idx in range(len(classes)):
+        class_name = classes[idx]
+        cate_acc = cate_topk_dict[class_name]
 
-        cate_name = classes[int(key)]
-
-        if total_num != 0:
-            result_str += '{:<3} - {:<20} - acc: {:.2f}\n'.format(key, cate_name, acc_num / total_num * 100)
+        if cate_acc != 0:
+            result_str += '{:<3} - {:<20} - acc: {:.2f}\n'.format(idx, class_name, cate_acc * 100)
         else:
-            result_str += '{:<3} - {:<20} - acc: 0.0\n'.format(key, cate_name, acc_num / total_num)
+            result_str += '{:<3} - {:<20} - acc: 0.0\n'.format(idx, class_name)
     logger.info(result_str)
 
     if iteration is not None:

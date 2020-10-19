@@ -18,7 +18,7 @@ from tsn.util import logging
 from tsn.util.collect_env import collect_env_info
 from tsn.util.parser import parse_train_args, load_config
 from tsn.util.misc import launch_job
-from tsn.util.distributed import setup, cleanup, is_master_proc, get_device
+from tsn.util.distributed import setup, cleanup, is_master_proc
 
 
 def train(gpu_id, cfg):

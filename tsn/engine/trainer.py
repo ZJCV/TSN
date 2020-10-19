@@ -12,7 +12,6 @@ import datetime
 import time
 import torch
 
-from tsn.util.metrics import topk_accuracy
 from tsn.util.metric_logger import MetricLogger
 from tsn.util.distributed import is_master_proc, synchronize, get_device
 from tsn.util import logging
@@ -42,6 +41,7 @@ def do_train(cfg, arguments,
     model.train()
     start_iter = arguments['iteration']
     max_iter = cfg.TRAIN.MAX_ITER
+    evaluator = data_loader.dataset.evaluator
 
     synchronize()
     start_training_time = time.time()
@@ -55,14 +55,13 @@ def do_train(cfg, arguments,
 
         outputs = model(images)
         loss = criterion(outputs, targets)
-        # compute top-k accuray
-        topk_list = topk_accuracy(outputs, targets, topk=(1, 5))
-        meters.update(loss=loss, acc_1=topk_list[0], acc_5=topk_list[1])
-
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
         lr_scheduler.step()
+
+        topk_list = evaluator.evaluate(outputs, targets, topk=(1, 5), once=True)
+        meters.update(loss=loss, acc_1=topk_list[0], acc_5=topk_list[1])
 
         if iteration % len(data_loader) == 0 and hasattr(data_loader.batch_sampler, "set_epoch"):
             data_loader.batch_sampler.set_epoch(iteration)

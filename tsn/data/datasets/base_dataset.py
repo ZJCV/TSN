@@ -7,6 +7,7 @@
 @description: 
 """
 
+from abc import ABCMeta, abstractmethod
 from torch.utils.data import Dataset
 
 from .clipsample import SegmentedSample, DenseSample
@@ -31,7 +32,7 @@ class VideoRecord(object):
         return int(self._data[2])
 
 
-class BaseDataset(Dataset):
+class BaseDataset(Dataset, metaclass=ABCMeta):
 
     def __init__(self,
                  data_dir,
@@ -82,11 +83,18 @@ class BaseDataset(Dataset):
         self.start_index = 0
         # RawFrames图像命令前缀，比如UCF101/HMDB51使用img_，JESTER没有
         self.img_prefix = 'img_'
+        self.evaluator = None
 
+    @abstractmethod
     def _update_video(self, annotation_dir, is_train=True):
         pass
 
+    @abstractmethod
     def _update_class(self):
+        pass
+
+    @abstractmethod
+    def _update_evaluator(self):
         pass
 
     def _sample_frames(self):
