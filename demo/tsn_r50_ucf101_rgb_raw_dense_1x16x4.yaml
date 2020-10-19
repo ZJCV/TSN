@@ -76,7 +76,7 @@ LR_SCHEDULER:
   WARMUP:
     ITERATION: 400
     MULTIPLIER: 1.0
-DEMO:
+VISUALIZATION:
   ENABLE: True
   INPUT_VIDEO: './demo/v_Rowing_g15_c04.avi'
   #  OUTPUT_FILE: './demo/v_Rowing_g15_c04_out.avi'

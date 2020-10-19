@@ -35,7 +35,7 @@ def run_demo(cfg, frame_provider):
     logger.info("Run demo with config:")
     logger.info(cfg)
 
-    async_vis = AsyncVis(cfg, n_workers=cfg.DEMO.NUM_VIS_INSTANCES)
+    async_vis = AsyncVis(cfg, n_workers=cfg.VISUALIZATION.NUM_VIS_INSTANCES)
 
     if cfg.NUM_GPUS <= 1:
         model = ActionPredictor(cfg=cfg, async_vis=async_vis)
@@ -78,7 +78,7 @@ def demo(cfg):
             tsn/config/defaults.py
     """
     start = time.time()
-    if cfg.DEMO.THREAD_ENABLE:
+    if cfg.VISUALIZATION.THREAD_ENABLE:
         frame_provider = ThreadVideoManager(cfg)
     else:
         frame_provider = VideoManager(cfg)
@@ -100,7 +100,7 @@ def main():
     cfg = load_config(args)
 
     # Run demo.
-    if cfg.DEMO.ENABLE:
+    if cfg.VISUALIZATION.ENABLE:
         demo(cfg)
 
 

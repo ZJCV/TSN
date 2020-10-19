@@ -53,16 +53,16 @@ class AsyncVis:
         num_workers = mp.cpu_count() if n_workers is None else n_workers
 
         common_classes = (
-            cfg.DEMO.COMMON_CLASS_NAMES
-            if len(cfg.DEMO.LABEL_FILE_PATH) != 0
+            cfg.VISUALIZATION.COMMON_CLASS_NAMES
+            if len(cfg.VISUALIZATION.LABEL_FILE_PATH) != 0
             else None
         )
         video_vis = VideoVisualizer(
             num_classes=cfg.MODEL.HEAD.NUM_CLASSES,
-            class_names_path=cfg.DEMO.LABEL_FILE_PATH,
-            colormap=cfg.DEMO.COLORMAP,
-            thres=cfg.DEMO.COMMON_CLASS_THRES,
-            lower_thres=cfg.DEMO.UNCOMMON_CLASS_THRES,
+            class_names_path=cfg.VISUALIZATION.LABEL_FILE_PATH,
+            colormap=cfg.VISUALIZATION.COLORMAP,
+            thres=cfg.VISUALIZATION.COMMON_CLASS_THRES,
+            lower_thres=cfg.VISUALIZATION.UNCOMMON_CLASS_THRES,
             common_class_names=common_classes,
         )
 

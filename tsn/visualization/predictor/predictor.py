@@ -45,7 +45,7 @@ class Predictor:
                 action detection task.
         """
         frames = task.frames
-        if self.cfg.DEMO.INPUT_FORMAT == "BGR":
+        if self.cfg.VISUALIZATION.INPUT_FORMAT == "BGR":
             frames = [
                 cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) for frame in frames
             ]
