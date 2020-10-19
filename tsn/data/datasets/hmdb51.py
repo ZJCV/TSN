@@ -9,6 +9,7 @@
 
 import os
 
+from .evaluator.hmdb51 import HMDB51Evaluator
 from .base_dataset import VideoRecord, BaseDataset
 from .video import video_container as container
 from .video import decoder
@@ -44,6 +45,7 @@ class HMDB51(BaseDataset):
         self._update_class()
         self._sample_frames()
         self._update_dataset()
+        self._update_evaluator()
 
     def _update_video(self, annotation_dir, is_train=True):
         dataset_type = 'rawframes' if self.type == 'RawFrame' else 'videos'
@@ -84,6 +86,8 @@ class HMDB51(BaseDataset):
         else:
             raise ValueError(f'{self.type} does not exist')
 
+    def _update_class(self):
+        self.classes = classes
 
-def _update_class(self):
-    self.classes = classes
+    def _update_evaluator(self):
+        self.evaluator = HMDB51Evaluator(self.classes)

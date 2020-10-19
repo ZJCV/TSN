@@ -10,6 +10,7 @@
 import os
 import numpy as np
 
+from .evaluator.jester import JesterEvaluator
 from .base_dataset import VideoRecord, BaseDataset
 
 
@@ -27,6 +28,7 @@ class JESTER(BaseDataset):
         self._update_class()
         self._sample_frames()
         self._update_dataset()
+        self._update_evaluator()
 
     def _update_video(self, annotation_dir, is_train=True):
         if self.type == 'Video':
@@ -57,3 +59,6 @@ class JESTER(BaseDataset):
 
     def _update_class(self):
         super()._update_class()
+
+    def _update_evaluator(self):
+        self.evaluator = JesterEvaluator(self.classes)
