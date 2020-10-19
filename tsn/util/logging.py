@@ -10,7 +10,6 @@ import logging
 import os
 import sys
 import simplejson
-from fvcore.common.file_io import PathManager
 
 import tsn.util.distributed as du
 
@@ -28,7 +27,7 @@ def _suppress_print():
 
 @functools.lru_cache(maxsize=None)
 def _cached_log_stream(filename):
-    return PathManager.open(filename, "a")
+    return open(filename, "a")
 
 
 def setup_logging(output_dir=None):
