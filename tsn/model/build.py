@@ -15,7 +15,7 @@ from tsn.util.checkpoint import CheckPointer
 from tsn.util import logging
 from . import registry
 from .recognizers.tsn_recognizer import TSNRecognizer
-from .criterions.crossentropy import build_crossentropy
+from .criterions.crossentropy_loss import CrossEntropyLoss
 
 
 def build_model(cfg, gpu_id):

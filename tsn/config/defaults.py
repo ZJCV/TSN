@@ -109,7 +109,7 @@ _C.MODEL.CONSENSU = CN()
 _C.MODEL.CONSENSU.NAME = 'AvgConsensus'
 
 _C.MODEL.CRITERION = CN()
-_C.MODEL.CRITERION.NAME = 'crossentropy'
+_C.MODEL.CRITERION.NAME = 'CrossEntropyLoss'
 
 # ---------------------------------------------------------------------------- #
 # Optimizer

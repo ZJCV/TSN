@@ -61,7 +61,7 @@ MODEL:
   CONSENSU:
     NAME: 'AvgConsensus'
   CRITERION:
-    NAME: 'crossentropy'
+    NAME: 'CrossEntropyLoss'
 OPTIMIZER:
   NAME: 'sgd'
   LR: 1e-3
