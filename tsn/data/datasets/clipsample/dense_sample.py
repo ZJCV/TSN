@@ -30,12 +30,15 @@ class DenseSample(SegmentedSample):
                  frame_interval,
                  num_clips,
                  is_train=True,
-                 start_index=0):
+                 start_index=0,
+                 num_sample_positions=10):
         super().__init__(clip_len,
                          frame_interval,
                          num_clips,
                          is_train=is_train,
                          start_index=start_index)
+
+        self.num_sample_positions = num_sample_positions
 
     def _get_train_clips(self, num_frames):
         """Get clip offsets by dense sample strategy in train mode.
@@ -51,20 +54,13 @@ class DenseSample(SegmentedSample):
         Returns:
             np.ndarray: Sampled frame indices in train mode.
         """
-        total_clip_len = self.clip_len * self.frame_interval * self.num_clips
-        start_range = num_frames - total_clip_len
-
-        if start_range > 0:
-            start_idx = np.random.randint(start_range)
-            end_idx = start_idx + total_clip_len
-            clip_offsets = np.linspace(start_idx, end_idx, num=self.num_clips)
-        elif num_frames > (self.clip_len * self.num_clips):
-            clip_offsets = np.sort(
-                np.random.randint(
-                    num_frames - self.clip_len * self.num_clips + 1, size=self.num_clips))
-        else:
-            clip_offsets = np.zeros((self.num_clips,), dtype=np.int)
-
+        clip_range = self.clip_len * self.frame_interval * self.num_clips
+        sample_position = max(1, 1 + num_frames - clip_range)
+        interval = clip_range // self.num_clips
+        start_idx = 0 if sample_position == 1 else np.random.randint(
+            0, sample_position - 1)
+        base_offsets = np.arange(self.num_clips) * interval
+        clip_offsets = (base_offsets + start_idx) % num_frames
         return clip_offsets
 
     def _get_test_clips(self, num_frames):
@@ -81,14 +77,14 @@ class DenseSample(SegmentedSample):
         Returns:
             np.ndarray: Sampled frame indices in train mode.
         """
-        total_clip_len = self.clip_len * self.frame_interval * self.num_clips
-        start_range = num_frames - total_clip_len
-
-        if start_range > 0:
-            start_idx = start_range // 2
-            end_idx = start_idx + total_clip_len
-            clip_offsets = np.linspace(start_idx, end_idx, num=self.num_clips)
-        else:
-            clip_offsets = np.zeros((self.num_clips,), dtype=np.int)
-
+        sample_range = self.clip_len * self.frame_interval * self.num_clips
+        sample_position = max(1, 1 + num_frames - sample_range)
+        interval = sample_range // self.num_clips
+        start_list = np.linspace(
+            0, sample_position - 1, num=self.num_sample_positions, dtype=int)
+        base_offsets = np.arange(self.num_clips) * interval
+        clip_offsets = list()
+        for start_idx in start_list:
+            clip_offsets.extend((base_offsets + start_idx) % num_frames)
+        clip_offsets = np.array(clip_offsets)
         return clip_offsets

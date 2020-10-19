@@ -43,6 +43,7 @@ class BaseDataset(Dataset, metaclass=ABCMeta):
                  clip_len=1,
                  frame_interval=1,
                  num_clips=3,
+                 num_sample_positions=10,
                  is_train=True,
                  transform=None,
                  **kwargs):
@@ -67,6 +68,7 @@ class BaseDataset(Dataset, metaclass=ABCMeta):
         self.clip_len = clip_len
         self.frame_interval = frame_interval
         self.num_clips = num_clips
+        self.num_sample_positions = num_sample_positions
         self.is_train = is_train
         self.transform = transform
         self.kwargs = kwargs
@@ -109,13 +111,15 @@ class BaseDataset(Dataset, metaclass=ABCMeta):
                                            self.frame_interval,
                                            self.num_clips,
                                            is_train=self.is_train,
-                                           start_index=self.start_index)
+                                           start_index=self.start_index,
+                                           num_sample_positions=self.num_sample_positions)
         else:
             raise ValueError(f'{self.sample_strategy} does not exist')
 
     def _update_dataset(self):
         if self.type == 'RawFrame':
             self.data_set = RawFrameDataset(self.clip_len,
+                                            self.frame_interval,
                                             self.data_dir,
                                             self.video_list,
                                             self.clip_sample,

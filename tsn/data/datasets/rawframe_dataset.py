@@ -18,6 +18,7 @@ class RawFrameDataset(Dataset):
 
     def __init__(self,
                  clip_len,
+                 frame_interval,
                  data_dir,
                  video_list,
                  clip_sample,
@@ -25,6 +26,7 @@ class RawFrameDataset(Dataset):
                  img_prefix='img_',
                  transform=None):
         self.clip_len = clip_len
+        self.frame_interval = frame_interval
         self.data_dir = data_dir
         self.video_list = video_list
         self.clip_sample = clip_sample
@@ -51,8 +53,10 @@ class RawFrameDataset(Dataset):
                 image_list.append(img)
             if 'RGBDiff' == self.modality:
                 tmp_list = list()
-                for clip in range(self.clip_len):
-                    img_path = os.path.join(video_path, '{}{:0>5d}.jpg'.format(self.img_prefix, offset + clip))
+                clip_idxs = offset + \
+                            np.linspace(0, self.clip_len * self.frame_interval, num=self.clip_len, dtype=np.int)
+                for idx in clip_idxs:
+                    img_path = os.path.join(video_path, '{}{:0>5d}.jpg'.format(self.img_prefix, idx))
                     img = np.array(Image.open(img_path))
 
                     tmp_list.append(img)

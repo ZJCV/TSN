@@ -18,6 +18,14 @@ class SegmentedSample():
                  num_clips,
                  is_train=True,
                  start_index=0):
+        """
+        离散采样
+        :param clip_len: 对于RGB模态，clip_len=1；对于RGBDiff模态，clip_len=6
+        :param frame_interval: 单次clip中帧间隔
+        :param num_clips: 将视频帧均分成num_clips，在每个clip中随机采样clip_len帧
+        :param is_train:
+        :param start_index:　数据集下标从0或者1开始
+        """
 
         self.clip_len = clip_len
         self.frame_interval = frame_interval
@@ -39,19 +47,19 @@ class SegmentedSample():
         Returns:
             np.ndarray: Sampled frame indices in train mode.
         """
-        ori_clip_len = self.clip_len * self.frame_interval
-        avg_interval = (num_frames - ori_clip_len + 1) // self.num_clips
+        one_clip_len = self.clip_len * self.frame_interval
+        avg_interval = (num_frames - one_clip_len + 1) // self.num_clips
 
         if avg_interval > 0:
             base_offsets = np.arange(self.num_clips) * avg_interval
             clip_offsets = base_offsets + np.random.randint(
                 avg_interval, size=self.num_clips)
-        elif num_frames > max(self.num_clips, ori_clip_len):
+        elif num_frames > max(self.num_clips, one_clip_len):
             clip_offsets = np.sort(
                 np.random.randint(
-                    num_frames - ori_clip_len + 1, size=self.num_clips))
+                    num_frames - one_clip_len + 1, size=self.num_clips))
         elif avg_interval == 0:
-            ratio = (num_frames - ori_clip_len + 1.0) / self.num_clips
+            ratio = (num_frames - one_clip_len + 1.0) / self.num_clips
             clip_offsets = np.around(np.arange(self.num_clips) * ratio)
         else:
             clip_offsets = np.zeros((self.num_clips,), dtype=np.int)
@@ -72,9 +80,9 @@ class SegmentedSample():
         Returns:
             np.ndarray: Sampled frame indices in test mode.
         """
-        ori_clip_len = self.clip_len * self.frame_interval
-        avg_interval = (num_frames - ori_clip_len + 1) / float(self.num_clips)
-        if num_frames > ori_clip_len - 1:
+        one_clip_len = self.clip_len * self.frame_interval
+        avg_interval = (num_frames - one_clip_len + 1) / float(self.num_clips)
+        if num_frames > one_clip_len - 1:
             base_offsets = np.arange(self.num_clips) * avg_interval
             clip_offsets = (base_offsets + avg_interval / 2.0).astype(np.int)
         else:

@@ -40,6 +40,8 @@ _C.DATASETS.SAMPLE_STRATEGY = 'SegSample'
 _C.DATASETS.CLIP_LEN = 1
 _C.DATASETS.FRAME_INTERVAL = 1
 _C.DATASETS.NUM_CLIPS = 3
+# for densesample test
+_C.DATASETS.NUM_SAMPLE_POSITIONS = 10
 # for vidoe decode
 # Enable multi thread decoding.
 _C.DATASETS.ENABLE_MULTI_THREAD_DECODE = False

@@ -18,6 +18,7 @@ def build_dataset(cfg, transform=None, is_train=True):
     clip_len = cfg.DATASETS.CLIP_LEN
     frame_interval = cfg.DATASETS.FRAME_INTERVAL
     num_clips = cfg.DATASETS.NUM_CLIPS
+    num_sample_positions = cfg.DATASETS.NUM_SAMPLE_POSITIONS
 
     dataset_name = cfg.DATASETS.TRAIN.NAME if is_train else cfg.DATASETS.TEST.NAME
     data_dir = cfg.DATASETS.TRAIN.DATA_DIR if is_train else cfg.DATASETS.TEST.DATA_DIR
