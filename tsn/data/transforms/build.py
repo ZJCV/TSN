@@ -8,37 +8,50 @@
 """
 
 import torchvision.transforms as transforms
-from .random_resize import RandomResize
+from .augmentation import RandomResize, ThreeCrop, ToTensor, Normalize
 
 
 def build_transform(cfg, is_train=True):
-    min, max = cfg.TRANSFORM.SCALE_JITTER
     MEAN = cfg.TRANSFORM.MEAN
     STD = cfg.TRANSFORM.STD
-    RANDOM_ROTATION = cfg.TRANSFORM.RANDOM_ROTATION
-    brightness, contrast, saturation, hue = cfg.TRANSFORM.COLOR_JITTER
 
+    aug_list = list()
+    aug_list.append(transforms.ToPILImage())
     if is_train:
-        crop_size = cfg.TRANSFORM.TRAIN_CROP_SIZE
-        transform = transforms.Compose([
-            transforms.ToPILImage(),
-            RandomResize(min, max),
-            transforms.RandomCrop(crop_size),
-            transforms.RandomHorizontalFlip(),
-            transforms.ColorJitter(brightness=brightness, contrast=contrast, saturation=saturation, hue=hue),
-            transforms.RandomRotation(RANDOM_ROTATION),
-            transforms.ToTensor(),
-            transforms.Normalize(MEAN, STD),
-            transforms.RandomErasing()
-        ])
-    else:
-        crop_size = cfg.TRANSFORM.TEST_CROP_SIZE
-        transform = transforms.Compose([
-            transforms.ToPILImage(),
-            transforms.Resize(min),
-            transforms.CenterCrop(crop_size),
-            transforms.ToTensor(),
-            transforms.Normalize(MEAN, STD)
-        ])
+        if cfg.TRANSFORM.TRAIN.SCALE_JITTER is not None:
+            min, max = cfg.TRANSFORM.TRAIN.SCALE_JITTER
+            aug_list.append(RandomResize(min, max))
+        if cfg.TRANSFORM.TRAIN.RANDOM_HORIZONTAL_FLIP:
+            aug_list.append(transforms.RandomHorizontalFlip())
+        if cfg.TRANSFORM.TRAIN.COLOR_JITTER is not None:
+            brightness, contrast, saturation, hue = cfg.TRANSFORM.TRAIN.COLOR_JITTER
+            aug_list.append(
+                transforms.ColorJitter(brightness=brightness, contrast=contrast, saturation=saturation, hue=hue))
+        if cfg.TRANSFORM.TRAIN.RANDOM_ROTATION is not None:
+            random_rotation = cfg.TRANSFORM.TRAIN.RANDOM_ROTATION
+            aug_list.append(transforms.RandomRotation(random_rotation))
+        if cfg.TRANSFORM.TRAIN.RANDOM_CROP is not None:
+            crop_size = cfg.TRANSFORM.TRAIN.TRAIN_CROP_SIZE
+            aug_list.append(transforms.RandomCrop(crop_size))
 
+        aug_list.append(ToTensor())
+        aug_list.append(Normalize(MEAN, STD))
+
+        if cfg.TRANSFORM.TRAIN.RANDOM_ERASING:
+            aug_list.append(transforms.RandomErasing())
+    else:
+        if cfg.TRANSFORM.TEST.SHORTER_SIDE is not None:
+            shorter_side = cfg.TRANSFORM.TEST.SHORTER_SIDE
+            aug_list.append(transforms.Resize(shorter_side))
+        if cfg.TRANSFORM.TEST.CENTER_CROP:
+            crop_size = cfg.TRANSFORM.TEST.TEST_CROP_SIZE
+            aug_list.append(transforms.CenterCrop(crop_size))
+        if cfg.TRANSFORM.TEST.THREE_CROP:
+            crop_size = cfg.TRANSFORM.TEST.TEST_CROP_SIZE
+            aug_list.append(ThreeCrop(crop_size))
+
+        aug_list.append(ToTensor())
+        aug_list.append(Normalize(MEAN, STD))
+
+    transform = transforms.Compose(aug_list)
     return transform

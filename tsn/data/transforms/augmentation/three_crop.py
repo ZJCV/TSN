@@ -7,9 +7,8 @@
 @description: 
 """
 
-import numpy as np
 import numbers
-import torchvision.transforms as transforms
+import torchvision.transforms.functional as F
 
 
 class ThreeCrop(object):
@@ -23,17 +22,6 @@ class ThreeCrop(object):
     Args:
          size (sequence or int): Desired output size of the crop. If size is an ``int``
             instead of sequence like (h, w), a square crop of size (size, size) is made.
-
-    Example:
-         >>> transform = Compose([
-         >>>    ThreeCrop(size), # this is a list of PIL Images
-         >>>    Lambda(lambda crops: torch.stack([ToTensor()(crop) for crop in crops])) # returns a 4D tensor
-         >>> ])
-         >>> #In your test loop you can do the following:
-         >>> input, target = batch # input is a 5d tensor, target is 2d
-         >>> bs, ncrops, c, h, w = input.size()
-         >>> result = model(input.view(-1, c, h, w)) # fuse batch size and ncrops
-         >>> result_avg = result.view(bs, ncrops, -1).mean(1) # avg over crops
     """
 
     def __init__(self, size):
@@ -78,10 +66,33 @@ def three_crop(img, size):
         msg = "Requested crop size {} is bigger than input size {}"
         raise ValueError(msg.format(size, (image_height, image_width)))
 
-    tl = img.crop((0, 0, crop_width, crop_height))
-    tr = img.crop((image_width - crop_width, 0, image_width, crop_height))
-    bl = img.crop((0, image_height - crop_height, crop_width, image_height))
-    br = img.crop((image_width - crop_width, image_height - crop_height,
-                   image_width, image_height))
-    center = center_crop(img, (crop_height, crop_width))
-    return (tl, tr, bl, br, center)
+    center = F.center_crop(img, (crop_height, crop_width))
+    if image_height > image_width:
+        # crop up/center/down
+        left = int(round((image_width - crop_width) / 2.))
+        crop_top = img.crop((left, 0, left + crop_width, crop_height))
+
+        top = int(round(image_height - crop_height))
+        crop_down = img.crop((left, top, left + crop_width, image_height))
+        res = (crop_top, center, crop_down)
+    else:
+        # crop left/center/right
+        top = int(round(image_height - crop_height) / 2.)
+        crop_left = img.crop((0, top, crop_width, top + crop_height))
+
+        left = int(round(image_width - crop_width))
+        crop_right = img.crop((left, top, image_width, top + crop_height))
+        res = (crop_left, center, crop_right)
+
+    return res
+
+
+if __name__ == '__main__':
+    model = ThreeCrop((255, 255))
+
+    from PIL import Image
+    import numpy as np
+
+    img = Image.fromarray(np.arange(255 * 320).reshape(255, 320).astype(np.uint8))
+    crop = model(img)
+    print(len(crop))
