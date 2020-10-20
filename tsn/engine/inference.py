@@ -25,7 +25,7 @@ def compute_on_dataset(model, data_loader, device):
         targets = targets.to(device=device, non_blocking=True)
 
         outputs = model(images)
-        evaluator.evaluate(outputs, targets, topk=(1, 5), once=False)
+        evaluator.evaluate(outputs, targets, once=False)
 
     topk_list, cate_topk_dict = evaluator.get()
     return topk_list, cate_topk_dict

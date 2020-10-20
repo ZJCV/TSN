@@ -50,7 +50,10 @@ class RawFrameDataset(Dataset):
 
                 if self.transform:
                     img = self.transform(img)
-                image_list.append(img)
+                if len(img.shape) == 4:
+                    image_list.extend(img)
+                else:
+                    image_list.append(img)
             if 'RGBDiff' == self.modality:
                 tmp_list = list()
                 clip_idxs = offset + \
@@ -64,7 +67,10 @@ class RawFrameDataset(Dataset):
                     img = tmp_list[clip] - tmp_list[clip - 1]
                     if self.transform:
                         img = self.transform(img)
-                    image_list.append(img)
+                    if len(img.shape) == 4:
+                        image_list.extend(img)
+                    else:
+                        image_list.append(img)
         # [T, C, H, W] -> [C, T, H, W]
         image = torch.stack(image_list).transpose(0, 1)
 

@@ -60,8 +60,9 @@ def do_train(cfg, arguments,
         optimizer.step()
         lr_scheduler.step()
 
-        topk_list = evaluator.evaluate(outputs, targets, topk=(1, 5), once=True)
-        meters.update(loss=loss, acc_1=topk_list[0], acc_5=topk_list[1])
+        topk_dict = evaluator.evaluate(outputs, targets, once=True)
+        meters.update(loss=loss)
+        meters.update(**topk_dict)
 
         if iteration % len(data_loader) == 0 and hasattr(data_loader.batch_sampler, "set_epoch"):
             data_loader.batch_sampler.set_epoch(iteration)

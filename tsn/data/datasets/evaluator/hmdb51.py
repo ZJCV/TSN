@@ -16,8 +16,8 @@ from tsn.util.metrics import topk_accuracy
 
 class HMDB51Evaluator(BaseEvaluator):
 
-    def __init__(self, classes):
-        super().__init__(classes)
+    def __init__(self, classes, topk=(1,)):
+        super().__init__(classes, topk=topk)
 
         self._init()
 
@@ -26,10 +26,13 @@ class HMDB51Evaluator(BaseEvaluator):
         self.cate_acc_dict = dict()
         self.cate_num_dict = dict()
 
-    def evaluate(self, outputs, targets, topk=(1,), once=False):
-        res = topk_accuracy(outputs, targets, topk=topk)
+    def evaluate(self, outputs, targets, once=False):
+        res = topk_accuracy(outputs, targets, topk=self.topk)
         if once:
-            return res
+            topk_dict = dict()
+            for acc, name in zip(res, self.topk):
+                topk_dict[f'acc_{name}'] = acc
+            return topk_dict
 
         self.topk_list.append(torch.stack(res).cpu().numpy())
         preds = torch.argmax(outputs, dim=1).cpu().numpy()
