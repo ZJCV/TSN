@@ -29,7 +29,7 @@ def build_model(cfg, gpu_id):
         process_group = simple_group_split(world_size, rank, 1)
         convert_sync_bn(model, process_group, gpu_id=gpu_id)
     if cfg.MODEL.PRETRAINED != "":
-        logger = logging.setup_logging()
+        logger = logging.setup_logging(__name__)
         logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
         checkpointer = CheckPointer(model, logger=logger)
         checkpointer.load(cfg.MODEL.PRETRAINED, map_location=map_location, rank=rank)

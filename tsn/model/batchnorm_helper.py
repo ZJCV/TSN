@@ -25,7 +25,9 @@ def simple_group_split(world_size, rank, num_groups):
     for i in range(num_groups):
         groups.append(dist.new_group(rank_list[i]))
     group_size = world_size // num_groups
-    logging.setup_logging().info(
+
+    logger = logging.setup_logging(__name__)
+    logger.info(
         "Rank no.{} start sync BN on the process group of {}".format(rank, rank_list[rank // group_size]))
     return groups[rank // group_size]
 

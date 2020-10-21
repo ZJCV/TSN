@@ -1,6 +1,5 @@
-import logging
 import os
-
+import logging
 import torch
 from torch.nn.parallel import DistributedDataParallel
 

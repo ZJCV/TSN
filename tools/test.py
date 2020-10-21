@@ -22,14 +22,13 @@ from tsn.util import logging
 def test(cfg):
     torch.backends.cudnn.benchmark = True
 
-    logger = logging.get_logger('TEST')
     device = torch.device(f'cuda:0' if torch.cuda.is_available() else 'cpu')
     map_location = {'cuda:%d' % 0: 'cuda:%d' % 0}
 
     model = build_model(cfg, 0)
     if cfg.MODEL.PRETRAINED != "":
-        if logger:
-            logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
+        logger = logging.setup_logging(__name__)
+        logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
         checkpointer = CheckPointer(model, logger=logger)
         checkpointer.load(cfg.MODEL.PRETRAINED, map_location=map_location)
 
@@ -62,7 +61,7 @@ def main():
 
     if not os.path.exists(cfg.OUTPUT.DIR):
         os.makedirs(cfg.OUTPUT.DIR)
-    logger = logging.setup_logging(output_dir=cfg.OUTPUT.DIR)
+    logger = logging.setup_logging(__name__, output_dir=cfg.OUTPUT.DIR)
     logger.info(args)
 
     logger.info("Environment info:\n" + collect_env_info())

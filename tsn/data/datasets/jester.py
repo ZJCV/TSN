@@ -61,4 +61,4 @@ class JESTER(BaseDataset):
         super()._update_class()
 
     def _update_evaluator(self):
-        self.evaluator = JesterEvaluator(self.classes, topk=(1, 5))
+        self.evaluator = JesterEvaluator(self.classes)

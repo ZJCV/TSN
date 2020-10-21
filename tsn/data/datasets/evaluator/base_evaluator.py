@@ -12,9 +12,8 @@ from abc import ABCMeta, abstractmethod
 
 class BaseEvaluator(metaclass=ABCMeta):
 
-    def __init__(self, classes, topk=(1,)):
+    def __init__(self, classes):
         self.classes = classes
-        self.topk = topk
 
     @abstractmethod
     def evaluate(self, **kwargs):

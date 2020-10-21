@@ -16,8 +16,8 @@ from tsn.util.metrics import topk_accuracy
 
 class UCF101Evaluator(BaseEvaluator):
 
-    def __init__(self, classes, topk=(1,)):
-        super().__init__(classes, topk=topk)
+    def __init__(self, classes):
+        super().__init__(classes)
 
         self._init()
 
@@ -26,13 +26,10 @@ class UCF101Evaluator(BaseEvaluator):
         self.cate_acc_dict = dict()
         self.cate_num_dict = dict()
 
-    def evaluate(self, outputs, targets, once=False):
-        res = topk_accuracy(outputs, targets, topk=self.topk)
+    def evaluate(self, outputs, targets, topk=(1,), once=False):
+        res = topk_accuracy(outputs, targets, topk=topk)
         if once:
-            topk_dict = dict()
-            for acc, name in zip(res, self.topk):
-                topk_dict[f'acc_{name}'] = acc
-            return topk_dict
+            return res
 
         self.topk_list.append(torch.stack(res).cpu().numpy())
         preds = torch.argmax(outputs, dim=1).cpu().numpy()
@@ -45,6 +42,7 @@ class UCF101Evaluator(BaseEvaluator):
                 str(target):
                     self.cate_acc_dict.get(str(target), 0) + int(target == pred)
             })
+        return res
 
     def get(self):
         if len(self.topk_list) == 0:

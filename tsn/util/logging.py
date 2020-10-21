@@ -4,12 +4,9 @@
 """Logging."""
 
 import builtins
-import decimal
-import functools
 import logging
 import os
 import sys
-import simplejson
 
 import tsn.util.distributed as du
 
@@ -25,45 +22,39 @@ def _suppress_print():
     builtins.print = print_pass
 
 
-@functools.lru_cache(maxsize=None)
-def _cached_log_stream(filename):
-    return open(filename, "a")
-
-
-def setup_logging(output_dir=None):
+def setup_logging(name, output_dir=None):
     """
     Sets up the logging for multiple processes. Only enable the logging for the
     master process, and suppress logging for the non-master processes.
     """
-    # Set up logging format.
-    _FORMAT = "[%(levelname)s: %(filename)s: %(lineno)4d]: %(message)s"
-
-    if du.is_master_proc():
-        # Enable logging for the master process.
-        logging.root.handlers = []
-    else:
+    if not du.is_master_proc(du.get_world_size()):
         # Suppress logging for non-master processes.
         _suppress_print()
+        logger = NllLogger(f'{name}.{du.get_rank()}')
+        return logger
 
-    logger = logging.getLogger()
+    logger = logging.getLogger(name)
+    logging.root.handlers = []
+    for handler in logger.handlers:
+        logger.removeHandler(handler)
+
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
+
     plain_formatter = logging.Formatter(
         "[%(asctime)s][%(levelname)s] %(filename)s: %(lineno)3d: %(message)s",
         datefmt="%m/%d %H:%M:%S",
     )
+    ch = logging.StreamHandler(stream=sys.stdout)
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(plain_formatter)
+    logger.addHandler(ch)
 
-    if du.is_master_proc(du.get_world_size()):
-        ch = logging.StreamHandler(stream=sys.stdout)
-        ch.setLevel(logging.DEBUG)
-        ch.setFormatter(plain_formatter)
-        logger.addHandler(ch)
-
-        if output_dir:
-            fh = logging.FileHandler(os.path.join(output_dir, 'log.txt'))
-            fh.setLevel(logging.DEBUG)
-            fh.setFormatter(plain_formatter)
-            logger.addHandler(fh)
+    if output_dir:
+        fh = logging.FileHandler(os.path.join(output_dir, 'log.txt'))
+        fh.setLevel(logging.DEBUG)
+        fh.setFormatter(plain_formatter)
+        logger.addHandler(fh)
 
     return logger
 
@@ -78,16 +69,12 @@ def get_logger(name):
     return logging.getLogger(name)
 
 
-def log_json_stats(stats):
-    """
-    Logs json stats.
-    Args:
-        stats (dict): a dictionary of statistical information to log.
-    """
-    stats = {
-        k: decimal.Decimal("{:.5f}".format(v)) if isinstance(v, float) else v
-        for k, v in stats.items()
-    }
-    json_stats = simplejson.dumps(stats, sort_keys=True, use_decimal=True)
-    logger = get_logger(__name__)
-    logger.info("json_stats: {:s}".format(json_stats))
+class NllLogger:
+
+    def __init__(self, name: str) -> None:
+        print('nll', name)
+        self.logger = logging.getLogger(name)
+
+    def info(self, msg, *args, **kwargs) -> None:
+        print(msg)
+        pass

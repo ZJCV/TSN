@@ -35,7 +35,8 @@ def build_dataset(cfg, transform=None, is_train=True):
                          sample_strategy=sample_strategy,
                          clip_len=clip_len,
                          frame_interval=frame_interval,
-                         num_clips=num_clips)
+                         num_clips=num_clips,
+                         num_sample_positions=num_sample_positions)
     elif dataset_name == 'UCF101':
         split = cfg.DATASETS.TRAIN.SPLIT if is_train else cfg.DATASETS.TEST.SPLIT
         dataset = UCF101(data_dir,
@@ -47,7 +48,8 @@ def build_dataset(cfg, transform=None, is_train=True):
                          sample_strategy=sample_strategy,
                          clip_len=clip_len,
                          frame_interval=frame_interval,
-                         num_clips=num_clips)
+                         num_clips=num_clips,
+                         num_sample_positions=num_sample_positions)
     elif dataset_name == 'JESTER':
         dataset = JESTER(data_dir,
                          annotation_dir,
@@ -57,7 +59,8 @@ def build_dataset(cfg, transform=None, is_train=True):
                          sample_strategy=sample_strategy,
                          clip_len=clip_len,
                          frame_interval=frame_interval,
-                         num_clips=num_clips)
+                         num_clips=num_clips,
+                         num_sample_positions=num_sample_positions)
     else:
         raise ValueError(f"the dataset {dataset_name} does not exist")
 
