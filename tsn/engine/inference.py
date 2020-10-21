@@ -28,10 +28,7 @@ def compute_on_dataset(images, targets, device, model, num_gpus, evaluator):
     if num_gpus > 1:
         outputs, targets = all_gather([outputs, targets])
 
-    top1, top5 = evaluator.evaluate(outputs, targets, topk=(1, 5), once=False)
-    # Gather all the predictions across all the devices.
-    if num_gpus > 1:
-        top1, top5 = all_reduce([top1, top5])
+    evaluator.evaluate(outputs, targets, topk=(1, 5), once=False)
 
 
 def inference(cfg, model, device, **kwargs):
@@ -46,20 +43,13 @@ def inference(cfg, model, device, **kwargs):
 
     logger = logging.setup_logging(__name__)
     logger.info("Evaluating {} dataset({} video clips):".format(dataset_name, len(dataset)))
-    max_iter = len(data_loader)
 
-    start_training_time = time.time()
     if is_master_proc():
         for iteration, (images, targets) in enumerate(tqdm(data_loader), 0):
             compute_on_dataset(images, targets, device, model, num_gpus, evaluator)
     else:
         for iteration, (images, targets) in enumerate(data_loader, 0):
             compute_on_dataset(images, targets, device, model, num_gpus, evaluator)
-
-    # compute training time
-    total_training_time = int(time.time() - start_training_time)
-    total_time_str = str(datetime.timedelta(seconds=total_training_time))
-    logger.info("Total evaluate time: {} ({:.4f} s / it)".format(total_time_str, total_training_time / max_iter))
 
     topk_list, cate_topk_dict = evaluator.get()
     top1_acc, top5_acc = topk_list
