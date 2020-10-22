@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@date: 2020/10/12 上午11:07
+@date: 2020/10/22 上午9:20
 @file: task_info.py
 @author: zj
 @description: 
@@ -16,6 +16,8 @@ class TaskInfo:
         self.num_buffer_frames = 0
         self.img_height = -1
         self.img_width = -1
+        self.crop_size = -1
+        self.clip_vis_size = -1
 
     def add_frames(self, idx, frames):
         """

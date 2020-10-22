@@ -7,7 +7,7 @@ import torch
 import tqdm
 
 from tsn.visualization.manager import VideoManager, ThreadVideoManager
-from tsn.visualization.visalizer import AsyncVis
+from tsn.visualization.visualizer import AsyncVisualizer
 from tsn.visualization.predictor import ActionPredictor, AsyncActionPredictor
 from tsn.util.parser import parse_train_args, load_config
 
@@ -30,12 +30,12 @@ def run_demo(cfg, frame_provider):
     np.random.seed(cfg.RNG_SEED)
     torch.manual_seed(cfg.RNG_SEED)
     # Setup logging format.
-    logging.setup_logging(cfg.OUTPUT.DIR)
+    logger = logging.setup_logging(__name__, cfg.OUTPUT.DIR)
     # Print config.
     logger.info("Run demo with config:")
     logger.info(cfg)
 
-    async_vis = AsyncVis(cfg, n_workers=cfg.VISUALIZATION.NUM_VIS_INSTANCES)
+    async_vis = AsyncVisualizer(cfg, n_workers=cfg.VISUALIZATION.NUM_VIS_INSTANCES)
 
     if cfg.NUM_GPUS <= 1:
         model = ActionPredictor(cfg=cfg, async_vis=async_vis)
@@ -84,7 +84,6 @@ def demo(cfg):
         frame_provider = VideoManager(cfg)
 
     for task in tqdm.tqdm(run_demo(cfg, frame_provider)):
-        # for task in run_demo(cfg, frame_provider):
         frame_provider.display(task)
 
     frame_provider.join()

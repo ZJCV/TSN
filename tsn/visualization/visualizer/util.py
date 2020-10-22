@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@date: 2020/10/14 下午4:45
+@date: 2020/10/22 上午9:25
 @file: util.py
 @author: zj
 @description: 
@@ -9,11 +9,8 @@
 
 import os
 import json
-import torch
 
 import tsn.util.logging as logging
-
-logger = logging.get_logger(__name__)
 
 
 def get_class_names(path):
@@ -35,11 +32,44 @@ def get_class_names(path):
         return
 
     class_names = [None] * len(class2idx)
-
-    for k, i in class2idx.items():
-        class_names[i - 1] = k
+    # 如果类标签从1开始
+    if min(class2idx.values()) == 1:
+        for k, i in class2idx.items():
+            class_names[i - 1] = k
+    else:
+        # 从0开始
+        for k, i in class2idx.items():
+            class_names[i] = k
 
     return class_names
+
+
+def create_text_labels(classes, scores, class_names, ground_truth=False):
+    """
+    Create text labels.
+    Args:
+        classes (list[int]): a list of class ids for each example.
+        scores (list[float] or None): list of scores for each example.
+        class_names (list[str]): a list of class names, ordered by their ids.
+        ground_truth (bool): whether the labels are ground truth.
+    Returns:
+        labels (list[str]): formatted text labels.
+    """
+    try:
+        labels = [class_names[i] for i in classes]
+    except IndexError:
+        logger = logging.setup_logging(__name__)
+        logger.error("Class indices get out of range: {}".format(classes))
+        return None
+
+    if ground_truth:
+        labels = ["[{}] {}".format("GT", label) for label in labels]
+    elif scores is not None:
+        assert len(classes) == len(scores)
+        labels = [
+            "[{:.2f}] {}".format(s, label) for s, label in zip(scores, labels)
+        ]
+    return labels
 
 
 def draw_predictions(task, video_vis):
@@ -49,42 +79,22 @@ def draw_predictions(task, video_vis):
         task (TaskInfo object): task object that contain
             the necessary information for visualization. (e.g. frames, preds)
             All attributes must lie on CPU devices.
-        video_vis (VideoVisualizer object): the manager visualizer object.
+        video_vis (VideoVisualizer object): the video visualizer object.
     """
     frames = task.frames
     preds = task.action_preds
 
-    for i in range(len(preds)):
-        preds[i] = torch.softmax(preds[i], dim=0)
-
+    keyframe_idx = len(frames) // 2 - task.num_buffer_frames
+    draw_range = [
+        keyframe_idx - task.clip_vis_size,
+        keyframe_idx + task.clip_vis_size,
+    ]
     buffer = frames[: task.num_buffer_frames]
     frames = frames[task.num_buffer_frames:]
 
-    frames = video_vis.draw_clip(frames, preds, text_alpha=1)
+    frames = video_vis.draw_clip_range(
+        frames, preds, keyframe_idx=keyframe_idx, draw_range=draw_range
+    )
     del task
 
     return buffer + frames
-
-
-def create_text_labels(classes, scores, class_names):
-    """
-    Create text labels.
-    Args:
-        classes (list[int]): a list of class ids for each example.
-        scores (list[float] or None): list of scores for each example.
-        class_names (list[str]): a list of class names, ordered by their ids.
-    Returns:
-        labels (list[str]): formatted text labels.
-    """
-    try:
-        labels = [class_names[i] for i in classes]
-    except IndexError:
-        logger.error("Class indices get out of range: {}".format(classes))
-        return None
-
-    if scores is not None:
-        assert len(classes) == len(scores)
-        labels = [
-            "[{:.2f}] {}".format(s, label) for s, label in zip(scores, labels)
-        ]
-    return labels

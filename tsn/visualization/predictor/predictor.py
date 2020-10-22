@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
-import cv2
 import torch
 
 from tsn.model.build import build_model
-from tsn.util import logging
-from tsn.visualization.predictor.util import process_cv2_inputs
-
-logger = logging.get_logger(__name__)
+from tsn.data.transforms.build import build_transform
+from .util import process_cv2_inputs
 
 
 class Predictor:
@@ -20,7 +17,7 @@ class Predictor:
         """
         Args:
             cfg (CfgNode): configs. Details can be found in
-                slowfast/config/defaults.py
+                tsn/config/defaults.py
             gpu_id (Optional[int]): GPU id.
         """
         if cfg.NUM_GPUS:
@@ -28,9 +25,11 @@ class Predictor:
                 torch.cuda.current_device() if gpu_id is None else gpu_id
             )
 
-        # Build the manager model and print model statistics.
-        self.model = build_model(cfg, gpu_id)
+        # Build the video model and print model statistics.
+        self.model = build_model(cfg, gpu_id=gpu_id)
         self.model.eval()
+        self.transform = build_transform(cfg, is_train=False)
+
         self.cfg = cfg
 
     def __call__(self, task):
@@ -41,31 +40,25 @@ class Predictor:
                 the necessary information for action prediction. (e.g. frames)
         Returns:
             task (TaskInfo object): the same task info object but filled with
-                prediction values (a tensor) and the corresponding boxes for
-                action detection task.
+                prediction values (a tensor)
         """
         frames = task.frames
-        if self.cfg.VISUALIZATION.INPUT_FORMAT == "BGR":
-            frames = [
-                cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) for frame in frames
-            ]
 
-        inputs = process_cv2_inputs(frames, self.cfg)
-
+        inputs = process_cv2_inputs(frames, self.cfg, self.transform)
         if self.cfg.NUM_GPUS > 0:
             # Transfer the data to the current GPU device.
             if isinstance(inputs, (list,)):
                 for i in range(len(inputs)):
-                    inputs[i] = inputs[i].to(
+                    inputs[i] = inputs[i].cuda(
                         device=torch.device(self.gpu_id), non_blocking=True
                     )
             else:
-                inputs = inputs.to(
+                inputs = inputs.cuda(
                     device=torch.device(self.gpu_id), non_blocking=True
                 )
 
-        with torch.no_grad():
-            preds = self.model(inputs)
+        preds = self.model(inputs)
+        preds = torch.softmax(preds, dim=1)
 
         if self.cfg.NUM_GPUS:
             preds = preds.cpu()

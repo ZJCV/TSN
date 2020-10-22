@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@date: 2020/10/13 下午3:10
+@date: 2020/10/22 上午9:39
 @file: async_action_predictor.py
 @author: zj
 @description: 
@@ -9,10 +9,7 @@
 
 import queue
 
-import tsn.util.logging as logging
 from .async_predictor import AsyncPredictor
-
-logger = logging.get_logger(__name__)
 
 
 class AsyncActionPredictor:
@@ -24,7 +21,7 @@ class AsyncActionPredictor:
         """
         Args:
             cfg (CfgNode): configs. Details can be found in
-                slowfast/config/defaults.py
+                tsn/config/defaults.py
             async_vis (AsyncVis object): asynchronous visualizer.
         """
         self.model = AsyncPredictor(

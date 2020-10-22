@@ -1,21 +1,12 @@
-# -*- coding: utf-8 -*-
-
-"""
-@date: 2020/10/13 下午3:12
-@file: async_predictor.py
-@author: zj
-@description: 
-"""
+#!/usr/bin/env python3
+# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
 import atexit
 import torch
 import torch.multiprocessing as mp
 
-import tsn.util.logging as logging
-from tsn.visualization.predictor.predictor import Predictor
+from .predictor import Predictor
 from tsn.visualization.stop_token import _StopToken
-
-logger = logging.get_logger(__name__)
 
 
 class AsyncPredictor:
@@ -25,10 +16,10 @@ class AsyncPredictor:
             Predict Worker for Detectron2.
             Args:
                 cfg (CfgNode): configs. Details can be found in
-                    slowfast/config/defaults.py
+                    tsn/config/defaults.py
                 task_queue (mp.Queue): a shared queue for incoming task.
                 result_queue (mp.Queue): a shared queue for predicted results.
-                gpu_id (int): index of the GPU device for the current child predictor.
+                gpu_id (int): index of the GPU device for the current child process.
             """
             super().__init__()
             self.cfg = cfg
@@ -46,7 +37,7 @@ class AsyncPredictor:
             """
             Run prediction asynchronously.
             """
-            # Build the manager model and print model statistics.
+            # Build the video model and print model statistics.
             model = Predictor(self.cfg, gpu_id=self.gpu_id)
             while True:
                 task = self.task_queue.get()

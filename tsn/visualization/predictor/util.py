@@ -1,30 +1,36 @@
-#!/usr/bin/env python3
-# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
+# -*- coding: utf-8 -*-
 
-import torch
+"""
+@date: 2020/10/22 上午9:30
+@file: util.py
+@author: zj
+@description: 
+"""
+
+import cv2
 import numpy as np
-
-from tsn.data.transforms.build import build_transform
-import tsn.util.logging as logging
-
-logger = logging.get_logger(__name__)
+import torch
 
 
-def process_cv2_inputs(frames, cfg):
+def process_cv2_inputs(frames, cfg, transform):
     """
     Normalize and prepare inputs as a list of tensors. Each tensor
     correspond to a unique pathway.
     Args:
         frames (list of array): list of input images (correspond to one clip) in range [0, 255].
         cfg (CfgNode): configs. Details can be found in
-            slowfast/config/defaults.py
+            tsn/config/defaults.py
     """
-    transform = build_transform(cfg, is_train=False)
-
     num_clips = cfg.DATASETS.NUM_CLIPS
     index = np.linspace(0, len(frames) - 1, num=num_clips).astype(np.int)
-    image_list = [transform(frames[i]) for i in index]
+    if cfg.VISUALIZATION.INPUT_FORMAT == "BGR":
+        frames = [
+            cv2.cvtColor(frames[i], cv2.COLOR_BGR2RGB) for i in index
+        ]
+
+    image_list = [transform(frame) for frame in frames]
     # [T, C, H, W] -> [C, T, H, W]
     image = torch.stack(image_list).transpose(0, 1)
+    # [C, T, H, W] -> [1, C, T, H, W]
     inputs = image.unsqueeze(0)
     return inputs

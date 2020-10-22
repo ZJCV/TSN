@@ -1,19 +1,22 @@
-#!/usr/bin/env python3
-# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
+# -*- coding: utf-8 -*-
+
+"""
+@date: 2020/10/22 上午9:37
+@file: async_visualizer.py
+@author: zj
+@description: 
+"""
 
 import atexit
 import numpy as np
 import torch.multiprocessing as mp
 
-import tsn.util.logging as logging
 from tsn.visualization.stop_token import _StopToken
-from .video_visualizer import VideoVisualizer
 from .util import draw_predictions
+from .video_visualizer import VideoVisualizer
 
-logger = logging.get_logger(__name__)
 
-
-class AsyncVis:
+class AsyncVisualizer:
     class _VisWorker(mp.Process):
         def __init__(self, video_vis, task_queue, result_queue):
             """
@@ -45,8 +48,8 @@ class AsyncVis:
         """
         Args:
             cfg (CfgNode): configs. Details can be found in
-                slowfast/config/defaults.py
-            n_workers (Optional[int]): number of CPUs for running manager visualizer.
+                tsn/config/defaults.py
+            n_workers (Optional[int]): number of CPUs for running video visualizer.
                 If not given, use all CPUs.
         """
 
@@ -64,6 +67,7 @@ class AsyncVis:
             thres=cfg.VISUALIZATION.COMMON_CLASS_THRES,
             lower_thres=cfg.VISUALIZATION.UNCOMMON_CLASS_THRES,
             common_class_names=common_classes,
+            mode=cfg.VISUALIZATION.VIS_MODE
         )
 
         self.task_queue = mp.Queue()
@@ -74,7 +78,7 @@ class AsyncVis:
         self.put_id = -1
         for _ in range(max(num_workers, 1)):
             self.procs.append(
-                AsyncVis._VisWorker(
+                AsyncVisualizer._VisWorker(
                     video_vis, self.task_queue, self.result_queue
                 )
             )

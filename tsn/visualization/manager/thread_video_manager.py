@@ -1,5 +1,11 @@
-#!/usr/bin/env python3
-# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
+# -*- coding: utf-8 -*-
+
+"""
+@date: 2020/10/22 上午9:22
+@file: thread_video_manager.py
+@author: zj
+@description: 
+"""
 
 import atexit
 import copy
@@ -8,15 +14,12 @@ import threading
 import time
 import cv2
 
-from tsn.util import logging
 from tsn.visualization.task_info import TaskInfo
-
-logger = logging.get_logger(__name__)
 
 
 class ThreadVideoManager:
     """
-    VideoManager object for getting frames from manager source for inference
+    VideoManager object for getting frames from video source for inference
     using multithreading for read and write frames.
     """
 
@@ -24,7 +27,7 @@ class ThreadVideoManager:
         """
         Args:
             cfg (CfgNode): configs. Details can be found in
-            slowfast/config/defaults.py
+            tsn/config/defaults.py
         """
         assert (
                 cfg.VISUALIZATION.WEBCAM > -1 or cfg.VISUALIZATION.INPUT_VIDEO != ""
@@ -64,8 +67,8 @@ class ThreadVideoManager:
         self.put_id = -1
         self.buffer = []
         self.buffer_size = cfg.VISUALIZATION.BUFFER_SIZE
-        self.seq_length = cfg.DATASETS.CLIP_LEN * cfg.DATASETS.NUM_CLIPS
-        self.test_crop_size = cfg.TRANSFORM.TEST_CROP_SIZE
+        self.seq_length = cfg.DATASETS.FRAME_INTERVAL * cfg.DATASETS.NUM_CLIPS
+        self.test_crop_size = cfg.TRANSFORM.TEST.TEST_CROP_SIZE
         self.clip_vis_size = cfg.VISUALIZATION.CLIP_VIS_SIZE
 
         self.read_queue = queue.Queue()
@@ -80,9 +83,9 @@ class ThreadVideoManager:
 
     def get_output_file(self, path, fps=30):
         """
-        Return a manager writer object.
+        Return a video writer object.
         Args:
-            path (str): path to the output manager file.
+            path (str): path to the output video file.
             fps (int or float): frames per second.
         """
         return cv2.VideoWriter(
@@ -143,7 +146,7 @@ class ThreadVideoManager:
             with self.put_id_lock:
                 put_id = self.put_id
             was_read, task = None, None
-            # If mode is to predictor most recent read clip.
+            # If mode is to predict most recent read clip.
             if self.num_skip == 0:
                 # Write all previous clips to write queue.
                 with self.write_lock:
@@ -154,7 +157,7 @@ class ThreadVideoManager:
                         self.write_queue[task.id] = (was_read, task)
             else:
                 was_read, task = self.read_queue.get()
-            # If we reach the end of the manager.
+            # If we reach the end of the video.
             if not was_read:
                 # Put to write queue.
                 with self.write_lock:
@@ -169,7 +172,7 @@ class ThreadVideoManager:
                 not_end = self.not_end
 
             with self.write_lock:
-                # If manager ended and we have display all frames.
+                # If video ended and we have display all frames.
                 if not not_end and self.get_id == put_id:
                     break
                 # If the next frames are not available, wait.
@@ -188,7 +191,8 @@ class ThreadVideoManager:
                 for frame in task.frames[task.num_buffer_frames:]:
                     if self.output_file is None:
                         cv2.imshow("SlowFast", frame)
-                        time.sleep(1 / self.output_fps)
+                        cv2.waitKey(10)
+                        # time.sleep(1 / self.output_fps)
                     else:
                         self.output_file.write(frame)
 
@@ -222,7 +226,7 @@ class ThreadVideoManager:
 
     def clean(self):
         """
-        Clean up open manager files and windows.
+        Clean up open video files and windows.
         """
         self.stopped = True
         self.input_lock.acquire()

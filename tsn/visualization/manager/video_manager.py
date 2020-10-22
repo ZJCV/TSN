@@ -1,30 +1,27 @@
 # -*- coding: utf-8 -*-
 
 """
-@date: 2020/10/13 下午3:04
+@date: 2020/10/22 上午9:19
 @file: video_manager.py
 @author: zj
 @description: 
 """
 
 import cv2
-
-from tsn.util import logging
+import time
 from tsn.visualization.task_info import TaskInfo
-
-logger = logging.get_logger(__name__)
 
 
 class VideoManager:
     """
-    VideoManager object for getting frames from manager source for inference.
+    VideoManager object for getting frames from video source for inference.
     """
 
     def __init__(self, cfg):
         """
         Args:
             cfg (CfgNode): configs. Details can be found in
-            slowfast/config/defaults.py
+            tsn/config/defaults.py
         """
         assert (
                 cfg.VISUALIZATION.WEBCAM > -1 or cfg.VISUALIZATION.INPUT_VIDEO != ""
@@ -60,10 +57,10 @@ class VideoManager:
             )
         self.id = -1
         self.buffer = []
-        # self.buffer_size = cfg.VISUALIZATION.BUFFER_SIZE
-        self.seq_length = cfg.DATASETS.CLIP_LEN * cfg.DATASETS.NUM_CLIPS
-        self.buffer_size = self.seq_length // 2
-        self.test_crop_size = cfg.TRANSFORM.TEST_CROP_SIZE
+        self.buffer_size = cfg.VISUALIZATION.BUFFER_SIZE
+        self.seq_length = cfg.DATASETS.FRAME_INTERVAL * cfg.DATASETS.NUM_CLIPS
+        self.test_crop_size = cfg.TRANSFORM.TEST.TEST_CROP_SIZE
+        self.clip_vis_size = cfg.VISUALIZATION.CLIP_VIS_SIZE
 
     def __iter__(self):
         return self
@@ -80,6 +77,8 @@ class VideoManager:
 
         task.img_height = self.display_height
         task.img_width = self.display_width
+        task.crop_size = self.test_crop_size
+        task.clip_vis_size = self.clip_vis_size
 
         frames = []
         if len(self.buffer) != 0:
@@ -98,9 +97,9 @@ class VideoManager:
 
     def get_output_file(self, path, fps=30):
         """
-        Return a manager writer object.
+        Return a video writer object.
         Args:
-            path (str): path to the output manager file.
+            path (str): path to the output video file.
             fps (int or float): frames per second.
         """
         return cv2.VideoWriter(
@@ -122,14 +121,14 @@ class VideoManager:
         for frame in task.frames[task.num_buffer_frames:]:
             if self.output_file is None:
                 cv2.imshow("SlowFast", frame)
+                cv2.waitKey(10)
                 # time.sleep(1 / self.output_fps)
-                cv2.waitKey(int(1 / self.output_fps * 1000))
             else:
                 self.output_file.write(frame)
 
     def clean(self):
         """
-        Clean up open manager files and windows.
+        Clean up open video files and windows.
         """
         self.cap.release()
         if self.output_file is None:

@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 
 """
-@date: 2020/10/13 下午3:14
+@date: 2020/10/22 上午9:24
 @file: img_visualizer.py
 @author: zj
 @description: 
 """
 
+import itertools
 import logging as log
+import numpy as np
+import matplotlib.pyplot as plt
 import torch
 from detectron2.utils.visualizer import Visualizer
-
-import tsn.util.logging as logging
-
-logger = logging.get_logger(__name__)
-log.getLogger("matplotlib").setLevel(log.ERROR)
 
 
 class ImgVisualizer(Visualizer):

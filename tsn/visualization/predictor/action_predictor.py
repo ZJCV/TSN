@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@date: 2020/10/14 下午4:56
+@date: 2020/10/22 上午9:29
 @file: action_predictor.py
 @author: zj
 @description: 
@@ -10,10 +10,6 @@
 import queue
 
 from .predictor import Predictor
-
-from tsn.util import logging
-
-logger = logging.get_logger(__name__)
 
 
 class ActionPredictor:
@@ -25,7 +21,7 @@ class ActionPredictor:
         """
         Args:
             cfg (CfgNode): configs. Details can be found in
-                slowfast/config/defaults.py
+                tsn/config/defaults.py
             async_vis (AsyncVis object): asynchronous visualizer.
             gpu_id (Optional[int]): GPU id.
         """
