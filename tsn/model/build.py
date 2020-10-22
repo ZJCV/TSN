@@ -33,6 +33,7 @@ def build_model(cfg, gpu_id):
         logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
         checkpointer = CheckPointer(model, logger=logger)
         checkpointer.load(cfg.MODEL.PRETRAINED, map_location=map_location, rank=rank)
+        logger.info("finish loading model weights")
 
     if du.get_world_size() > 1:
         model = DDP(model, device_ids=[device], output_device=device, find_unused_parameters=True)
