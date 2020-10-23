@@ -35,4 +35,5 @@ class TSNRecognizer(nn.Module):
         features = self.backbone(input_data)
         probs = self.head(features).reshape(N, T, -1)
 
-        return self.consensus(probs, dim=1)
+        output_dict = {'probs': self.consensus(probs, dim=1)}
+        return output_dict

@@ -20,11 +20,13 @@ from .criterions.crossentropy_loss import CrossEntropyLoss
 
 def build_model(cfg, gpu_id):
     device = du.get_device(gpu_id)
-    map_location = {'cuda:%d' % 0: 'cuda:%d' % du.get_rank()}
-    model = registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg, map_location=map_location).to(device=device)
-
     world_size = du.get_world_size()
     rank = du.get_rank()
+    map_location = {'cuda:%d' % 0: 'cuda:%d' % rank}
+
+    model = registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg, map_location=map_location)
+    model = model.to(device=device)
+
     if cfg.MODEL.SYNC_BN and world_size > 1:
         process_group = simple_group_split(world_size, rank, 1)
         convert_sync_bn(model, process_group, gpu_id=gpu_id)

@@ -104,4 +104,4 @@ class UCF101(BaseDataset):
         self.classes = classes
 
     def _update_evaluator(self):
-        self.evaluator = UCF101Evaluator(self.classes)
+        self.evaluator = UCF101Evaluator(self.classes, topk=(1, 5))

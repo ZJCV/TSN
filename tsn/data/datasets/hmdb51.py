@@ -89,4 +89,4 @@ class HMDB51(BaseDataset):
         self.classes = classes
 
     def _update_evaluator(self):
-        self.evaluator = HMDB51Evaluator(self.classes)
+        self.evaluator = HMDB51Evaluator(self.classes, topk=(1, 5))

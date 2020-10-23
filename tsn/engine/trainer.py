@@ -12,8 +12,8 @@ import datetime
 import time
 import torch
 
-from tsn.util.metric_logger import MetricLogger
-from tsn.util.distributed import is_master_proc, synchronize, get_device, all_reduce
+from tsn.util.metric_logger import MetricLogger, update_meters
+from tsn.util.distributed import is_master_proc, synchronize, get_device
 from tsn.util import logging
 from tsn.engine.inference import do_evaluation
 
@@ -30,46 +30,50 @@ def do_train(cfg, arguments,
     log_step = cfg.TRAIN.LOG_STEP
     save_step = cfg.TRAIN.SAVE_STEP
     eval_step = cfg.TRAIN.EVAL_STEP
+    max_iter = cfg.TRAIN.MAX_ITER
+    start_iter = arguments['iteration']
 
     if is_master_proc() and use_tensorboard:
         from torch.utils.tensorboard import SummaryWriter
         summary_writer = SummaryWriter(log_dir=os.path.join(cfg.OUTPUT.DIR, 'tf_logs'))
-
-    model.train()
-    start_iter = arguments['iteration']
-    max_iter = cfg.TRAIN.MAX_ITER
     evaluator = data_loader.dataset.evaluator
 
     synchronize()
     start_training_time = time.time()
     end = time.time()
     logger.info("Start training ...")
+    model.train()
     for iteration, (images, targets) in enumerate(data_loader, start_iter):
         iteration = iteration + 1
         arguments["iteration"] = iteration
 
+        start2 = time.time()
         images = images.to(device=device, non_blocking=True)
         targets = targets.to(device=device, non_blocking=True)
+        start3 = time.time()
 
-        outputs = model(images)
-        loss = criterion(outputs, targets)
+        output_dict = model(images)
+        loss_dict = criterion(output_dict, targets)
+        loss = sum(loss for loss in loss_dict.values())
+        start4 = time.time()
+
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
         lr_scheduler.step()
+        start5 = time.time()
 
-        top1, top5 = evaluator.evaluate(outputs, targets, topk=(1, 5), once=True)
-
-        # Gather all the predictions across all the devices.
-        if cfg.NUM_GPUS > 1:
-            loss, top1, top5 = all_reduce([loss, top1, top5])
-
-        meters.update(loss=loss, top1=top1, top5=top5)
+        acc_dict = evaluator.evaluate_train(output_dict, targets)
+        update_meters(cfg.NUM_GPUS, loss_dict, acc_dict, meters)
+        start6 = time.time()
 
         if iteration % len(data_loader) == 0 and hasattr(data_loader.batch_sampler, "set_epoch"):
             data_loader.batch_sampler.set_epoch(iteration)
 
         batch_time = time.time() - end
+        # logger.info(
+        #     f'start1: {start2 - end}, start2: {start3 - start2}, start3: {start4 - start3}, start4: {start5 - start4}, start5: {start6 - start5}')
+        # logger.info(f'batch_time: {batch_time}')
         end = time.time()
         meters.update(time=batch_time)
         if iteration % log_step == 0:
@@ -122,6 +126,5 @@ def do_train(cfg, arguments,
     # compute training time
     total_training_time = int(time.time() - start_training_time)
     total_time_str = str(datetime.timedelta(seconds=total_training_time))
-    # if is_master_proc():
     logger.info("Total training time: {} ({:.4f} s / it)".format(total_time_str, total_training_time / max_iter))
     return model

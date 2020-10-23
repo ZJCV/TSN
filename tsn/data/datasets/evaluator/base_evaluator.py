@@ -8,15 +8,21 @@
 """
 
 from abc import ABCMeta, abstractmethod
+import torch
 
 
 class BaseEvaluator(metaclass=ABCMeta):
 
     def __init__(self, classes):
         self.classes = classes
+        self.device = torch.device('cpu')
 
     @abstractmethod
-    def evaluate(self, **kwargs):
+    def evaluate_train(self, **kwargs):
+        pass
+
+    @abstractmethod
+    def evaluate_test(self, **kwargs):
         pass
 
     @abstractmethod

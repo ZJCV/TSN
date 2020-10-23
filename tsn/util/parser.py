@@ -70,10 +70,38 @@ def parse_train_args():
 
 
 def parse_test_args():
-    pass
+    parser = argparse.ArgumentParser(description='TSN Test With PyTorch')
+    parser.add_argument('cfg',
+                        type=str,
+                        default="",
+                        metavar="FILE",
+                        help="path to config file")
+    parser.add_argument('pretrained', default="", metavar='PRETRAINED_FILE',
+                        help="path to pretrained model", type=str)
+    parser.add_argument('--output', default="./outputs/test", type=str)
+
+    parser.add_argument('-g',
+                        '--gpus',
+                        type=int,
+                        default=-1,
+                        help='number of gpus per node (default: 1)')
+    parser.add_argument('-n',
+                        '--nodes',
+                        type=int,
+                        default=-1,
+                        metavar='N',
+                        help='number of machines (default: 1)')
+    parser.add_argument('-nr',
+                        '--nr',
+                        type=int,
+                        default=-1,
+                        help='ranking within the nodes (default: 0)')
+
+    args = parser.parse_args()
+    return args
 
 
-def load_config(args):
+def load_train_config(args):
     if args.config_file:
         cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
@@ -97,6 +125,28 @@ def load_config(args):
         cfg.OPTIMIZER.WEIGHT_DECAY *= num_gpus
         cfg.LR_SCHEDULER.COSINE_ANNEALING_LR.MINIMAL_LR *= num_gpus
 
+    cfg.freeze()
+
+    if not os.path.exists(cfg.OUTPUT.DIR):
+        os.makedirs(cfg.OUTPUT.DIR)
+
+    return cfg
+
+
+def load_test_config(args):
+    if not os.path.isfile(args.cfg) or not os.path.isfile(args.pretrained):
+        raise ValueError('需要输入配置文件和预训练模型路径')
+
+    cfg.merge_from_file(args.cfg)
+    cfg.MODEL.PRETRAINED = args.pretrained
+    cfg.OUTPUT.DIR = args.output
+
+    if args.gpus != -1:
+        cfg.NUM_GPUS = args.gpus
+    if args.nodes != -1:
+        cfg.NODES = args.nodes
+    if args.nr != -1:
+        cfg.RANK = args.nr
     cfg.freeze()
 
     if not os.path.exists(cfg.OUTPUT.DIR):

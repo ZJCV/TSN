@@ -24,32 +24,20 @@ def build_dataset(cfg, transform=None, is_train=True):
     data_dir = cfg.DATASETS.TRAIN.DATA_DIR if is_train else cfg.DATASETS.TEST.DATA_DIR
     annotation_dir = cfg.DATASETS.TRAIN.ANNOTATION_DIR if is_train else cfg.DATASETS.TEST.ANNOTATION_DIR
 
-    if dataset_name == 'HMDB51':
+    if dataset_name in ('HMDB51', 'UCF101'):
+        DataSet = HMDB51 if dataset_name == 'HMDB51' else UCF101
         split = cfg.DATASETS.TRAIN.SPLIT if is_train else cfg.DATASETS.TEST.SPLIT
-        dataset = HMDB51(data_dir,
-                         annotation_dir,
-                         split=split,
-                         is_train=is_train,
-                         transform=transform,
-                         modality=modality,
-                         sample_strategy=sample_strategy,
-                         clip_len=clip_len,
-                         frame_interval=frame_interval,
-                         num_clips=num_clips,
-                         num_sample_positions=num_sample_positions)
-    elif dataset_name == 'UCF101':
-        split = cfg.DATASETS.TRAIN.SPLIT if is_train else cfg.DATASETS.TEST.SPLIT
-        dataset = UCF101(data_dir,
-                         annotation_dir,
-                         split=split,
-                         is_train=is_train,
-                         transform=transform,
-                         modality=modality,
-                         sample_strategy=sample_strategy,
-                         clip_len=clip_len,
-                         frame_interval=frame_interval,
-                         num_clips=num_clips,
-                         num_sample_positions=num_sample_positions)
+        dataset = DataSet(data_dir,
+                          annotation_dir,
+                          split=split,
+                          is_train=is_train,
+                          transform=transform,
+                          modality=modality,
+                          sample_strategy=sample_strategy,
+                          clip_len=clip_len,
+                          frame_interval=frame_interval,
+                          num_clips=num_clips,
+                          num_sample_positions=num_sample_positions)
     elif dataset_name == 'JESTER':
         dataset = JESTER(data_dir,
                          annotation_dir,

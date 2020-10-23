@@ -7,60 +7,34 @@
 @description: 
 """
 
-import os
-import torch
-import argparse
-
-from tsn.config import cfg
 from tsn.model.build import build_model
 from tsn.engine.inference import do_evaluation
-from tsn.util.checkpoint import CheckPointer
 from tsn.util.collect_env import collect_env_info
 from tsn.util import logging
+from tsn.util.distributed import get_device
+from tsn.util.parser import parse_test_args, load_test_config
+from tsn.util.misc import launch_job
+from tsn.util.distributed import setup, cleanup, synchronize
 
 
-def test(cfg):
-    torch.backends.cudnn.benchmark = True
+def test(gpu_id, cfg):
+    rank = cfg.RANK * cfg.NUM_GPUS + gpu_id
+    world_size = cfg.WORLD_SIZE
+    setup(rank, world_size, seed=cfg.RNG_SEED)
 
-    device = torch.device(f'cuda:0' if torch.cuda.is_available() else 'cpu')
-    map_location = {'cuda:%d' % 0: 'cuda:%d' % 0}
+    model = build_model(cfg, gpu_id=gpu_id)
+    device = get_device()
 
-    model = build_model(cfg, 0)
-    if cfg.MODEL.PRETRAINED != "":
-        logger = logging.setup_logging(__name__)
-        logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
-        checkpointer = CheckPointer(model, logger=logger)
-        checkpointer.load(cfg.MODEL.PRETRAINED, map_location=map_location)
-
+    synchronize()
     do_evaluation(cfg, model, device)
+
+    cleanup()
 
 
 def main():
-    parser = argparse.ArgumentParser(description='TSN Test With PyTorch')
-    parser.add_argument("config_file", default="", metavar="CONFIG_FILE",
-                        help="path to config file", type=str)
-    parser.add_argument('pretrained', default="", metavar='PRETRAINED_FILE',
-                        help="path to pretrained model", type=str)
-    parser.add_argument('--output', default="./outputs/test", type=str)
-    parser.add_argument(
-        "opts",
-        help="Modify config options using the command-line",
-        default=None,
-        nargs=argparse.REMAINDER,
-    )
-    args = parser.parse_args()
+    args = parse_test_args()
+    cfg = load_test_config(args)
 
-    if not os.path.isfile(args.config_file) or not os.path.isfile(args.pretrained):
-        raise ValueError('需要输入配置文件和预训练模型路径')
-
-    cfg.merge_from_file(args.config_file)
-    cfg.merge_from_list(args.opts)
-    cfg.MODEL.PRETRAINED = args.pretrained
-    cfg.OUTPUT.DIR = args.output
-    cfg.freeze()
-
-    if not os.path.exists(cfg.OUTPUT.DIR):
-        os.makedirs(cfg.OUTPUT.DIR)
     logger = logging.setup_logging(__name__, output_dir=cfg.OUTPUT.DIR)
     logger.info(args)
 
@@ -72,7 +46,7 @@ def main():
             logger.info(config_str)
     logger.info("Running with config:\n{}".format(cfg))
 
-    test(cfg)
+    launch_job(cfg, test)
 
 
 if __name__ == '__main__':

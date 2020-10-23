@@ -10,11 +10,10 @@
 import os
 import datetime
 import torch
-import time
 from tqdm import tqdm
 
 import tsn.util.logging as logging
-from tsn.util.distributed import all_gather, all_reduce, is_master_proc
+from tsn.util.distributed import all_gather, is_master_proc
 from tsn.data.build import build_dataloader
 
 
@@ -23,12 +22,19 @@ def compute_on_dataset(images, targets, device, model, num_gpus, evaluator):
     images = images.to(device=device, non_blocking=True)
     targets = targets.to(device=device, non_blocking=True)
 
-    outputs = model(images)
+    output_dict = model(images)
     # Gather all the predictions across all the devices to perform ensemble.
     if num_gpus > 1:
-        outputs, targets = all_gather([outputs, targets])
+        keys = []
+        values = []
+        for k in sorted(output_dict.keys()):
+            keys.append(k)
+            values.append(output_dict[k])
+        gathered_values = all_gather(values)
+        output_dict = {k: v for k, v in zip(keys, gathered_values)}
+        targets = all_gather([targets])[0]
 
-    evaluator.evaluate(outputs, targets, topk=(1, 5), once=False)
+    evaluator.evaluate_test(output_dict, targets)
 
 
 def inference(cfg, model, device, **kwargs):
@@ -51,32 +57,19 @@ def inference(cfg, model, device, **kwargs):
         for iteration, (images, targets) in enumerate(data_loader, 0):
             compute_on_dataset(images, targets, device, model, num_gpus, evaluator)
 
-    topk_list, cate_topk_dict = evaluator.get()
-    top1_acc, top5_acc = topk_list
-    result_str = '\ntotal - top_1 acc: {:.3f}, top_5 acc: {:.3f}\n'.format(top1_acc, top5_acc)
-
-    classes = dataset.classes
-    for idx in range(len(classes)):
-        class_name = classes[idx]
-        cate_acc = cate_topk_dict[class_name]
-
-        if cate_acc != 0:
-            result_str += '{:<3} - {:<20} - acc: {:.2f}\n'.format(idx, class_name, cate_acc * 100)
-        else:
-            result_str += '{:<3} - {:<20} - acc: 0.0\n'.format(idx, class_name)
+    result_str, acc_dict = evaluator.get()
     logger.info(result_str)
 
     if is_master_proc():
         output_dir = cfg.OUTPUT.DIR
-        if iteration is not None:
-            result_path = os.path.join(output_dir, 'result_{:07d}.txt'.format(iteration))
-        else:
-            result_path = os.path.join(output_dir,
-                                       'result_{}.txt'.format(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')))
+        result_path = os.path.join(output_dir,
+                                   'result_{}.txt'.format(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))) \
+            if iteration is None else os.path.join(output_dir, 'result_{:07d}.txt'.format(iteration))
+
         with open(result_path, "w") as f:
             f.write(result_str)
 
-    return {'top1': top1_acc, 'top5': top5_acc}
+    return acc_dict
 
 
 @torch.no_grad()
