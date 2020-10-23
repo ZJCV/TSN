@@ -2,6 +2,7 @@ from collections import deque, defaultdict
 import numpy as np
 import torch
 
+from .misc import retrieve_name
 from .distributed import all_reduce
 
 
@@ -73,27 +74,14 @@ class MetricLogger:
         return self.delimiter.join(loss_str)
 
 
-def update_meters(num_gpus, loss_dict, acc_dict, meters):
+def update_meters(num_gpus, meters, values):
     # Gather all the predictions across all the devices.
+    keys = retrieve_name(values)
     if num_gpus > 1:
-        keys = []
-        values = []
-        for k in sorted(loss_dict.keys()):
-            keys.append(k)
-            values.append(loss_dict[k])
-        for k in sorted(acc_dict.keys()):
-            keys.append(k)
-            values.append(acc_dict[k])
         reduced_values = all_reduce(values)
         reduced_dict = {k: v for k, v in zip(keys, reduced_values)}
-        if len(loss_dict) == 1:
-            meters.update(**reduced_dict)
-        else:
-            loss = sum(loss for loss in loss_dict.values())
-            meters.update(loss=loss, **reduced_dict)
+
+        meters.update(**reduced_dict)
     else:
-        if len(loss_dict) == 1:
-            meters.update(**loss_dict, **acc_dict)
-        else:
-            loss = sum(loss for loss in loss_dict.values())
-            meters.update(loss=loss, **loss_dict, **acc_dict)
+        data_dict = {k: v for k, v in zip(keys, values)}
+        meters.update(**data_dict)

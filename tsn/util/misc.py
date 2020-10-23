@@ -8,6 +8,7 @@
 """
 
 import os
+import inspect
 import torch.multiprocessing as mp
 
 
@@ -19,3 +20,8 @@ def launch_job(cfg, func):
         mp.spawn(func, nprocs=gpus, args=(cfg,))
     else:
         func(gpu_id=0, cfg=cfg)
+
+
+def retrieve_name(var):
+    callers_local_vars = inspect.currentframe().f_back.f_locals.items()
+    return [var_name for var_name, var_val in callers_local_vars if var_val is var]

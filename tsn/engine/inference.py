@@ -22,19 +22,12 @@ def compute_on_dataset(images, targets, device, model, num_gpus, evaluator):
     images = images.to(device=device, non_blocking=True)
     targets = targets.to(device=device, non_blocking=True)
 
-    output_dict = model(images)
+    outputs = model(images)
     # Gather all the predictions across all the devices to perform ensemble.
     if num_gpus > 1:
-        keys = []
-        values = []
-        for k in sorted(output_dict.keys()):
-            keys.append(k)
-            values.append(output_dict[k])
-        gathered_values = all_gather(values)
-        output_dict = {k: v for k, v in zip(keys, gathered_values)}
-        targets = all_gather([targets])[0]
+        outputs, targets = all_gather([outputs, targets])
 
-    evaluator.evaluate_test(output_dict, targets)
+    evaluator.evaluate_test(outputs, targets)
 
 
 def inference(cfg, model, device, **kwargs):

@@ -26,23 +26,16 @@ class HMDB51Evaluator(BaseEvaluator):
         self.cate_acc_dict = dict()
         self.cate_num_dict = dict()
 
-    def evaluate_train(self, output_dict, targets):
-        probs = output_dict['probs']
-        res = topk_accuracy(probs, targets, topk=self.topk)
+    def evaluate_train(self, outputs, targets):
+        return topk_accuracy(outputs, targets, topk=self.topk)
 
-        acc_dict = dict()
-        for i in range(len(self.topk)):
-            acc_dict[f"top{self.topk[i]}"] = res[i]
-
-        return acc_dict
-
-    def evaluate_test(self, output_dict, targets):
-        probs = output_dict['probs'].to(device=self.device)
+    def evaluate_test(self, outputs, targets):
+        outputs = outputs.to(device=self.device)
         targets = targets.to(device=self.device)
 
-        res = topk_accuracy(probs, targets, topk=self.topk)
+        res = topk_accuracy(outputs, targets, topk=self.topk)
         self.topk_list.append(torch.stack(res))
-        preds = torch.argmax(probs, dim=1)
+        preds = torch.argmax(outputs, dim=1)
         for target, pred in zip(targets.numpy(), preds.numpy()):
             self.cate_num_dict.update({
                 str(target):

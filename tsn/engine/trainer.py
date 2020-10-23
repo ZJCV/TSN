@@ -52,9 +52,8 @@ def do_train(cfg, arguments,
         targets = targets.to(device=device, non_blocking=True)
         start3 = time.time()
 
-        output_dict = model(images)
-        loss_dict = criterion(output_dict, targets)
-        loss = sum(loss for loss in loss_dict.values())
+        outputs = model(images)
+        loss = criterion(outputs, targets)
         start4 = time.time()
 
         optimizer.zero_grad()
@@ -63,8 +62,10 @@ def do_train(cfg, arguments,
         lr_scheduler.step()
         start5 = time.time()
 
-        acc_dict = evaluator.evaluate_train(output_dict, targets)
-        update_meters(cfg.NUM_GPUS, loss_dict, acc_dict, meters)
+        acc_list = evaluator.evaluate_train(outputs, targets)
+        value_list = [loss]
+        value_list.extend(acc_list)
+        update_meters(cfg.NUM_GPUS, meters, value_list)
         start6 = time.time()
 
         if iteration % len(data_loader) == 0 and hasattr(data_loader.batch_sampler, "set_epoch"):
@@ -73,7 +74,7 @@ def do_train(cfg, arguments,
         batch_time = time.time() - end
         # logger.info(
         #     f'start1: {start2 - end}, start2: {start3 - start2}, start3: {start4 - start3}, start4: {start5 - start4}, start5: {start6 - start5}')
-        # logger.info(f'batch_time: {batch_time}')
+        logger.info(f'batch_time: {batch_time}')
         end = time.time()
         meters.update(time=batch_time)
         if iteration % log_step == 0:
@@ -120,7 +121,7 @@ def do_train(cfg, arguments,
 
         if is_master_proc() and summary_writer:
             for key, value in eval_results.items():
-                summary_writer.add_scalar(f'eval/{key}', value, global_step=iteration)
+                summary_writer.add_scalar(f'eval/{key}', value, global_step=arguments["iteration"])
             summary_writer.close()
     checkpointer.save("model_final", **arguments)
     # compute training time
