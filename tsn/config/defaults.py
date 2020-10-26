@@ -1,12 +1,29 @@
 from yacs.config import CfgNode as CN
 
 _C = CN()
-_C.RNG_SEED = 0
 
+# Output basedir.
+_C.OUTPUT_DIR = "./tmp"
+
+# Note that non-determinism may still be present due to non-deterministic
+# operator implementations in GPU operator libraries.
+_C.RNG_SEED = 1
+
+# ---------------------------------------------------------------------------- #
+# Distributed options
+# ---------------------------------------------------------------------------- #
+
+# Number of GPUs to use (applies to both training and testing).
 _C.NUM_GPUS = 1
-_C.NODES = 1
-_C.RANK = 0
-_C.WORLD_SIZE = 1
+
+# Number of machine to use for the job.
+_C.NUM_NODES = 1
+
+# The index of the current machine.
+_C.RANK_ID = 0
+
+# Distributed backend.
+_C.DIST_BACKEND = "nccl"
 
 # ---------------------------------------------------------------------------- #
 # Train
@@ -18,17 +35,6 @@ _C.TRAIN.SAVE_STEP = 1000
 _C.TRAIN.EVAL_STEP = 1000
 _C.TRAIN.RESUME = False
 _C.TRAIN.USE_TENSORBOARD = True
-
-# ---------------------------------------------------------------------------- #
-# Test
-# ---------------------------------------------------------------------------- #
-_C.INFER = CN()
-
-# ---------------------------------------------------------------------------- #
-# Output
-# ---------------------------------------------------------------------------- #
-_C.OUTPUT = CN()
-_C.OUTPUT.DIR = 'outputs/'
 
 # ---------------------------------------------------------------------------- #
 # DataSets

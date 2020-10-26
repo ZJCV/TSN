@@ -22,12 +22,19 @@ def compute_on_dataset(images, targets, device, model, num_gpus, evaluator):
     images = images.to(device=device, non_blocking=True)
     targets = targets.to(device=device, non_blocking=True)
 
-    outputs = model(images)
+    output_dict = model(images)
     # Gather all the predictions across all the devices to perform ensemble.
     if num_gpus > 1:
-        outputs, targets = all_gather([outputs, targets])
+        keys = list()
+        values = list()
+        for key in sorted(output_dict):
+            keys.append(key)
+            values.append(output_dict[key])
+        values = all_gather(values)
+        output_dict = {k: v for k, v in zip(keys, values)}
+        targets = all_gather([targets])[0]
 
-    evaluator.evaluate_test(outputs, targets)
+    evaluator.evaluate_test(output_dict, targets)
 
 
 def inference(cfg, model, device, **kwargs):
@@ -54,7 +61,7 @@ def inference(cfg, model, device, **kwargs):
     logger.info(result_str)
 
     if is_master_proc():
-        output_dir = cfg.OUTPUT.DIR
+        output_dir = cfg.OUTPUT_DIR
         result_path = os.path.join(output_dir,
                                    'result_{}.txt'.format(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))) \
             if iteration is None else os.path.join(output_dir, 'result_{:07d}.txt'.format(iteration))

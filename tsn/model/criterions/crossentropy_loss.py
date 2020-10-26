@@ -18,7 +18,9 @@ class CrossEntropyLoss(nn.Module):
         super(CrossEntropyLoss, self).__init__()
         self.loss = nn.CrossEntropyLoss(reduction='mean')
 
-    def __call__(self, inputs, targets):
+    def __call__(self, output_dict, targets):
+        assert isinstance(output_dict, dict) and 'probs' in output_dict.keys()
+        inputs = output_dict['probs']
         loss = self.loss(inputs, targets)
 
-        return loss
+        return {'loss': loss}

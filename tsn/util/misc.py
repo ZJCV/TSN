@@ -7,21 +7,37 @@
 @description: 
 """
 
-import os
-import inspect
+import torch
 import torch.multiprocessing as mp
+import tsn.util.multiprocessing as mpu
 
 
-def launch_job(cfg, func):
-    gpus = cfg.NUM_GPUS
-    if gpus > 1:
-        os.environ['MASTER_ADDR'] = '127.0.0.1'
-        os.environ['MASTER_PORT'] = '17928'
-        mp.spawn(func, nprocs=gpus, args=(cfg,))
+def launch_job(cfg, init_method, func, daemon=False):
+    """
+    Run 'func' on one or more GPUs, specified in cfg
+    Args:
+        cfg (CfgNode): configs. Details can be found in
+            tsn/config/defaults.py
+        init_method (str): initialization method to launch the job with multiple
+            devices.
+        func (function): job to run on GPU(s)
+        daemon (bool): The spawned processes’ daemon flag. If set to True,
+            daemonic processes will be created
+    """
+    if cfg.NUM_GPUS > 1:
+        torch.multiprocessing.spawn(
+            mpu.run,
+            nprocs=cfg.NUM_GPUS,
+            args=(
+                cfg.NUM_GPUS,
+                func,
+                init_method,
+                cfg.RANK_ID,
+                cfg.NUM_NODES,
+                cfg.DIST_BACKEND,
+                cfg,
+            ),
+            daemon=daemon,
+        )
     else:
-        func(gpu_id=0, cfg=cfg)
-
-
-def retrieve_name(var):
-    callers_local_vars = inspect.currentframe().f_back.f_locals.items()
-    return [var_name for var_name, var_val in callers_local_vars if var_val is var]
+        func(cfg=cfg)

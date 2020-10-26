@@ -13,18 +13,17 @@ import time
 import torch
 
 from tsn.util.metric_logger import MetricLogger, update_meters
-from tsn.util.distributed import is_master_proc, synchronize, get_device
+from tsn.util.distributed import is_master_proc, synchronize, get_device, get_local_rank
 from tsn.util import logging
 from tsn.engine.inference import do_evaluation
 
 
 def do_train(cfg, arguments,
              data_loader, model, criterion, optimizer, lr_scheduler,
-             checkpointer):
+             checkpointer, device):
     logger = logging.setup_logging(__name__)
     meters = MetricLogger()
     summary_writer = None
-    device = get_device(arguments['gpu_id'])
 
     use_tensorboard = cfg.TRAIN.USE_TENSORBOARD
     log_step = cfg.TRAIN.LOG_STEP
@@ -35,7 +34,7 @@ def do_train(cfg, arguments,
 
     if is_master_proc() and use_tensorboard:
         from torch.utils.tensorboard import SummaryWriter
-        summary_writer = SummaryWriter(log_dir=os.path.join(cfg.OUTPUT.DIR, 'tf_logs'))
+        summary_writer = SummaryWriter(log_dir=os.path.join(cfg.OUTPUT_DIR, 'tf_logs'))
     evaluator = data_loader.dataset.evaluator
 
     synchronize()
@@ -47,34 +46,25 @@ def do_train(cfg, arguments,
         iteration = iteration + 1
         arguments["iteration"] = iteration
 
-        start2 = time.time()
         images = images.to(device=device, non_blocking=True)
         targets = targets.to(device=device, non_blocking=True)
-        start3 = time.time()
 
-        outputs = model(images)
-        loss = criterion(outputs, targets)
-        start4 = time.time()
+        output_dict = model(images)
+        loss_dict = criterion(output_dict, targets)
+        loss = loss_dict['loss']
 
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
         lr_scheduler.step()
-        start5 = time.time()
 
-        acc_list = evaluator.evaluate_train(outputs, targets)
-        value_list = [loss]
-        value_list.extend(acc_list)
-        update_meters(cfg.NUM_GPUS, meters, value_list)
-        start6 = time.time()
+        acc_list = evaluator.evaluate_train(output_dict, targets)
+        update_meters(cfg.NUM_GPUS, meters, loss_dict, acc_list)
 
         if iteration % len(data_loader) == 0 and hasattr(data_loader.batch_sampler, "set_epoch"):
             data_loader.batch_sampler.set_epoch(iteration)
 
         batch_time = time.time() - end
-        # logger.info(
-        #     f'start1: {start2 - end}, start2: {start3 - start2}, start3: {start4 - start3}, start4: {start5 - start4}, start5: {start6 - start5}')
-        logger.info(f'batch_time: {batch_time}')
         end = time.time()
         meters.update(time=batch_time)
         if iteration % log_step == 0:

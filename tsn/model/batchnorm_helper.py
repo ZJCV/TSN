@@ -32,13 +32,12 @@ def simple_group_split(world_size, rank, num_groups):
     return groups[rank // group_size]
 
 
-def convert_sync_bn(model, process_group, gpu_id=None):
+def convert_sync_bn(model, process_group, device):
     # convert all BN layers in the model to syncBN
     for _, (child_name, child) in enumerate(model.named_children()):
         if isinstance(child, nn.modules.batchnorm._BatchNorm):
             m = nn.SyncBatchNorm.convert_sync_batchnorm(child, process_group)
-            if gpu_id is not None:
-                m = m.to(device=torch.device(f'cuda:{gpu_id}'))
+            m = m.to(device=device)
             setattr(model, child_name, m)
         else:
-            convert_sync_bn(child, process_group, gpu_id=gpu_id)
+            convert_sync_bn(child, process_group, device)

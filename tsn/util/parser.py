@@ -59,6 +59,10 @@ def parse_train_args():
                         type=int,
                         default=-1,
                         help='ranking within the nodes (default: 0)')
+    parser.add_argument("--init_method",
+                        help="Initialization method, includes TCP or shared file-system",
+                        default="tcp://localhost:39129",
+                        type=str)
 
     parser.add_argument("opts",
                         help="Modify config options using the command-line",
@@ -71,7 +75,7 @@ def parse_train_args():
 
 def parse_test_args():
     parser = argparse.ArgumentParser(description='TSN Test With PyTorch')
-    parser.add_argument('cfg',
+    parser.add_argument("config_file",
                         type=str,
                         default="",
                         metavar="FILE",
@@ -96,6 +100,10 @@ def parse_test_args():
                         type=int,
                         default=-1,
                         help='ranking within the nodes (default: 0)')
+    parser.add_argument("--init_method",
+                        help="Initialization method, includes TCP or shared file-system",
+                        default="tcp://localhost:39129",
+                        type=str)
 
     args = parser.parse_args()
     return args
@@ -114,10 +122,9 @@ def load_train_config(args):
     if args.gpus != -1:
         cfg.NUM_GPUS = args.gpus
     if args.nodes != -1:
-        cfg.NODES = args.nodes
+        cfg.NUM_NODES = args.nodes
     if args.nr != -1:
-        cfg.RANK = args.nr
-    cfg.WORLD_SIZE = cfg.NUM_GPUS * cfg.NODES
+        cfg.RANK_ID = args.nr
 
     num_gpus = cfg.NUM_GPUS
     if num_gpus > 1:
@@ -127,19 +134,19 @@ def load_train_config(args):
 
     cfg.freeze()
 
-    if not os.path.exists(cfg.OUTPUT.DIR):
-        os.makedirs(cfg.OUTPUT.DIR)
+    if not os.path.exists(cfg.OUTPUT_DIR):
+        os.makedirs(cfg.OUTPUT_DIR)
 
     return cfg
 
 
 def load_test_config(args):
-    if not os.path.isfile(args.cfg) or not os.path.isfile(args.pretrained):
+    if not os.path.isfile(args.config_file) or not os.path.isfile(args.pretrained):
         raise ValueError('需要输入配置文件和预训练模型路径')
 
-    cfg.merge_from_file(args.cfg)
+    cfg.merge_from_file(args.config_file)
     cfg.MODEL.PRETRAINED = args.pretrained
-    cfg.OUTPUT.DIR = args.output
+    cfg.OUTPUT_DIR = args.output
 
     if args.gpus != -1:
         cfg.NUM_GPUS = args.gpus
@@ -149,7 +156,7 @@ def load_test_config(args):
         cfg.RANK = args.nr
     cfg.freeze()
 
-    if not os.path.exists(cfg.OUTPUT.DIR):
-        os.makedirs(cfg.OUTPUT.DIR)
+    if not os.path.exists(cfg.OUTPUT_DIR):
+        os.makedirs(cfg.OUTPUT_DIR)
 
     return cfg

@@ -7,35 +7,40 @@
 @description: 
 """
 
+import numpy as np
+import torch
+
 from tsn.model.build import build_model
 from tsn.engine.inference import do_evaluation
 from tsn.util.collect_env import collect_env_info
 from tsn.util import logging
-from tsn.util.distributed import get_device
+from tsn.util.distributed import get_device, get_local_rank
 from tsn.util.parser import parse_test_args, load_test_config
 from tsn.util.misc import launch_job
-from tsn.util.distributed import setup, cleanup, synchronize
+from tsn.util.distributed import synchronize, init_distributed_training
 
 
-def test(gpu_id, cfg):
-    rank = cfg.RANK * cfg.NUM_GPUS + gpu_id
-    world_size = cfg.WORLD_SIZE
-    setup(rank, world_size, seed=cfg.RNG_SEED)
+def test(cfg):
+    # Set up environment.
+    init_distributed_training(cfg)
+    # Set random seed from configs.
+    np.random.seed(cfg.RNG_SEED)
+    torch.manual_seed(cfg.RNG_SEED)
+    torch.backends.cudnn.deterministic = False
+    torch.backends.cudnn.benchmark = True
 
-    model = build_model(cfg, gpu_id=gpu_id)
-    device = get_device()
+    device = get_device(local_rank=get_local_rank())
+    model = build_model(cfg, device=device)
 
     synchronize()
     do_evaluation(cfg, model, device)
-
-    cleanup()
 
 
 def main():
     args = parse_test_args()
     cfg = load_test_config(args)
 
-    logger = logging.setup_logging(__name__, output_dir=cfg.OUTPUT.DIR)
+    logger = logging.setup_logging(__name__, output_dir=cfg.OUTPUT_DIR)
     logger.info(args)
 
     logger.info("Environment info:\n" + collect_env_info())
@@ -46,7 +51,7 @@ def main():
             logger.info(config_str)
     logger.info("Running with config:\n{}".format(cfg))
 
-    launch_job(cfg, test)
+    launch_job(cfg=cfg, init_method=args.init_method, func=test)
 
 
 if __name__ == '__main__':
