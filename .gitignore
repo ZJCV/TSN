@@ -1,5 +1,7 @@
 .idea/
-./outputs/
+demo/videos/
+demo/results/
+outputs/
 *.pyc
 *.mp4
 *.avi
