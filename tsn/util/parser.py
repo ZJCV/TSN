@@ -119,6 +119,12 @@ def load_train_config(args):
         cfg.TRAIN.SAVE_STEP = args.save_step
     if args.eval_step != -1:
         cfg.TRAIN.EVAL_STEP = args.eval_step
+
+    if args.resume:
+        cfg.TRAIN.RESUME = True
+    if not args.use_tensorboard:
+        cfg.TRAIN.USE_TENSORBOARD = False
+
     if args.gpus != -1:
         cfg.NUM_GPUS = args.gpus
     if args.nodes != -1:
