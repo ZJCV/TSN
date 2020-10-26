@@ -9,7 +9,7 @@ import tqdm
 from tsn.visualization.manager import VideoManager, ThreadVideoManager
 from tsn.visualization.visualizer import AsyncVisualizer
 from tsn.visualization.predictor import ActionPredictor, AsyncActionPredictor
-from tsn.util.parser import parse_train_args, load_config
+from tsn.util.parser import parse_test_args, load_test_config
 
 from tsn.util import logging
 
@@ -29,8 +29,10 @@ def run_demo(cfg, frame_provider):
     # Set random seed from configs.
     np.random.seed(cfg.RNG_SEED)
     torch.manual_seed(cfg.RNG_SEED)
+    torch.backends.cudnn.deterministic = False
+    torch.backends.cudnn.benchmark = True
     # Setup logging format.
-    logger = logging.setup_logging(__name__, cfg.OUTPUT.DIR)
+    logger = logging.setup_logging(__name__, cfg.OUTPUT_DIR)
     # Print config.
     logger.info("Run demo with config:")
     logger.info(cfg)
@@ -42,6 +44,7 @@ def run_demo(cfg, frame_provider):
     else:
         model = AsyncActionPredictor(cfg=cfg, async_vis=async_vis)
 
+    start = time.time()
     num_task = 0
     # Start reading frames.
     frame_provider.start()
@@ -68,6 +71,7 @@ def run_demo(cfg, frame_provider):
             yield task
         except IndexError:
             continue
+    logger.info("Finish video in: {}".format(time.time() - start))
 
 
 def demo(cfg):
@@ -95,8 +99,8 @@ def main():
     """
     Main function to spawn the train and test predict.
     """
-    args = parse_train_args()
-    cfg = load_config(args)
+    args = parse_test_args()
+    cfg = load_test_config(args)
 
     # Run demo.
     if cfg.VISUALIZATION.ENABLE:

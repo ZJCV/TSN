@@ -150,8 +150,6 @@ class VideoVisualizer:
             frames,
             preds,
             text_alpha=0.5,
-            ground_truth=False,
-            keyframe_idx=None,
             draw_range=None,
             repeat_frame=1,
     ):
@@ -164,7 +162,6 @@ class VideoVisualizer:
                 preds (tensor): a tensor of shape (num_boxes, num_classes) that contains all of the confidence scores
                     of the model. For recognition task or for ground_truth labels, input shape can be (num_classes,).
                 text_alpha (float): transparency label of the box wrapped around text labels.
-                ground_truth (bool): whether the prodived bounding boxes are ground-truth.
                 keyframe_idx (int): the index of keyframe in the clip.
                 draw_range (Optional[list[ints]): only draw frames in range [start_idx, end_idx] inclusively in the clip.
                     If None, draw on the entire clip.
@@ -178,8 +175,6 @@ class VideoVisualizer:
             right_frames = frames[draw_range[1] + 1:]
 
         draw_frames = frames[draw_range[0]: draw_range[1] + 1]
-        if keyframe_idx is None:
-            keyframe_idx = len(frames) // 2
 
         img_ls = (
                 list(left_frames)
@@ -187,7 +182,6 @@ class VideoVisualizer:
             draw_frames,
             preds,
             text_alpha=text_alpha,
-            keyframe_idx=keyframe_idx - draw_range[0],
             repeat_frame=repeat_frame,
         )
                 + list(right_frames)
@@ -200,7 +194,6 @@ class VideoVisualizer:
             frames,
             preds,
             text_alpha=0.5,
-            keyframe_idx=None,
             repeat_frame=1,
     ):
         """
@@ -209,7 +202,6 @@ class VideoVisualizer:
                 frames (array-like): video data in the shape (T, H, W, C).
                 preds (tensor): For recognition task, input shape can be (num_classes,).
                 text_alpha (float): transparency label of the box wrapped around text labels.
-                keyframe_idx (int): the index of keyframe in the clip.
                 repeat_frame (int): repeat each frame in draw_range for `repeat_frame` time for slow-motion effect.
         """
         assert repeat_frame >= 1, "`repeat_frame` must be a positive integer."
@@ -222,24 +214,11 @@ class VideoVisualizer:
         )
 
         frames, adjusted = self._adjust_frames_type(frames)
-        if keyframe_idx is None:
-            half_left = len(repeated_seq) // 2
-            half_right = (len(repeated_seq) + 1) // 2
-        else:
-            mid = int((keyframe_idx / len(frames)) * len(repeated_seq))
-            half_left = mid
-            half_right = len(repeated_seq) - mid
 
-        alpha_ls = np.concatenate(
-            [
-                np.linspace(0, 1, num=half_left),
-                np.linspace(1, 0, num=half_right),
-            ]
-        )
         text_alpha = text_alpha
         frames = frames[repeated_seq]
         img_ls = []
-        for alpha, frame in zip(alpha_ls, frames):
+        for frame in frames:
             draw_img = self.draw_one_frame(
                 frame,
                 preds,

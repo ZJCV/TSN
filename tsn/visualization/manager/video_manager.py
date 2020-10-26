@@ -121,7 +121,7 @@ class VideoManager:
         for frame in task.frames[task.num_buffer_frames:]:
             if self.output_file is None:
                 cv2.imshow("SlowFast", frame)
-                cv2.waitKey(10)
+                cv2.waitKey(int(1 / self.output_fps * 1000))
                 # time.sleep(1 / self.output_fps)
             else:
                 self.output_file.write(frame)

@@ -24,22 +24,25 @@ def get_class_names(path):
         class_names (list of strs): list of class names.
     """
     assert os.path.exists(path), f'{path} is None'
-    try:
-        with open(path, "r") as f:
-            class2idx = json.load(f)
-    except Exception as err:
-        print("Fail to load file from {} with error {}".format(path, err))
-        return
+    # try:
+    #     with open(path, "r") as f:
+    #         class2idx = json.load(f)
+    # except Exception as err:
+    #     print("Fail to load file from {} with error {}".format(path, err))
+    #     return
+    #
+    # class_names = [None] * len(class2idx)
+    # # 如果类标签从1开始
+    # if min(class2idx.values()) == 1:
+    #     for k, i in class2idx.items():
+    #         class_names[i - 1] = k
+    # else:
+    #     # 从0开始
+    #     for k, i in class2idx.items():
+    #         class_names[i] = k
 
-    class_names = [None] * len(class2idx)
-    # 如果类标签从1开始
-    if min(class2idx.values()) == 1:
-        for k, i in class2idx.items():
-            class_names[i - 1] = k
-    else:
-        # 从0开始
-        for k, i in class2idx.items():
-            class_names[i] = k
+    with open(path, 'r') as f:
+        class_names = [line.strip().split(' ')[1] for line in f]
 
     return class_names
 
@@ -92,9 +95,10 @@ def draw_predictions(task, video_vis):
     buffer = frames[: task.num_buffer_frames]
     frames = frames[task.num_buffer_frames:]
 
-    frames = video_vis.draw_clip_range(
-        frames, preds, keyframe_idx=keyframe_idx, draw_range=draw_range
-    )
+    # frames = video_vis.draw_clip_range(
+    #     frames, preds, keyframe_idx=keyframe_idx, draw_range=draw_range
+    # )
+    frames = video_vis.draw_clip(frames, preds)
     del task
 
     return buffer + frames
