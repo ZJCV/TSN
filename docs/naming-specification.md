@@ -4,7 +4,7 @@
 ## 配置文件
 
 ```
-<core algorithm>-<backbone>-<dataset>-<modality>-<data format>-<sample strategy>-<<clip_len>x<frame_interval>x<num_clips>>
+<core algorithm>-<backbone>-<dataset>-<modality>-<data format>-<sample strategy>-<clip_len>x<frame_interval>x<num_clips>
 ```
 
 比如配置文件`tsn_r50_ucf101_rgb_raw_dense_1x16x4`
