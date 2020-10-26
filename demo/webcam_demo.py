@@ -32,9 +32,11 @@ def show_results():
         msg = 'Waiting for action ...'
         ret, frame = camera.read()
         if not ret:
-            print('ret = False')
             break
-        frame_queue.append(frame)
+
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        rgb = test_transform(rgb)
+        frame_queue.append(rgb)
 
         if len(result_queue) != 0:
             text_info = {}
@@ -73,20 +75,14 @@ def inference():
 
         while len(cur_windows) == 0:
             if len(frame_queue) == sample_length:
-                cur_windows = list(np.array(frame_queue))
+                cur_windows = list(frame_queue)[frame_interval // 2::frame_interval]
 
-        images = list()
-        for frame in cur_windows:
-            rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            images.append(test_transform(rgb))
-        images = torch.stack(images).transpose(0, 1).unsqueeze(0)
-        print(images.shape)
+        images = torch.stack(cur_windows).transpose(0, 1).unsqueeze(0)
         images = images.to(device=device, non_blocking=True)
 
         with torch.no_grad():
             output_dict = model(images)
             probs = torch.softmax(output_dict['probs'], dim=1).cpu().numpy()[0]
-            print(f'probs: {probs.shape}')
 
         score_cache.append(probs)
         scores_sum += probs
@@ -95,31 +91,35 @@ def inference():
             scores_avg = scores_sum / average_size
             num_selected_labels = min(len(label), 5)
 
-            print(f'scores: {scores_avg.shape}')
             scores_tuples = tuple(zip(label, scores_avg))
             scores_sorted = sorted(
                 scores_tuples, key=itemgetter(1), reverse=True)
             results = scores_sorted[:num_selected_labels]
-            print(results)
 
             result_queue.append(results)
             scores_sum -= score_cache.popleft()
-
     camera.release()
     cv2.destroyAllWindows()
 
 
 def main():
     global frame_queue, camera, frame, results, threshold, sample_length, \
-        data, test_transform, model, device, average_size, label, result_queue
+        data, test_transform, model, device, average_size, label, result_queue, \
+        frame_interval
 
     args = parse_test_args()
     cfg = load_test_config(args)
-    average_size = 2
-    threshold = 0
+    average_size = 1
+    threshold = 0.5
+
+    np.random.seed(cfg.RNG_SEED)
+    torch.manual_seed(cfg.RNG_SEED)
+    torch.backends.cudnn.deterministic = False
+    torch.backends.cudnn.benchmark = True
 
     device = get_device(local_rank=get_local_rank())
     model = build_model(cfg, device)
+    model.eval()
     camera = cv2.VideoCapture(cfg.VISUALIZATION.INPUT_VIDEO)
 
     with open(cfg.VISUALIZATION.LABEL_FILE_PATH, 'r') as f:
@@ -127,7 +127,8 @@ def main():
 
     # prepare test pipeline from non-camera pipeline
     test_transform = build_transform(cfg, is_train=False)
-    sample_length = cfg.DATASETS.CLIP_LEN * cfg.DATASETS.NUM_CLIPS
+    sample_length = cfg.DATASETS.CLIP_LEN * cfg.DATASETS.NUM_CLIPS * cfg.DATASETS.FRAME_INTERVAL
+    frame_interval = cfg.DATASETS.FRAME_INTERVAL
 
     assert sample_length > 0
 
