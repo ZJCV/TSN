@@ -18,21 +18,24 @@ def build_transform(cfg, is_train=True):
     aug_list = list()
     aug_list.append(transforms.ToPILImage())
     if is_train:
-        if cfg.TRANSFORM.TRAIN.SCALE_JITTER is not None:
-            min, max = cfg.TRANSFORM.TRAIN.SCALE_JITTER
-            aug_list.append(RandomResize(min, max))
+        min, max = cfg.TRANSFORM.TRAIN.SCALE_JITTER
+        assert max > 0 and min > 0 and max > min
+        aug_list.append(RandomResize(min, max))
         if cfg.TRANSFORM.TRAIN.RANDOM_HORIZONTAL_FLIP:
             aug_list.append(transforms.RandomHorizontalFlip())
         if cfg.TRANSFORM.TRAIN.COLOR_JITTER is not None:
             brightness, contrast, saturation, hue = cfg.TRANSFORM.TRAIN.COLOR_JITTER
             aug_list.append(
                 transforms.ColorJitter(brightness=brightness, contrast=contrast, saturation=saturation, hue=hue))
-        if cfg.TRANSFORM.TRAIN.RANDOM_ROTATION is not None:
+        if cfg.TRANSFORM.TRAIN.RANDOM_ROTATION > 0:
             random_rotation = cfg.TRANSFORM.TRAIN.RANDOM_ROTATION
             aug_list.append(transforms.RandomRotation(random_rotation))
-        if cfg.TRANSFORM.TRAIN.RANDOM_CROP is not None:
+        if cfg.TRANSFORM.TRAIN.RANDOM_CROP:
             crop_size = cfg.TRANSFORM.TRAIN.TRAIN_CROP_SIZE
             aug_list.append(transforms.RandomCrop(crop_size))
+        if cfg.TRANSFORM.TRAIN.CENTER_CROP:
+            crop_size = cfg.TRANSFORM.TRAIN.TRAIN_CROP_SIZE
+            aug_list.append(transforms.CenterCrop(crop_size))
 
         aug_list.append(ToTensor())
         aug_list.append(Normalize(MEAN, STD))
@@ -40,9 +43,9 @@ def build_transform(cfg, is_train=True):
         if cfg.TRANSFORM.TRAIN.RANDOM_ERASING:
             aug_list.append(transforms.RandomErasing())
     else:
-        if cfg.TRANSFORM.TEST.SHORTER_SIDE is not None:
-            shorter_side = cfg.TRANSFORM.TEST.SHORTER_SIDE
-            aug_list.append(transforms.Resize(shorter_side))
+        shorter_side = cfg.TRANSFORM.TEST.SHORTER_SIDE
+        assert shorter_side > 0
+        aug_list.append(transforms.Resize(shorter_side))
         if cfg.TRANSFORM.TEST.CENTER_CROP:
             crop_size = cfg.TRANSFORM.TEST.TEST_CROP_SIZE
             aug_list.append(transforms.CenterCrop(crop_size))
