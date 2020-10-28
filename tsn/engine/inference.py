@@ -51,10 +51,10 @@ def inference(cfg, model, device, **kwargs):
     logger.info("Evaluating {} dataset({} video clips):".format(dataset_name, len(dataset)))
 
     if is_master_proc():
-        for iteration, (images, targets) in enumerate(tqdm(data_loader), 0):
+        for images, targets in tqdm(data_loader):
             compute_on_dataset(images, targets, device, model, num_gpus, evaluator)
     else:
-        for iteration, (images, targets) in enumerate(data_loader, 0):
+        for images, targets in data_loader:
             compute_on_dataset(images, targets, device, model, num_gpus, evaluator)
 
     result_str, acc_dict = evaluator.get()
