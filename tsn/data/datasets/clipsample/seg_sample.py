@@ -48,7 +48,8 @@ class SegmentedSample():
             np.ndarray: Sampled frame indices in train mode.
         """
         one_clip_len = self.clip_len * self.frame_interval
-        avg_interval = (num_frames - one_clip_len + 1) // self.num_clips
+        # avg_interval = (num_frames - one_clip_len + 1) // self.num_clips
+        avg_interval = (num_frames - one_clip_len) // self.num_clips
 
         if avg_interval > 0:
             base_offsets = np.arange(self.num_clips) * avg_interval
