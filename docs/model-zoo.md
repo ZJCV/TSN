@@ -45,4 +45,19 @@
     <td class="tg-rt64"><a href="https://cloud.zhujian.tech:9300/s/ZKXim94beK4a9EJ">ckpt</a></td>
   </tr>
 </tbody>
+<tbody>
+  <tr>
+    <td class="tg-0wh7"><a href="https://cloud.zhujian.tech:9300/s/bY7jRPpAD9mKqkW" target="_blank" rel="noopener noreferrer">tsn_r50_ucf101_rgb_raw_seg_1x1x3</a></td>
+    <td class="tg-tiqg">4x256x256</td>
+    <td class="tg-tiqg">2</td>
+    <td class="tg-tiqg"><span style="background-color:#F3F6F6">tsn</span></td>
+    <td class="tg-tiqg"><span style="background-color:#F3F6F6">imagenet</span></td>
+    <td class="tg-tiqg">81.589</td>
+    <td class="tg-tiqg"><span style="font-weight:400;font-style:normal">95.964</span></td>
+    <td class="tg-tiqg"><span style="background-color:#F3F6F6">1 clips x 1 crop</span></td>
+    <td class="tg-tiqg"><span style="background-color:#F3F6F6">x</span></td>
+    <td class="tg-tiqg">x</td>
+    <td class="tg-0wh7"><a href="https://cloud.zhujian.tech:9300/s/xqbSpLFcQkJADbz" target="_blank" rel="noopener noreferrer">ckpt</a></td>
+  </tr>
+</tbody>
 </table>
