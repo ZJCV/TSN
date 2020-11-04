@@ -26,11 +26,21 @@ class JesterEvaluator(BaseEvaluator):
         self.cate_acc_dict = dict()
         self.cate_num_dict = dict()
 
-    def evaluate_train(self, outputs, targets):
-        return topk_accuracy(outputs, targets, topk=self.topk)
+    def evaluate_train(self, output_dict: dict, targets: torch.Tensor):
+        assert isinstance(output_dict, dict) and 'probs' in output_dict.keys()
 
-    def evaluate_test(self, outputs, targets):
-        outputs = outputs.to(device=self.device)
+        probs = output_dict['probs']
+        res = topk_accuracy(probs, targets, topk=self.topk)
+
+        acc_dict = dict()
+        for i in range(len(self.topk)):
+            acc_dict[f'tok{self.topk[i]}'] = res[i]
+        return acc_dict
+
+    def evaluate_test(self, output_dict: dict, targets: torch.Tensor):
+        assert isinstance(output_dict, dict) and 'probs' in output_dict.keys()
+        probs = output_dict['probs']
+        outputs = probs.to(device=self.device)
         targets = targets.to(device=self.device)
 
         res = topk_accuracy(outputs, targets, topk=self.topk)
