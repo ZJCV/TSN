@@ -9,19 +9,19 @@
 
 import torch.nn as nn
 
-from tsn.model import registry
-from tsn.model.backbones.build import build_backbone
-from tsn.model.heads.build import build_head
-from tsn.model.consensus.build import build_consensus
+from .. import registry
+from ..backbones.build import build_backbone
+from ..heads.build import build_head
+from ..consensus.build import build_consensus
 
 
 @registry.RECOGNIZER.register('TSNRecognizer')
 class TSNRecognizer(nn.Module):
 
-    def __init__(self, cfg, map_location=None):
+    def __init__(self, cfg):
         super(TSNRecognizer, self).__init__()
 
-        self.backbone = build_backbone(cfg, map_location=map_location)
+        self.backbone = build_backbone(cfg)
         self.head = build_head(cfg)
         self.consensus = build_consensus(cfg)
 

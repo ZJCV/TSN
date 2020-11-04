@@ -3,7 +3,7 @@ NUM_NODES: 1
 RANK_ID: 0
 DIST_BACKEND: "nccl"
 RNG_SEED: 1
-OUTPUT_DIR: 'outputs/tsn_r50_hmdb51_rgb_raw_seg_1x1x3'
+OUTPUT_DIR: 'outputs/tsn_mbv2_ucf101_rgb_raw_dense_1x16x4'
 TRAIN:
   MAX_ITER: 30000
   LOG_STEP: 10
@@ -14,19 +14,20 @@ TRAIN:
 DATASETS:
   MODALITY: 'RGB'
   TYPE: 'RawFrame'
-  SAMPLE_STRATEGY: 'SegSample'
+  SAMPLE_STRATEGY: 'DenseSample'
   CLIP_LEN: 1
-  FRAME_INTERVAL: 1
-  NUM_CLIPS: 3
+  FRAME_INTERVAL: 16
+  NUM_CLIPS: 4
+  NUM_SAMPLE_POSITIONS: 1
   TRAIN:
-    NAME: 'HMDB51'
-    DATA_DIR: 'data/hmdb51/rawframes'
-    ANNOTATION_DIR: 'data/hmdb51'
+    NAME: 'UCF101'
+    DATA_DIR: 'data/ucf101/rawframes'
+    ANNOTATION_DIR: 'data/ucf101'
     SPLIT: 1
   TEST:
-    NAME: 'HMDB51'
-    DATA_DIR: 'data/hmdb51/rawframes'
-    ANNOTATION_DIR: 'data/hmdb51'
+    NAME: 'UCF101'
+    DATA_DIR: 'data/ucf101/rawframes'
+    ANNOTATION_DIR: 'data/ucf101'
     SPLIT: 1
 TRANSFORM:
   MEAN: (0.485, 0.456, 0.406)
@@ -46,24 +47,23 @@ TRANSFORM:
     THREE_CROP: False
     TEST_CROP_SIZE: 256
 DATALOADER:
-  TRAIN_BATCH_SIZE: 32
-  TEST_BATCH_SIZE: 32
+  TRAIN_BATCH_SIZE: 96
+  TEST_BATCH_SIZE: 96
   NUM_WORKERS: 8
 MODEL:
   NAME: 'TSN'
-  PRETRAINED: ""
-  SYNC_BN: False
+  PRETRAINED: ''
+  SYNC_BN: True
   INPUT_SIZE: (224, 224, 3)
   BACKBONE:
-    NAME: 'ResNet50'
+    NAME: 'ShuffleNet_v2'
     PARTIAL_BN: False
     TORCHVISION_PRETRAINED: True
-    ZERO_INIT_RESIDUAL: True
   HEAD:
     NAME: 'TSNHead'
-    FEATURE_DIMS: 2048
+    FEATURE_DIMS: 1024
     DROPOUT: 0.5
-    NUM_CLASSES: 51
+    NUM_CLASSES: 101
   RECOGNIZER:
     NAME: 'TSNRecognizer'
   CONSENSU:
@@ -72,14 +72,14 @@ MODEL:
     NAME: 'CrossEntropyLoss'
 OPTIMIZER:
   NAME: 'SGD'
-  LR: 1e-3
+  LR: 1e-2
   WEIGHT_DECAY: 3e-5
   SGD:
     MOMENTUM: 0.9
 LR_SCHEDULER:
   NAME: 'MultiStepLR'
   IS_WARMUP: True
-  GAMMA: 0.2
+  GAMMA: 0.1
   MULTISTEP_LR:
     MILESTONES: [ 15000, 25000 ]
   WARMUP:

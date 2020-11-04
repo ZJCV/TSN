@@ -9,7 +9,7 @@
 
 from torch.nn.parallel import DistributedDataParallel as DDP
 
-from tsn.model.batchnorm_helper import convert_sync_bn
+from ..layers.batchnorm_helper import convert_sync_bn
 import tsn.util.distributed as du
 from tsn.util.checkpoint import CheckPointer
 from tsn.util import logging
@@ -20,7 +20,7 @@ from .tsn_recognizer import TSNRecognizer
 def build_recognizer(cfg, device):
     world_size = du.get_world_size()
 
-    model = registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg, map_location=device).to(device=device)
+    model = registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg).to(device=device)
 
     logger = logging.setup_logging(__name__)
     if cfg.MODEL.SYNC_BN and world_size > 1:

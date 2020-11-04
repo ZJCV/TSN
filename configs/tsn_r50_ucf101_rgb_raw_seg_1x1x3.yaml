@@ -55,7 +55,7 @@ MODEL:
   SYNC_BN: True
   INPUT_SIZE: (224, 224, 3)
   BACKBONE:
-    NAME: 'resnet50'
+    NAME: 'ResNet50'
     PARTIAL_BN: False
     TORCHVISION_PRETRAINED: True
     ZERO_INIT_RESIDUAL: True

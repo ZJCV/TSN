@@ -8,7 +8,7 @@
 """
 
 import torch.nn as nn
-from tsn.model import registry
+from .. import registry
 
 
 @registry.CRITERION.register('CrossEntropyLoss')
