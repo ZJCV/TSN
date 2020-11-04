@@ -5,7 +5,7 @@ DIST_BACKEND: "nccl"
 RNG_SEED: 1
 OUTPUT_DIR: 'outputs/tsn_r50_jester_rgbdiff_raw_seg_1x1x3'
 TRAIN:
-  MAX_ITER: 50000
+  MAX_ITER: 30000
   LOG_STEP: 10
   SAVE_STEP: 1000
   EVAL_STEP: 1000
@@ -70,15 +70,16 @@ MODEL:
     NAME: 'CrossEntropyLoss'
 OPTIMIZER:
   NAME: 'sgd'
-  LR: 2e-3
+  LR: 1e-3
   WEIGHT_DECAY: 1e-4
   SGD:
     MOMENTUM: 0.9
 LR_SCHEDULER:
-  NAME: 'cosine_annearling_lr'
+  NAME: 'multistep_lr'
   IS_WARMUP: True
-  COSINE_ANNEALING_LR:
-    MINIMAL_LR: 3e-4
+  GAMMA: 0.2
+  MULTISTEP_LR:
+    MILESTONES: [ 15000, 25000 ]
   WARMUP:
     ITERATION: 1000
     MULTIPLIER: 1.0
