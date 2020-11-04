@@ -10,7 +10,7 @@
 import numpy as np
 import torch
 
-from tsn.model.build import build_model
+from tsn.model.recognizers.build import build_recognizer
 from tsn.engine.inference import do_evaluation
 from tsn.util.collect_env import collect_env_info
 from tsn.util import logging
@@ -30,7 +30,7 @@ def test(cfg):
     torch.backends.cudnn.benchmark = True
 
     device = get_device(local_rank=get_local_rank())
-    model = build_model(cfg, device=device)
+    model = build_recognizer(cfg, device=device)
 
     synchronize()
     do_evaluation(cfg, model, device)
