@@ -7,22 +7,13 @@
 @description: 
 """
 
-import torch.nn as nn
-import torch.optim as optim
 from torch.optim.optimizer import Optimizer
 
-from . import registry
-from .lr_schedulers.gradual_warmup import GradualWarmupScheduler
-from .lr_schedulers.step_lr import build_step_lr
-from .lr_schedulers.multistep_lr import build_multistep_lr
-from .lr_schedulers.cosine_annearling_lr import build_cosine_annearling_lr
-from .optimizers.sgd import build_sgd
-from .optimizers.adam import build_adam
-
-
-def build_optimizer(cfg, model):
-    assert isinstance(model, nn.Module)
-    return registry.OPTIMIZERS[cfg.OPTIMIZER.NAME](cfg, model)
+from .. import registry
+from .gradual_warmup import GradualWarmupScheduler
+from .step_lr import build_step_lr
+from .multistep_lr import build_multistep_lr
+from .cosine_annearling_lr import build_cosine_annearling_lr
 
 
 def build_lr_scheduler(cfg, optimizer):

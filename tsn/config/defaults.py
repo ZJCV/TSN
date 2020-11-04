@@ -134,9 +134,9 @@ _C.MODEL.CRITERION.NAME = 'CrossEntropyLoss'
 # Optimizer
 # ---------------------------------------------------------------------------- #
 _C.OPTIMIZER = CN()
-_C.OPTIMIZER.NAME = 'sgd'
+_C.OPTIMIZER.NAME = 'SGD'
 _C.OPTIMIZER.LR = 1e-3
-_C.OPTIMIZER.WEIGHT_DECAY = 1e-4
+_C.OPTIMIZER.WEIGHT_DECAY = 3e-5
 # for sgd
 _C.OPTIMIZER.SGD = CN()
 _C.OPTIMIZER.SGD.MOMENTUM = 0.9
@@ -145,7 +145,7 @@ _C.OPTIMIZER.SGD.MOMENTUM = 0.9
 # LR_Scheduler
 # ---------------------------------------------------------------------------- #
 _C.LR_SCHEDULER = CN()
-_C.LR_SCHEDULER.NAME = 'multistep_lr'
+_C.LR_SCHEDULER.NAME = 'MultiStepLR'
 _C.LR_SCHEDULER.IS_WARMUP = False
 _C.LR_SCHEDULER.GAMMA = 0.1
 

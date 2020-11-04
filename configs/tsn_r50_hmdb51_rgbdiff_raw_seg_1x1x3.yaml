@@ -71,17 +71,17 @@ MODEL:
   CRITERION:
     NAME: 'CrossEntropyLoss'
 OPTIMIZER:
-  NAME: 'sgd'
+  NAME: 'SGD'
   LR: 1e-3
-  WEIGHT_DECAY: 1e-4
+  WEIGHT_DECAY: 3e-5
   SGD:
     MOMENTUM: 0.9
 LR_SCHEDULER:
-  NAME: 'multistep_lr'
+  NAME: 'MultiStepLR'
   IS_WARMUP: True
   GAMMA: 0.2
   MULTISTEP_LR:
     MILESTONES: [ 15000, 25000 ]
   WARMUP:
-    ITERATION: 1000
+    ITERATION: 400
     MULTIPLIER: 1.0

@@ -10,10 +10,10 @@
 import torch.nn as nn
 import torch.optim as optim
 
-from tsn.optim import registry
+from .. import registry
 
 
-@registry.OPTIMIZERS.register('sgd')
+@registry.OPTIMIZERS.register('SGD')
 def build_sgd(cfg, model):
     assert isinstance(model, nn.Module)
 
