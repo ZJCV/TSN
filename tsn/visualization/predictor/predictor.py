@@ -3,7 +3,7 @@
 
 import torch
 
-from tsn.model.build import build_model
+from tsn.model.recognizers.build import build_recognizer
 from tsn.data.transforms.build import build_transform
 from .util import process_cv2_inputs
 from tsn.util.distributed import get_device, get_local_rank
@@ -27,7 +27,7 @@ class Predictor:
             device = get_device()
 
         # Build the video model and print model statistics.
-        self.model = build_model(cfg, device)
+        self.model = build_recognizer(cfg, device)
         self.model.eval()
         self.transform = build_transform(cfg, is_train=False)
 
