@@ -8,6 +8,7 @@
 """
 
 import time
+import numpy as np
 import torch
 
 from tsn.util.distributed import get_device, get_local_rank
@@ -21,6 +22,7 @@ def main(data_shape, config_file, mobile_name):
 
     device = get_device(local_rank=get_local_rank())
     model = build_recognizer(cfg, device)
+    model.eval()
     data = torch.randn(data_shape).to(device=device, non_blocking=True)
 
     GFlops, params_size = compute_num_flops(model, data)
@@ -29,18 +31,25 @@ def main(data_shape, config_file, mobile_name):
     print(f'GFlops: {GFlops}')
     print(f'Params Size: {params_size}')
 
-    total_time = 0.0
+    data = torch.randn(data_shape)
+    t1 = 0.0
     num = 100
+    begin = time.time()
     for i in range(num):
-        data = torch.randn(data_shape).to(device=device, non_blocking=True)
         start = time.time()
-        model(data)
-        total_time = time.time() - start
-    print(f'one process need {total_time / num}')
+        model(data.to(device=device, non_blocking=True))
+        t1 += time.time() - start
+    t2 = time.time() - begin
+    print(f'one process need {t2 / num}, model compute need: {t1 / num}')
 
 
 if __name__ == '__main__':
-    data_shape = (1, 3, 4, 256, 256)
+    np.random.seed(cfg.RNG_SEED)
+    torch.manual_seed(cfg.RNG_SEED)
+    torch.backends.cudnn.deterministic = False
+    torch.backends.cudnn.benchmark = True
+
+    data_shape = (1, 3, 3, 256, 256)
 
     sf_cfg = 'configs/tsn_sfv2_ucf101_rgb_raw_dense_1x16x4.yaml'
     sf_name = 'ShuffleNet_v2'
