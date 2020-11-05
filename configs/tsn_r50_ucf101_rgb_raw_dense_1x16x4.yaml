@@ -54,7 +54,6 @@ MODEL:
   NAME: 'TSN'
   PRETRAINED: ''
   SYNC_BN: True
-  INPUT_SIZE: (224, 224, 3)
   BACKBONE:
     NAME: 'ResNet50'
     PARTIAL_BN: False
