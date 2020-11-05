@@ -9,8 +9,6 @@
 
 import torch.nn as nn
 
-from tsn.util import logging
-
 
 def convert_sync_bn(model, process_group, device):
     # convert all BN layers in the model to syncBN

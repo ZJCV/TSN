@@ -9,7 +9,7 @@
 
 from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
-from torch.utils.data import RandomSampler, SequentialSampler, BatchSampler
+from torch.utils.data import RandomSampler, SequentialSampler
 
 from .datasets.build import build_dataset
 from .transforms.build import build_transform

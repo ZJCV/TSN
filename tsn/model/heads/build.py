@@ -7,8 +7,6 @@
 @description: 
 """
 
-import torch.nn as nn
-
 from .. import registry
 from .tsn_head import TSNHead
 
