@@ -135,8 +135,6 @@ def load_train_config(args):
     num_gpus = cfg.NUM_GPUS
     if num_gpus > 1:
         cfg.OPTIMIZER.LR *= num_gpus
-        cfg.OPTIMIZER.WEIGHT_DECAY *= num_gpus
-        cfg.LR_SCHEDULER.COSINE_ANNEALING_LR.MINIMAL_LR *= num_gpus
 
     cfg.freeze()
 
