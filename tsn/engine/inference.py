@@ -38,7 +38,7 @@ def compute_on_dataset(images, targets, device, model, num_gpus, evaluator):
 
 
 def inference(cfg, model, device, **kwargs):
-    iteration = kwargs.get('iteration', None)
+    cur_epoch = kwargs.get('cur_epoch', None)
     dataset_name = cfg.DATASETS.TEST.NAME
     num_gpus = cfg.NUM_GPUS
 
@@ -64,7 +64,7 @@ def inference(cfg, model, device, **kwargs):
         output_dir = cfg.OUTPUT_DIR
         result_path = os.path.join(output_dir,
                                    'result_{}.txt'.format(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))) \
-            if iteration is None else os.path.join(output_dir, 'result_{:07d}.txt'.format(iteration))
+            if cur_epoch is None else os.path.join(output_dir, 'result_{:04d}.txt'.format(cur_epoch))
 
         with open(result_path, "w") as f:
             f.write(result_str)

@@ -1,8 +1,10 @@
 from collections import deque, defaultdict
 import numpy as np
+import datetime
 import torch
 
 from .distributed import all_reduce
+from .misc import gpu_mem_usage, cpu_mem_usage
 
 
 class SmoothedValue:
@@ -73,7 +75,7 @@ class MetricLogger:
         return self.delimiter.join(loss_str)
 
 
-def update_meters(num_gpus, meters, loss_dict, acc_dict):
+def update_stats(num_gpus, meters, loss_dict, acc_dict):
     assert isinstance(loss_dict, dict) and isinstance(acc_dict, dict)
 
     # Gather all the predictions across all the devices.
@@ -93,3 +95,58 @@ def update_meters(num_gpus, meters, loss_dict, acc_dict):
     else:
         meter_dict = {k: v for k, v in zip(keys, values)}
         meters.update(**meter_dict)
+
+
+def log_iter_stats(cur_iter, epoch_iters, cur_epoch, max_epoch, lr, meters):
+    max_iter = epoch_iters * max_epoch
+    cur_epoch_iter = epoch_iters * (cur_epoch - 1) + (cur_iter + 1)
+    eta_seconds = meters.time.global_avg * (max_iter - cur_epoch_iter)
+    eta_string = str(datetime.timedelta(seconds=int(eta_seconds)))
+
+    stats = meters.delimiter.join([
+        "epoch: {cur_epoch:04d}/{max_epoch:04d}",
+        "iter: {cur_iter:05d}/{max_iter:05d}",
+        "lr: {lr:.5f}",
+        '{meters}',
+        "eta: {eta}",
+        'gpu_mem: {mem:.2f}G',
+    ]).format(
+        cur_epoch=cur_epoch,
+        max_epoch=max_epoch,
+        cur_iter=cur_iter + 1,
+        max_iter=epoch_iters,
+        lr=lr,
+        meters=str(meters),
+        eta=eta_string,
+        mem=gpu_mem_usage(),
+    )
+
+    return stats
+
+
+def log_epoch_stats(epoch_iters, cur_epoch, max_epoch, lr, meters):
+    max_iter = epoch_iters * max_epoch
+    cur_epoch_iter = epoch_iters * cur_epoch
+    eta_seconds = meters.time.global_avg * (max_iter - cur_epoch_iter)
+    eta_string = str(datetime.timedelta(seconds=int(eta_seconds)))
+
+    usage, total = cpu_mem_usage()
+
+    stats = meters.delimiter.join([
+        "epoch: {cur_epoch:04d}/{max_epoch:04d}",
+        "lr: {lr:.5f}",
+        "eta: {eta}",
+        'gpu_mem: {mem:.2f}G',
+        "RAM: {usage:.2f}/{total:.2f}G",
+    ]).format(
+        cur_epoch=cur_epoch,
+        max_epoch=max_epoch,
+        lr=lr,
+        meters=str(meters),
+        eta=eta_string,
+        mem=gpu_mem_usage(),
+        usage=usage,
+        total=total,
+    )
+
+    return stats

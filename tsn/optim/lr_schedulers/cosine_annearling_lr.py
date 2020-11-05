@@ -17,9 +17,9 @@ from .. import registry
 def build_cosine_annearling_lr(cfg, optimizer):
     assert isinstance(optimizer, Optimizer)
 
-    max_iteration = cfg.TRAIN.MAX_ITER
+    max_epoch = cfg.TRAIN.MAX_EPOCH
     if cfg.LR_SCHEDULER.IS_WARMUP:
-        max_iteration -= cfg.LR_SCHEDULER.WARMUP.ITERATION
+        max_epoch -= cfg.LR_SCHEDULER.WARMUP.ITERATION
     minimal_lr = cfg.LR_SCHEDULER.COSINE_ANNEALING_LR.MINIMAL_LR
 
-    return optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=max_iteration, eta_min=minimal_lr)
+    return optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=max_epoch, eta_min=minimal_lr)

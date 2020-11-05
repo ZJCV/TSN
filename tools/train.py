@@ -35,7 +35,8 @@ def train(cfg):
 
     logger = logging.setup_logging(__name__)
     logger.info('init start')
-    arguments = {"iteration": 0}
+    # 迭代轮数从１开始计数
+    arguments = {"cur_epoch": 1}
 
     device = get_device(get_local_rank())
     model = build_recognizer(cfg, device)
@@ -49,7 +50,7 @@ def train(cfg):
         logger.info('resume start')
         extra_checkpoint_data = checkpointer.load(map_location=device)
         if isinstance(extra_checkpoint_data, dict):
-            arguments['iteration'] = extra_checkpoint_data['iteration']
+            arguments['cur_epoch'] = extra_checkpoint_data['cur_epoch']
             if cfg.LR_SCHEDULER.IS_WARMUP:
                 logger.info('warmup start')
                 if lr_scheduler.finished:
@@ -61,7 +62,7 @@ def train(cfg):
                 logger.info('warmup end')
         logger.info('resume end')
 
-    data_loader = build_dataloader(cfg, is_train=True, start_iter=arguments['iteration'])
+    data_loader = build_dataloader(cfg, is_train=True)
 
     logger.info('init end')
     synchronize()
