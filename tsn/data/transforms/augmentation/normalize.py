@@ -8,31 +8,14 @@
 """
 
 import torch
-import torchvision.transforms as transforms
-import torchvision.transforms.functional as F
+from opencv_transforms import transforms
+from opencv_transforms import functional as F
 
 
-class Normalize(object):
-    """Normalize a tensor image with mean and standard deviation.
-    Given mean: ``(mean[1],...,mean[n])`` and std: ``(std[1],..,std[n])`` for ``n``
-    channels, this transform will normalize each channel of the input
-    ``torch.*Tensor`` i.e.,
-    ``output[channel] = (input[channel] - mean[channel]) / std[channel]``
+class Normalize(transforms.Normalize):
 
-    .. note::
-        This transform acts out of place, i.e., it does not mutate the input tensor.
-
-    Args:
-        mean (sequence): Sequence of means for each channel.
-        std (sequence): Sequence of standard deviations for each channel.
-        inplace(bool,optional): Bool to make this operation in-place.
-
-    """
-
-    def __init__(self, mean, std, inplace=False):
-        self.mean = mean
-        self.std = std
-        self.inplace = inplace
+    def __init__(self, mean, std):
+        super().__init__(mean, std)
 
     def __call__(self, tensor):
         """
@@ -43,9 +26,9 @@ class Normalize(object):
             Tensor: Normalized Tensor image.
         """
         if len(tensor.shape) == 4:
-            return torch.stack([transforms.Normalize(self.mean, self.std, self.inplace)(crop) for crop in tensor])
+            return torch.stack([F.normalize(crop, self.mean, self.std) for crop in tensor])
         else:
-            return F.normalize(tensor, self.mean, self.std, self.inplace)
+            return super().__call__(tensor)
 
     def __repr__(self):
-        return self.__class__.__name__ + '(mean={0}, std={1})'.format(self.mean, self.std)
+        return super().__repr__()

@@ -9,7 +9,7 @@
 
 import os
 import numpy as np
-from PIL import Image
+import cv2
 import torch
 from torch.utils.data import Dataset
 
@@ -46,7 +46,8 @@ class RawFrameDataset(Dataset):
         for offset in clip_offsets:
             if 'RGB' == self.modality:
                 img_path = os.path.join(video_path, '{}{:0>5d}.jpg'.format(self.img_prefix, offset))
-                img = np.array(Image.open(img_path))
+                img = np.array(cv2.imread(img_path))
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
                 if self.transform:
                     img = self.transform(img)
@@ -60,7 +61,8 @@ class RawFrameDataset(Dataset):
                             np.linspace(0, self.clip_len * self.frame_interval, num=self.clip_len, dtype=np.int)
                 for idx in clip_idxs:
                     img_path = os.path.join(video_path, '{}{:0>5d}.jpg'.format(self.img_prefix, idx))
-                    img = np.array(Image.open(img_path))
+                    img = np.array(cv2.imread(img_path))
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
                     tmp_list.append(img)
                 for clip in reversed(range(1, self.clip_len)):

@@ -8,20 +8,11 @@
 """
 
 import torch
-import torchvision.transforms as transforms
-import torchvision.transforms.functional as F
+from opencv_transforms import transforms
+from opencv_transforms import functional as F
 
 
-class ToTensor(object):
-    """Convert a ``PIL Image`` or ``numpy.ndarray`` to tensor.
-
-    Converts a PIL Image or numpy.ndarray (H x W x C) in the range
-    [0, 255] to a torch.FloatTensor of shape (C x H x W) in the range [0.0, 1.0]
-    if the PIL Image belongs to one of the modes (L, LA, P, I, F, RGB, YCbCr, RGBA, CMYK, 1)
-    or if the numpy.ndarray has dtype = np.uint8
-
-    In the other cases, tensors are returned without scaling.
-    """
+class ToTensor(transforms.ToTensor):
 
     def __call__(self, pic):
         """
@@ -34,9 +25,9 @@ class ToTensor(object):
             Tensor: Converted image.
         """
         if isinstance(pic, tuple):
-            return torch.stack([transforms.ToTensor()(crop) for crop in pic])
+            return torch.stack([F.to_tensor(crop) for crop in pic])
         else:
-            return F.to_tensor(pic)
+            return super().__call__(pic)
 
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return super().__repr__()
