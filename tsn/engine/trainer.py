@@ -99,7 +99,8 @@ def do_train(cfg, arguments,
             for key, value in eval_results.items():
                 summary_writer.add_scalar(f'eval/{key}', value, global_step=arguments["cur_epoch"])
             summary_writer.close()
-    checkpointer.save("model_final", **arguments)
+    if is_master_proc():
+        checkpointer.save("model_final", **arguments)
     # compute training time
     total_training_time = int(time.time() - start_training_time)
     total_time_str = str(datetime.timedelta(seconds=total_training_time))
