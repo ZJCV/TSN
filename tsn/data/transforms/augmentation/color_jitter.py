@@ -25,13 +25,6 @@ class ColorJitter(transforms.ColorJitter):
 
         self.to_pil_image = ToPILImage()
 
-    def _check_input(self, value, name, center=1, bound=(0, float('inf')), clip_first_on_zero=True):
-        return super()._check_input(value, name, center, bound, clip_first_on_zero)
-
-    @staticmethod
-    def get_params(brightness, contrast, saturation, hue):
-        return super().get_params(brightness, contrast, saturation, hue)
-
     def forward(self, img):
         """
         先转换成PIL Image，再使用torchvision进行color jitter，然后转换成numpy ndarray
