@@ -41,14 +41,7 @@ class ActionPredictor:
         preds = self.model(inputs)['probs']
         preds = torch.softmax(preds, dim=1).to(self.cpu_device)
 
-        # num_selected_labels = min(len(self.label), 5)
-        # scores_tuples = tuple(zip(self.label, preds))
-        # scores_sorted = sorted(
-        #     scores_tuples, key=itemgetter(1), reverse=True)
-        # results = scores_sorted[:num_selected_labels]
-
         task.add_action_preds(preds)
-
         return task
 
     def process_cv2_inputs(self, frames):
@@ -62,8 +55,6 @@ class ActionPredictor:
             ]
 
         image_list = [self.transform(frame) for frame in frames]
-        # [T, C, H, W] -> [C, T, H, W]
-        image = torch.stack(image_list).transpose(0, 1)
-        # [C, T, H, W] -> [1, C, T, H, W]
-        inputs = image.unsqueeze(0)
+        # [T, C, H, W] -> [C, T, H, W] -> [1, C, T, H, W]
+        inputs = torch.stack(image_list).transpose(0, 1).unsqueeze(0)
         return inputs

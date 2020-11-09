@@ -19,6 +19,8 @@ from tsn.multiprocess.manager.video_manager import VideoManager
 from tsn.multiprocess.predictor.action_predictor import ActionPredictor
 from tsn.multiprocess.visualizer.video_visualizor import VideoVisualizer
 
+time_decay = 0.001
+
 
 def read(cfg, task_queue):
     provider = VideoProvider(cfg)
@@ -28,8 +30,7 @@ def read(cfg, task_queue):
             task_queue.put(_StopToken())
             break
         start = time.time()
-        task_queue.put(task)
-        time.sleep(0.001)
+        task_queue.put(task, block=False)
         print('one put task_queue need: {}'.format(time.time() - start))
     provider.clean()
     time.sleep(100)
@@ -40,6 +41,9 @@ def write(cfg, result_queue):
 
     while True:
         start = time.time()
+        if result_queue.empty():
+            time.sleep(time_decay)
+            continue
         task = result_queue.get()
         end = time.time()
         print('one get result_queue need: {}'.format(end - start))
@@ -60,6 +64,9 @@ def predict(cfg, task_queue, predict_queue):
     predictor = ActionPredictor(cfg)
     while True:
         start = time.time()
+        if task_queue.empty():
+            time.sleep(time_decay)
+            continue
         task = task_queue.get()
         end = time.time()
         print('one get task_queue need: {}'.format(end - start))
@@ -70,9 +77,7 @@ def predict(cfg, task_queue, predict_queue):
         task = predictor(task)
         end1 = time.time()
         print('one task predict need: {}'.format(end1 - end))
-        predict_queue.put(task)
-        time.sleep(0.001)
-
+        predict_queue.put(task, block=False)
         print('one put predict_queue need: {}'.format(time.time() - end1))
     time.sleep(100)
 
@@ -82,6 +87,9 @@ def visualize(cfg, predict_queue, result_queue):
 
     while True:
         start = time.time()
+        if predict_queue.empty():
+            time.sleep(time_decay)
+            continue
         task = predict_queue.get()
         end = time.time()
         print('one get predict_queue need: {}'.format(end - start))
@@ -92,8 +100,7 @@ def visualize(cfg, predict_queue, result_queue):
         task = visualizer(task)
         end1 = time.time()
         print('one compute visualizer need: {}'.format(end1 - end))
-        result_queue.put(task)
-        time.sleep(0.001)
+        result_queue.put(task, block=False)
         print('one put result_queue need: {}'.format(time.time() - end1))
     time.sleep(100)
 
@@ -103,23 +110,27 @@ def main():
     cfg = load_test_config(args)
 
     # 任务队列，保存待预测数据
-    task_queue = mp.SimpleQueue()
+    task_queue = mp.Queue()
     # 预测队列，保存待绘制数据
-    predict_queue = mp.SimpleQueue()
+    predict_queue = mp.Queue()
     # 结果队列，保存待显示数据
-    result_queue = mp.SimpleQueue()
+    result_queue = mp.Queue()
 
-    process_read = mp.Process(target=read, args=(cfg, task_queue))
-    process_predict = mp.Process(target=predict, args=(cfg, task_queue, predict_queue))
-    process_visualize = mp.Process(target=visualize, args=(cfg, predict_queue, result_queue))
+    process_read = mp.Process(target=read, args=(cfg, task_queue), daemon=True)
+    process_predict = mp.Process(target=predict, args=(cfg, task_queue, predict_queue), daemon=True)
+    process_visualize = mp.Process(target=visualize, args=(cfg, predict_queue, result_queue), daemon=True)
     process_write = mp.Process(target=write, args=(cfg, result_queue))
 
     process_write.start()
     process_visualize.start()
     process_predict.start()
-
-    time.sleep(10)
+    time.sleep(2)
     process_read.start()
+
+    process_read.join()
+    process_predict.join()
+    process_visualize.join()
+    process_write.join()
 
 
 if __name__ == '__main__':

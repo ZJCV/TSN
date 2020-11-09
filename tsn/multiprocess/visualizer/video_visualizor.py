@@ -48,9 +48,6 @@ class VideoVisualizer:
         frames = frames[task.num_buffer_frames:]
 
         frames = self.draw_clip(frames, preds)
-        del task
-
-        task = TaskInfo()
         task.frames = np.array(buffer + frames)
 
         return task

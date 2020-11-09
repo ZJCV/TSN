@@ -43,12 +43,13 @@ VISUALIZATION:
   ENABLE: True
   THREAD_ENABLE: False
   WEBCAM: -1
+  INPUT_VIDEO: 'rtsp://admin:ts123456@58.213.74.114:555/Streaming/Channels/102'
   #  INPUT_VIDEO: './demo/videos/125-1.mp4'
-  INPUT_VIDEO: './demo/videos/00000001415000201.mp4'
+  #  INPUT_VIDEO: './demo/videos/00000001415000201.mp4'
   #  INPUT_VIDEO: './demo/videos/v_Rowing_g15_c04.avi'
   #    INPUT_VIDEO: './demo/videos/v_Lunges_g16_c01.avi'
-#  DISPLAY_WIDTH: 1280
-#  DISPLAY_HEIGHT: 720
-  OUTPUT_FPS: -1
+  #  DISPLAY_WIDTH: 1024
+  #  DISPLAY_HEIGHT: 576
+  OUTPUT_FPS: 25
   #  OUTPUT_FILE: "./demo/results/v_Rowing_g15_c04_out.mp4"
   LABEL_FILE_PATH: 'data/ucf101/annotations/classInd.txt'

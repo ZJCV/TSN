@@ -9,6 +9,8 @@
 
 import cv2
 
+from .live import Live
+
 
 class VideoManager:
 
@@ -53,13 +55,12 @@ class VideoManager:
 
         self.cap.release()
         self.cap = None
-        print(self.output_fps)
-        print(self.output_file)
 
         self.id = -1
         self.buffer = []
         self.buffer_size = cfg.VISUALIZATION.BUFFER_SIZE
         self.seq_length = cfg.DATASETS.FRAME_INTERVAL * cfg.DATASETS.NUM_CLIPS
+        self.live = self.init_live()
 
     def __call__(self, task):
         self.display(task)
@@ -79,6 +80,16 @@ class VideoManager:
             isColor=True,
         )
 
+    def init_live(self):
+        return None
+
+        """初始化推流"""
+        live = Live(enable=True, way='rtsp', url='rtsp://localhost:554/zj_test',
+                    size=(self.display_width, self.display_height), fps=self.output_fps)
+        live.run()
+
+        return live
+
     def display(self, task):
         """
         Either display a single frame (BGR image) to a window or write to
@@ -87,11 +98,13 @@ class VideoManager:
             task (TaskInfo object): task object that contain
                 the necessary information for prediction visualization. (e.g. visualized frames.)
         """
-        print('afadf')
         for frame in task.frames[task.num_buffer_frames:]:
+            if self.live is not None:
+                self.live.read_frame(frame)
+
             if self.output_file is None:
                 cv2.imshow("SlowFast", frame)
-                cv2.waitKey(int(1 / self.output_fps * 1000))
+                cv2.waitKey(20)
                 # time.sleep(1 / self.output_fps)
             else:
                 self.output_file.write(frame)
