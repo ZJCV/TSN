@@ -102,6 +102,11 @@ def main():
     args = parse_test_args()
     cfg = load_test_config(args)
 
+    np.random.seed(cfg.RNG_SEED)
+    torch.manual_seed(cfg.RNG_SEED)
+    torch.backends.cudnn.deterministic = False
+    torch.backends.cudnn.benchmark = True
+
     # Run demo.
     if cfg.VISUALIZATION.ENABLE:
         demo(cfg)

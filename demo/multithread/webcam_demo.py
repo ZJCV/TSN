@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import torch
 
-from tsn.model.build import build_model
+from tsn.model.recognizers.build import build_recognizer
 from tsn.data.transforms.build import build_transform
 from tsn.util.parser import parse_test_args, load_test_config
 from tsn.util.distributed import get_device, get_local_rank
@@ -118,7 +118,7 @@ def main():
     torch.backends.cudnn.benchmark = True
 
     device = get_device(local_rank=get_local_rank())
-    model = build_model(cfg, device)
+    model = build_recognizer(cfg, device)
     model.eval()
     camera = cv2.VideoCapture(cfg.VISUALIZATION.INPUT_VIDEO)
 
