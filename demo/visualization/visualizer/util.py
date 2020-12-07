@@ -12,6 +12,8 @@ import json
 
 import tsn.util.logging as logging
 
+logger = logging.get_logger(__name__)
+
 
 def get_class_names(path):
     """
@@ -61,7 +63,6 @@ def create_text_labels(classes, scores, class_names, ground_truth=False):
     try:
         labels = [class_names[i] for i in classes]
     except IndexError:
-        logger = logging.setup_logging(__name__)
         logger.error("Class indices get out of range: {}".format(classes))
         return None
 

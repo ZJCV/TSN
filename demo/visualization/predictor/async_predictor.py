@@ -6,7 +6,7 @@ import torch
 import torch.multiprocessing as mp
 
 from .predictor import Predictor
-from tsn.visualization.stop_token import _StopToken
+from demo.visualization import _StopToken
 
 
 class AsyncPredictor:

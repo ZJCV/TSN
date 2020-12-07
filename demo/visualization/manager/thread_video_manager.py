@@ -14,7 +14,7 @@ import threading
 import time
 import cv2
 
-from tsn.visualization.task_info import TaskInfo
+from demo.visualization.task_info import TaskInfo
 
 
 class ThreadVideoManager:

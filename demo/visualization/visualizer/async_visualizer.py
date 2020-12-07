@@ -11,7 +11,7 @@ import atexit
 import numpy as np
 import torch.multiprocessing as mp
 
-from tsn.visualization.stop_token import _StopToken
+from demo.visualization import _StopToken
 from .util import draw_predictions
 from .video_visualizer import VideoVisualizer
 

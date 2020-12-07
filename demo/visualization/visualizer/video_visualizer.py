@@ -11,6 +11,8 @@ from .util import create_text_labels, get_class_names
 import tsn.util.logging as logging
 from .img_visualizer import ImgVisualizer
 
+logger = logging.get_logger(__name__)
+
 
 class VideoVisualizer:
     def __init__(
@@ -98,7 +100,6 @@ class VideoVisualizer:
         elif isinstance(preds, list):
             n_instances = len(preds)
         else:
-            logger = logging.setup_logging(__name__)
             log.getLogger("matplotlib").setLevel(log.ERROR)
             logger.error("Unsupported type of prediction input.")
             return

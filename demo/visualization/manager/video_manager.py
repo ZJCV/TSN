@@ -8,8 +8,7 @@
 """
 
 import cv2
-import time
-from tsn.visualization.task_info import TaskInfo
+from demo.visualization.task_info import TaskInfo
 
 
 class VideoManager:

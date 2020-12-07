@@ -10,12 +10,10 @@
 import os
 import cv2
 import torch
-import time
 import numpy as np
 import matplotlib.pyplot as plt
 
 from .img_visualizer import ImgVisualizer
-from tsn.multiprocess.task_info import TaskInfo
 
 FONTFACE = cv2.FONT_HERSHEY_COMPLEX_SMALL
 FONTSCALE = 1
