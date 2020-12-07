@@ -11,20 +11,25 @@ av == 8.0.2
 joblib == 0.15.1
 
 # TSN/demo/multiprocess/visualizer/img_visualizer.py: 13
-# TSN/demo/multiprocess/visualizer/video_visualizor.py: 13
-# TSN/tsn/visualization/visualizer/img_visualizer.py: 13
-# TSN/tsn/visualization/visualizer/video_visualizer.py: 7
+# TSN/demo/multiprocess/visualizer/video_visualizor.py: 14
+# TSN/demo/visualization/visualizer/img_visualizer.py: 13
+# TSN/demo/visualization/visualizer/video_visualizer.py: 7
 matplotlib == 3.2.2
 
 # TSN/tools/data/build_rawframes.py: 9
 mmcv_full == 1.1.5
 
+# TSN/demo/demo.py: 10
 # TSN/demo/demo_net.py: 4
 # TSN/demo/multiprocess/predictor/action_predictor.py: 12
 # TSN/demo/multiprocess/visualizer/img_visualizer.py: 12
-# TSN/demo/multiprocess/visualizer/video_visualizor.py: 12
+# TSN/demo/multiprocess/visualizer/video_visualizor.py: 13
 # TSN/demo/multithread/webcam_demo.py: 6
-# TSN/test/test_clipsample.py: 10
+# TSN/demo/visualization/predictor/util.py: 11
+# TSN/demo/visualization/visualizer/async_visualizer.py: 11
+# TSN/demo/visualization/visualizer/img_visualizer.py: 12
+# TSN/demo/visualization/visualizer/video_visualizer.py: 6
+# TSN/test/test_clipsample.py: 11
 # TSN/test/test_transforms.py: 10
 # TSN/tools/compute_flops.py: 11
 # TSN/tools/data/activitynet/process_annotations.py: 5
@@ -38,28 +43,28 @@ mmcv_full == 1.1.5
 # TSN/tsn/data/datasets/rawframe_dataset.py: 11
 # TSN/tsn/data/datasets/video/decoder.py: 5
 # TSN/tsn/data/datasets/video_dataset.py: 11
+# TSN/tsn/data/samplers/short_cycle_batch_sampler.py: 6
 # TSN/tsn/data/transforms/augmentation/color_jitter.py: 10
 # TSN/tsn/data/transforms/augmentation/scale_jitter.py: 11
 # TSN/tsn/data/transforms/augmentation/three_crop.py: 95
 # TSN/tsn/util/collect_env.py: 3
 # TSN/tsn/util/metric_logger.py: 2
-# TSN/tsn/visualization/predictor/util.py: 11
-# TSN/tsn/visualization/visualizer/async_visualizer.py: 11
-# TSN/tsn/visualization/visualizer/img_visualizer.py: 12
-# TSN/tsn/visualization/visualizer/video_visualizer.py: 6
 numpy == 1.18.5
 
-# TSN/demo/multiprocess/manager/frame_provider.py: 10
+# TSN/demo/multiprocess/manager/live.py: 10
+# TSN/demo/multiprocess/manager/video_manager.py: 10
+# TSN/demo/multiprocess/manager/video_provider.py: 10
 # TSN/demo/multiprocess/predictor/action_predictor.py: 11
+# TSN/demo/multiprocess/visualizer/video_visualizor.py: 11
 # TSN/demo/multithread/webcam_demo.py: 5
+# TSN/demo/visualization/manager/thread_video_manager.py: 15
+# TSN/demo/visualization/manager/video_manager.py: 10
+# TSN/demo/visualization/predictor/util.py: 10
 # TSN/tsn/data/datasets/rawframe_dataset.py: 12
 # TSN/tsn/data/transforms/augmentation/resize.py: 10
 # TSN/tsn/data/transforms/augmentation/scale_jitter.py: 10
 # TSN/tsn/util/collect_env.py: 165
-# TSN/tsn/visualization/manager/thread_video_manager.py: 15
-# TSN/tsn/visualization/manager/video_manager.py: 10
-# TSN/tsn/visualization/predictor/util.py: 10
-opencv_python == 4.4.0.44
+opencv_contrib_python == 4.4.0.46
 
 # TSN/tsn/data/transforms/augmentation/center_crop.py: 10
 # TSN/tsn/data/transforms/augmentation/compose.py: 10
@@ -85,13 +90,21 @@ tabulate == 0.8.7
 # TSN/tsn/util/metrics.py: 10
 thop == 0.0.31.post2005241907
 
+# TSN/demo/demo.py: 11,12
 # TSN/demo/demo_net.py: 6
-# TSN/demo/multiprocess/multiprocess_demo.py: 10
 # TSN/demo/multiprocess/predictor/action_predictor.py: 10
 # TSN/demo/multiprocess/visualizer/img_visualizer.py: 14
-# TSN/demo/multiprocess/visualizer/video_visualizor.py: 11
+# TSN/demo/multiprocess/visualizer/video_visualizor.py: 12
 # TSN/demo/multithread/webcam_demo.py: 7
+# TSN/demo/visualization/predictor/async_predictor.py: 5,6
+# TSN/demo/visualization/predictor/predictor.py: 4
+# TSN/demo/visualization/predictor/util.py: 12
+# TSN/demo/visualization/visualizer/async_visualizer.py: 12
+# TSN/demo/visualization/visualizer/img_visualizer.py: 14
+# TSN/demo/visualization/visualizer/video_visualizer.py: 8
 # TSN/test/test_backbone.py: 10
+# TSN/test/test_clipsample.py: 10
+# TSN/test/test_short_cycle.py: 11
 # TSN/tools/compute_flops.py: 12
 # TSN/tools/fusion_test.py: 12
 # TSN/tools/test.py: 11
@@ -105,10 +118,11 @@ thop == 0.0.31.post2005241907
 # TSN/tsn/data/datasets/rawframe_dataset.py: 13,14
 # TSN/tsn/data/datasets/video/decoder.py: 7
 # TSN/tsn/data/datasets/video_dataset.py: 13,14
+# TSN/tsn/data/samplers/short_cycle_batch_sampler.py: 7,8
 # TSN/tsn/data/transforms/augmentation/normalize.py: 10
 # TSN/tsn/data/transforms/augmentation/to_tensor.py: 10
 # TSN/tsn/engine/inference.py: 12
-# TSN/tsn/engine/trainer.py: 13,31
+# TSN/tsn/engine/trainer.py: 13,32
 # TSN/tsn/model/consensus/avg_consensus.py: 10,11
 # TSN/tsn/model/criterions/crossentropy_loss.py: 10
 # TSN/tsn/model/heads/tsn_head.py: 10,11
@@ -129,12 +143,6 @@ thop == 0.0.31.post2005241907
 # TSN/tsn/util/metric_logger.py: 4
 # TSN/tsn/util/misc.py: 11,12
 # TSN/tsn/util/multiprocessing.py: 6
-# TSN/tsn/visualization/predictor/async_predictor.py: 5,6
-# TSN/tsn/visualization/predictor/predictor.py: 4
-# TSN/tsn/visualization/predictor/util.py: 12
-# TSN/tsn/visualization/visualizer/async_visualizer.py: 12
-# TSN/tsn/visualization/visualizer/img_visualizer.py: 14
-# TSN/tsn/visualization/visualizer/video_visualizer.py: 8
 torch == 1.6.0
 
 # TSN/tsn/data/datasets/video/decoder.py: 8
@@ -153,5 +161,6 @@ torchvision == 0.7.0
 tqdm == 4.47.0
 
 # TSN/tsn/config/defaults.py: 1
-# TSN/tsn/config/visualization_config.py: 10
+# TSN/tsn/config/multigrid.py: 10
+# TSN/tsn/config/visualization.py: 10
 yacs == 0.1.7
