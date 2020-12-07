@@ -8,10 +8,10 @@
 """
 
 from .defaults import _C
-from . import visualization_config
+from . import visualization
 from . import custom_config
 
-visualization_config.add_visualization_config(_C)
+visualization.add_visualization_config(_C)
 # Add custom config with default values.
 custom_config.add_custom_config(_C)
 

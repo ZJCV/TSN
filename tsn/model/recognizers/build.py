@@ -16,13 +16,14 @@ from tsn.util import logging
 from .. import registry
 from .tsn_recognizer import TSNRecognizer
 
+logger = logging.get_logger(__name__)
+
 
 def build_recognizer(cfg, device):
     world_size = du.get_world_size()
 
     model = registry.RECOGNIZER[cfg.MODEL.RECOGNIZER.NAME](cfg).to(device=device)
 
-    logger = logging.setup_logging(__name__)
     if cfg.MODEL.SYNC_BN and world_size > 1:
         logger.info(
             "start sync BN on the process group of {}".format(du._LOCAL_RANK_GROUP))

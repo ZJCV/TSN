@@ -15,6 +15,8 @@ from .video import video_container as container
 from .video import decoder
 from tsn.util import logging
 
+logger = logging.get_logger(__name__)
+
 classes = ['ApplyEyeMakeup', 'ApplyLipstick', 'Archery', 'BabyCrawling',
            'BalanceBeam', 'BandMarching', 'BaseballPitch', 'Basketball',
            'BasketballDunk', 'BenchPress', 'Biking', 'Billiards',
@@ -87,7 +89,6 @@ class UCF101(BaseDataset):
                         self.decoding_backend,
                     )
                 except Exception as e:
-                    logger = logging.setup_logging(__name__)
                     logger.info(
                         "Failed to load video from {} with error {}".format(
                             video_path, e

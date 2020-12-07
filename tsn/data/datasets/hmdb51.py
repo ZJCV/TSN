@@ -15,6 +15,8 @@ from .video import video_container as container
 from .video import decoder
 from tsn.util import logging
 
+logger = logging.get_logger(__name__)
+
 classes = ['brush_hair', 'cartwheel', 'catch', 'chew', 'clap', 'climb',
            'climb_stairs', 'dive', 'draw_sword', 'dribble', 'drink', 'eat',
            'fall_floor', 'fencing', 'flic_flac', 'golf', 'handstand', 'hit',
@@ -72,7 +74,7 @@ class HMDB51(BaseDataset):
                         self.decoding_backend,
                     )
                 except Exception as e:
-                    logger = logging.setup_logging(__name__)
+
                     logger.info(
                         "Failed to load video from {} with error {}".format(
                             video_path, e
