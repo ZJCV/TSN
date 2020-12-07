@@ -121,7 +121,7 @@ def test(args):
 
     rgb_model = build_recognizer(rgb_cfg, 0)
     rgb_model.eval()
-    checkpointer = CheckPointer(rgb_model, logger=logger)
+    checkpointer = CheckPointer(rgb_model)
     checkpointer.load(args.rgb_pretrained, map_location=map_location)
 
     # inference(rgb_cfg, rgb_model, device)
@@ -135,7 +135,7 @@ def test(args):
 
     rgbdiff_model = build_recognizer(rgbdiff_cfg, 0)
     rgbdiff_model.eval()
-    checkpointer = CheckPointer(rgbdiff_model, logger=logger)
+    checkpointer = CheckPointer(rgbdiff_model)
     checkpointer.load(args.rgbdiff_pretrained, map_location=map_location)
 
     inference(rgb_cfg, rgb_model, rgbdiff_cfg, rgbdiff_model, device)
