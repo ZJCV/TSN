@@ -13,11 +13,11 @@ import torch.multiprocessing as mp
 import time
 
 from tsn.util.parser import load_test_config, parse_test_args
-from tsn.multiprocess.stop_token import _StopToken
-from tsn.multiprocess.manager.video_provider import VideoProvider
-from tsn.multiprocess.manager.video_manager import VideoManager
-from tsn.multiprocess.predictor.action_predictor import ActionPredictor
-from tsn.multiprocess.visualizer.video_visualizor import VideoVisualizer
+from demo.multiprocess.stop_token import _StopToken
+from demo.multiprocess.manager.video_provider import VideoProvider
+from demo.multiprocess.manager import VideoManager
+from demo.multiprocess.predictor.action_predictor import ActionPredictor
+from demo.multiprocess.visualizer.video_visualizor import VideoVisualizer
 
 time_decay = 0.001
 

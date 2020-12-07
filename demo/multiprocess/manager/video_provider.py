@@ -20,7 +20,7 @@ class VideoProvider:
         """
         Args:
             cfg (CfgNode): configs. Details can be found in
-            tsn/config/visualization_config.py
+            tsn/config/visualization.py
         """
         assert (
                 cfg.VISUALIZATION.WEBCAM > -1 or cfg.VISUALIZATION.INPUT_VIDEO != ""

@@ -7,17 +7,18 @@
 @description: 
 """
 
+from torch.nn import GroupNorm
 import numpy as np
 
 from tsn.data.datasets.clipsample import SegmentedSample, DenseSample
 
 
 def test_seg_sample():
-    np.random.seed(100)
+    # np.random.seed(100)
 
-    clip_len = 1
+    clip_len = 3
     frame_interval = 1
-    num_clips = 3
+    num_clips = 10
     start_index = 0
 
     is_train = True
@@ -52,12 +53,15 @@ def test_dense_sample():
     num_frames = 100
     clip_offsets = clip_sample(num_frames)
     print(clip_offsets)
+    print(len(clip_offsets))
 
     clip_sample.is_train = False
     clip_offsets = clip_sample(num_frames)
     print(clip_offsets)
+    print(clip_offsets.reshape(10, -1))
+    print(clip_offsets.reshape(10, -1).shape)
 
 
 if __name__ == '__main__':
-    test_seg_sample()
+    # test_seg_sample()
     test_dense_sample()

@@ -6,9 +6,9 @@ import time
 import torch
 import tqdm
 
-from tsn.visualization.manager import VideoManager, ThreadVideoManager
-from tsn.visualization.visualizer import AsyncVisualizer
-from tsn.visualization.predictor import ActionPredictor, AsyncActionPredictor
+from demo.visualization.manager import VideoManager, ThreadVideoManager
+from demo.visualization.visualizer import AsyncVisualizer
+from demo.visualization.predictor import ActionPredictor, AsyncActionPredictor
 from tsn.util.parser import parse_test_args, load_test_config
 
 from tsn.util import logging
@@ -32,7 +32,7 @@ def run_demo(cfg, frame_provider):
     torch.backends.cudnn.deterministic = False
     torch.backends.cudnn.benchmark = True
     # Setup logging format.
-    logger = logging.setup_logging(__name__, cfg.OUTPUT_DIR)
+    logging.setup_logging(cfg.OUTPUT_DIR)
     # Print config.
     logger.info("Run demo with config:")
     logger.info(cfg)
