@@ -27,10 +27,10 @@ def build_recognizer(cfg, device):
     if cfg.MODEL.SYNC_BN and world_size > 1:
         logger.info(
             "start sync BN on the process group of {}".format(du._LOCAL_RANK_GROUP))
-        convert_sync_bn(model, du._LOCAL_PROCESS_GROUP, device)
+        convert_sync_bn(model, du._LOCAL_PROCESS_GROUP)
     if cfg.MODEL.PRETRAINED != "":
         logger.info(f'load pretrained: {cfg.MODEL.PRETRAINED}')
-        checkpointer = CheckPointer(model, logger=logger)
+        checkpointer = CheckPointer(model)
         checkpointer.load(cfg.MODEL.PRETRAINED, map_location=device)
         logger.info("finish loading model weights")
 

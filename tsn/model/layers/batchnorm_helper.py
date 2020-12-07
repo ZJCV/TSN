@@ -10,12 +10,6 @@
 import torch.nn as nn
 
 
-def convert_sync_bn(model, process_group, device):
-    # convert all BN layers in the model to syncBN
-    for _, (child_name, child) in enumerate(model.named_children()):
-        if isinstance(child, nn.modules.batchnorm._BatchNorm):
-            m = nn.SyncBatchNorm.convert_sync_batchnorm(child, process_group)
-            m = m.to(device=device)
-            setattr(model, child_name, m)
-        else:
-            convert_sync_bn(child, process_group, device)
+def convert_sync_bn(model, process_group):
+    sync_bn_module = nn.SyncBatchNorm.convert_sync_batchnorm(model, process_group)
+    return sync_bn_module
