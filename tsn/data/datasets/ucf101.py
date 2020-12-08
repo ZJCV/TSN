@@ -63,7 +63,7 @@ class UCF101(BaseDataset):
         self._update_evaluator()
 
     def _update_video(self, annotation_dir, is_train=True):
-        dataset_type = 'rawframes' if self.type == 'RawFrame' else 'videos'
+        dataset_type = 'rawframes' if self.type == 'RawFrame' else 'Video'
         if is_train:
             annotation_path = os.path.join(annotation_dir, f'ucf101_train_split_{self.split}_{dataset_type}.txt')
         else:
