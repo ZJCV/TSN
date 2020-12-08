@@ -3,30 +3,31 @@ NUM_NODES: 1
 RANK_ID: 0
 DIST_BACKEND: "nccl"
 RNG_SEED: 1
-OUTPUT_DIR: 'outputs/tsn_r50_hmdb51_rgbdiff_raw_seg_1x1x3'
+OUTPUT_DIR: 'outputs/tsn_r50_pretrained_partial_bn_ucf101_rgb_raw_dense_1x16x4'
 TRAIN:
   LOG_STEP: 10
-  MAX_EPOCH: 100
-  SAVE_EPOCH: 10
-  EVAL_EPOCH: 10
+  MAX_EPOCH: 200
+  SAVE_EPOCH: 5
+  EVAL_EPOCH: 5
   RESUME: False
   USE_TENSORBOARD: True
 DATASETS:
-  MODALITY: 'RGBDiff'
+  MODALITY: 'RGB'
   TYPE: 'RawFrame'
-  SAMPLE_STRATEGY: 'SegSample'
-  CLIP_LEN: 5
-  FRAME_INTERVAL: 1
-  NUM_CLIPS: 3
+  SAMPLE_STRATEGY: 'DenseSample'
+  CLIP_LEN: 1
+  FRAME_INTERVAL: 16
+  NUM_CLIPS: 4
+  NUM_SAMPLE_POSITIONS: 1
   TRAIN:
-    NAME: 'HMDB51'
-    DATA_DIR: 'data/hmdb51/rawframes'
-    ANNOTATION_DIR: 'data/hmdb51'
+    NAME: 'UCF101'
+    DATA_DIR: 'data/ucf101/rawframes'
+    ANNOTATION_DIR: 'data/ucf101'
     SPLIT: 1
   TEST:
-    NAME: 'HMDB51'
-    DATA_DIR: 'data/hmdb51/rawframes'
-    ANNOTATION_DIR: 'data/hmdb51'
+    NAME: 'UCF101'
+    DATA_DIR: 'data/ucf101/rawframes'
+    ANNOTATION_DIR: 'data/ucf101'
     SPLIT: 1
 TRANSFORM:
   MEAN: (0.485, 0.456, 0.406)
@@ -46,23 +47,27 @@ TRANSFORM:
     THREE_CROP: False
     TEST_CROP_SIZE: 256
 DATALOADER:
-  TRAIN_BATCH_SIZE: 8
-  TEST_BATCH_SIZE: 8
+  TRAIN_BATCH_SIZE: 24
+  TEST_BATCH_SIZE: 24
   NUM_WORKERS: 8
 MODEL:
   NAME: 'TSN'
-  PRETRAINED: ""
-  SYNC_BN: True
+  PRETRAINED: ''
+  NORM:
+    TYPE: 'BatchNorm2d'
+    SYNC_BN: False
+    FIX_BN: False
+    PARTIAL_BN: True
   BACKBONE:
-    NAME: 'ResNet50'
-    PARTIAL_BN: False
+    NAME: 'ResNetBackbone'
     TORCHVISION_PRETRAINED: True
+    ARCH: "resnet50"
     ZERO_INIT_RESIDUAL: True
   HEAD:
     NAME: 'TSNHead'
     FEATURE_DIMS: 2048
-    DROPOUT: 0.0
-    NUM_CLASSES: 51
+    DROPOUT: 0.5
+    NUM_CLASSES: 101
   RECOGNIZER:
     NAME: 'TSNRecognizer'
   CONSENSU:
@@ -72,15 +77,15 @@ MODEL:
 OPTIMIZER:
   NAME: 'SGD'
   LR: 1e-3
-  WEIGHT_DECAY: 3e-5
+  WEIGHT_DECAY: 1e-5
   SGD:
     MOMENTUM: 0.9
 LR_SCHEDULER:
   NAME: 'MultiStepLR'
   IS_WARMUP: True
-  GAMMA: 0.2
+  GAMMA: 0.1
   MULTISTEP_LR:
-    MILESTONES: [ 50, 80 ]
+    MILESTONES: [ 100, 150, 175 ]
   WARMUP:
     ITERATION: 5
     MULTIPLIER: 1.0

@@ -15,7 +15,7 @@ from tsn.model.backbones.regnet import build_regnet
 
 
 def test_resnet50():
-    cfg.merge_from_file('configs/tsn_r50_ucf101_rgb_raw_dense_1x16x4.yaml')
+    cfg.merge_from_file('configs/tsn_r50_pretrained_sync_bn_ucf101_rgb_raw_dense_1x16x4.yaml')
 
     model = build_resnet50(cfg)
     data = torch.randn((1, 3, 224, 224))

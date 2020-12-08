@@ -10,9 +10,7 @@
 from tsn.util.distributed import get_device, get_local_rank
 
 from .. import registry
-from .mobilenet import build_mobilenet_v2
-from .shufflenet import build_shufflenet_v2
-from .resnet import build_resnet50
+from .build_resnet_backbone import build_resnet_backbone
 
 
 def build_backbone(cfg):

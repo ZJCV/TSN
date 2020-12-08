@@ -27,6 +27,12 @@ class TSNHead(nn.Module):
         self.fc = nn.Linear(in_channels, num_classes)
         self.dropout = nn.Dropout(p=dropout_rate)
 
+        self._init_weights()
+
+    def _init_weights(self):
+        nn.init.normal_(self.fc.weight, 0, 0.01)
+        nn.init.zeros_(self.fc.bias)
+
     def forward(self, x):
         x = self.avgpool(x)
         x = self.dropout(x)

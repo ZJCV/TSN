@@ -17,12 +17,24 @@ def add_config(_C):
     _C.MODEL = CN()
     _C.MODEL.NAME = "TSN"
     _C.MODEL.PRETRAINED = ""
-    _C.MODEL.SYNC_BN = False
+
+    _C.MODEL.NORM = CN()
+    _C.MODEL.NORM.TYPE = 'BatchNorm2d'
+    # for bn
+    _C.MODEL.NORM.SYNC_BN = False
+    _C.MODEL.NORM.FIX_BN = False
+    _C.MODEL.NORM.PARTIAL_BN = False
+    # for groupnorm
+    _C.MODEL.NORM.GROUPS = 32
+
+    _C.MODEL.ACT = CN()
+    _C.MODEL.ACT.TYPE = 'ReLU'
 
     _C.MODEL.BACKBONE = CN()
-    _C.MODEL.BACKBONE.NAME = 'ResNet50'
-    _C.MODEL.BACKBONE.PARTIAL_BN = False
+    _C.MODEL.BACKBONE.NAME = 'ResNetBackbone'
     _C.MODEL.BACKBONE.TORCHVISION_PRETRAINED = False
+    # for ResNet
+    _C.MODEL.BACKBONE.ARCH = 'resnet18'
     _C.MODEL.BACKBONE.ZERO_INIT_RESIDUAL = False
 
     _C.MODEL.HEAD = CN()

@@ -59,6 +59,6 @@ if __name__ == '__main__':
     mb_name = 'MobileNet_v2'
     main(data_shape, mb_cfg, mb_name)
 
-    r50_cfg = 'configs/tsn_r50_ucf101_rgb_raw_dense_1x16x4.yaml'
+    r50_cfg = 'configs/tsn_r50_pretrained_sync_bn_ucf101_rgb_raw_dense_1x16x4.yaml'
     r50_name = 'ResNet50'
     main(data_shape, r50_cfg, r50_name)
