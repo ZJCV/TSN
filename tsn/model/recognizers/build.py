@@ -9,7 +9,7 @@
 
 from torch.nn.parallel import DistributedDataParallel as DDP
 
-from ..layers.batchnorm_helper import convert_sync_bn
+from ..norm_helper import convert_sync_bn
 import tsn.util.distributed as du
 from tsn.util.checkpoint import CheckPointer
 from tsn.util import logging
