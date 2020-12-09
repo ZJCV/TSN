@@ -15,8 +15,8 @@ def add_config(_C):
     # Transform
     # ---------------------------------------------------------------------------- #
     _C.TRANSFORM = CN()
-    _C.TRANSFORM.MEAN = (0.5, 0.5, 0.5)  # (0.485, 0.456, 0.406)
-    _C.TRANSFORM.STD = (0.5, 0.5, 0.5)  # (0.229, 0.224, 0.225)
+    _C.TRANSFORM.MEAN = (0.45, 0.45, 0.45)  # (0.485, 0.456, 0.406)
+    _C.TRANSFORM.STD = (0.225, 0.225, 0.225)  # (0.229, 0.224, 0.225)
 
     _C.TRANSFORM.TRAIN = CN()
     _C.TRANSFORM.TRAIN.SCALE_JITTER = (256, 320)
