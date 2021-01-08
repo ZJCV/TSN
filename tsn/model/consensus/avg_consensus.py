@@ -13,7 +13,7 @@ import torch.nn as nn
 from .. import registry
 
 
-@registry.CONSENSU.register('AvgConsensus')
+@registry.CONSENSUS.register('AvgConsensus')
 class AvgConsensus(nn.Module):
 
     def __init__(self, cfg):

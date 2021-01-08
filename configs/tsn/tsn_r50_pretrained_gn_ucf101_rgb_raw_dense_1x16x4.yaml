@@ -70,7 +70,7 @@ MODEL:
     NUM_CLASSES: 101
   RECOGNIZER:
     NAME: 'TSNRecognizer'
-  CONSENSU:
+  CONSENSUS:
     NAME: 'AvgConsensus'
   CRITERION:
     NAME: 'CrossEntropyLoss'

@@ -46,8 +46,8 @@ def add_config(_C):
     _C.MODEL.RECOGNIZER = CN()
     _C.MODEL.RECOGNIZER.NAME = 'TSNRecognizer'
 
-    _C.MODEL.CONSENSU = CN()
-    _C.MODEL.CONSENSU.NAME = 'AvgConsensus'
+    _C.MODEL.CONSENSUS = CN()
+    _C.MODEL.CONSENSUS.NAME = 'AvgConsensus'
 
     _C.MODEL.CRITERION = CN()
     _C.MODEL.CRITERION.NAME = 'CrossEntropyLoss'

@@ -6,6 +6,6 @@ HEAD = Registry()
 
 RECOGNIZER = Registry()
 
-CONSENSU = Registry()
+CONSENSUS = Registry()
 
 CRITERION = Registry()
