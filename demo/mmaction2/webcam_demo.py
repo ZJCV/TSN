@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+"""
+参考[mmaction2/demo/webcam_demo.py](https://github.com/open-mmlab/mmaction2/blob/master/demo/webcam_demo.py)
+"""
+
 from collections import deque
 from operator import itemgetter
 from threading import Thread
