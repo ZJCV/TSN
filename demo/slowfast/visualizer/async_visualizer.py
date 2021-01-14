@@ -11,7 +11,7 @@ import atexit
 import numpy as np
 import torch.multiprocessing as mp
 
-from demo.visualization import _StopToken
+from demo.slowfast import _StopToken
 from .util import draw_predictions
 from .video_visualizer import VideoVisualizer
 
@@ -22,8 +22,8 @@ class AsyncVisualizer:
             """
             Visualization Worker for AsyncVis.
             Args:
-                video_vis (VideoVisualizer object): object with tools for visualization.
-                task_queue (mp.Queue): a shared queue for incoming task for visualization.
+                video_vis (VideoVisualizer object): object with tools for slowfast.
+                task_queue (mp.Queue): a shared queue for incoming task for slowfast.
                 result_queue (mp.Queue): a shared queue for visualized results.
             """
             self.video_vis = video_vis
@@ -33,7 +33,7 @@ class AsyncVisualizer:
 
         def run(self):
             """
-            Run visualization asynchronously.
+            Run slowfast asynchronously.
             """
             while True:
                 task = self.task_queue.get()

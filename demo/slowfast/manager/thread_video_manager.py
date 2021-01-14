@@ -14,7 +14,7 @@ import threading
 import time
 import cv2
 
-from demo.visualization.task_info import TaskInfo
+from demo.slowfast.utils.task_info import TaskInfo
 
 
 class ThreadVideoManager:
@@ -201,7 +201,7 @@ class ThreadVideoManager:
         Add the visualized task to the write queue for display/write to outputfile.
         Args:
             task (TaskInfo object): task object that contain
-                the necessary information for prediction visualization. (e.g. visualized frames.)
+                the necessary information for prediction slowfast. (e.g. visualized frames.)
         """
         with self.write_lock:
             self.write_queue[task.id] = (True, task)

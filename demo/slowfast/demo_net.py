@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
+"""
+参考：
+[SlowFast/tools/demo_net.py](https://github.com/facebookresearch/SlowFast/blob/master/tools/demo_net.py)
+[SlowFast/slowfast/visualization](https://github.com/facebookresearch/SlowFast/tree/master/slowfast/visualization)
+"""
+
 import numpy as np
 import time
 import torch
 import tqdm
 
-from demo.visualization.manager import VideoManager, ThreadVideoManager
-from demo.visualization.visualizer import AsyncVisualizer
-from demo.visualization.predictor import ActionPredictor, AsyncActionPredictor
+from demo.slowfast.manager import VideoManager, ThreadVideoManager
+from demo.slowfast.visualizer import AsyncVisualizer
+from demo.slowfast.predictor import ActionPredictor, AsyncActionPredictor
 from tsn.util.parser import parse_test_args, load_test_config
 
 from tsn.util import logging
@@ -18,13 +24,13 @@ logger = logging.get_logger(__name__)
 
 def run_demo(cfg, frame_provider):
     """
-    Run demo visualization.
+    Run demo slowfast.
     Args:
         cfg (CfgNode): configs. Details can be found in
             tsn/config/defaults.py
         frame_provider (iterator): Python iterator that return task objects that are filled
             with necessary information such as `frames`, `id` and `num_buffer_frames` for the
-            prediction and visualization pipeline.
+            prediction and slowfast pipeline.
     """
     # Set random seed from configs.
     np.random.seed(cfg.RNG_SEED)
@@ -101,11 +107,6 @@ def main():
     """
     args = parse_test_args()
     cfg = load_test_config(args)
-
-    np.random.seed(cfg.RNG_SEED)
-    torch.manual_seed(cfg.RNG_SEED)
-    torch.backends.cudnn.deterministic = False
-    torch.backends.cudnn.benchmark = True
 
     # Run demo.
     if cfg.VISUALIZATION.ENABLE:

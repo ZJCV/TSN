@@ -18,7 +18,7 @@ class VideoManager:
         """
         Args:
             cfg (CfgNode): configs. Details can be found in
-            tsn/config/visualization.py
+            tsn/config/slowfast.py
         """
         assert (
                 cfg.VISUALIZATION.WEBCAM > -1 or cfg.VISUALIZATION.INPUT_VIDEO != ""
@@ -96,7 +96,7 @@ class VideoManager:
         an output file if output path is provided.
         Args:
             task (TaskInfo object): task object that contain
-                the necessary information for prediction visualization. (e.g. visualized frames.)
+                the necessary information for prediction slowfast. (e.g. visualized frames.)
         """
         for frame in task.frames[task.num_buffer_frames:]:
             if self.live is not None:

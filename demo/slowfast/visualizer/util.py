@@ -81,7 +81,7 @@ def draw_predictions(task, video_vis):
     Draw prediction for the given task.
     Args:
         task (TaskInfo object): task object that contain
-            the necessary information for visualization. (e.g. frames, preds)
+            the necessary information for slowfast. (e.g. frames, preds)
             All attributes must lie on CPU devices.
         video_vis (VideoVisualizer object): the video visualizer object.
     """

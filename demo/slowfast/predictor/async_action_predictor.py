@@ -31,7 +31,7 @@ class AsyncActionPredictor:
 
     def put(self, task):
         """
-        Put task into task queue for prediction and visualization.
+        Put task into task queue for prediction and slowfast.
         Args:
             task (TaskInfo object): task object that contain
                 the necessary information for action prediction. (e.g. frames)

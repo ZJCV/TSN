@@ -2,7 +2,7 @@
 
 """
 @date: 2020/10/19 上午9:33
-@file: visualization.py
+@file: slowfast.py
 @author: zj
 @description: 
 """
@@ -11,7 +11,7 @@ from yacs.config import CfgNode as CN
 
 
 def add_visualization_config(_C):
-    # visualization configs.
+    # slowfast configs.
     # ---------------------------------------------------------------------------- #
     # Visualization options
     # ---------------------------------------------------------------------------- #
@@ -43,14 +43,14 @@ def add_visualization_config(_C):
     # The number of overlapping frames cannot be larger than
     # half of the sequence length `cfg.DATA.NUM_FRAMES * cfg.DATA.SAMPLING_RATE`
     _C.VISUALIZATION.BUFFER_SIZE = 0
-    # Draw visualization frames in [keyframe_idx - CLIP_VIS_SIZE, keyframe_idx + CLIP_VIS_SIZE] inclusively.
+    # Draw slowfast frames in [keyframe_idx - CLIP_VIS_SIZE, keyframe_idx + CLIP_VIS_SIZE] inclusively.
     _C.VISUALIZATION.CLIP_VIS_SIZE = 10
 
     # Whether to run in with multi-threaded manager reader.
     _C.VISUALIZATION.THREAD_ENABLE = False
-    # Take one clip for every `DEMO.NUM_CLIPS_SKIP` + 1 for prediction and visualization.
+    # Take one clip for every `DEMO.NUM_CLIPS_SKIP` + 1 for prediction and slowfast.
     # This is used for fast demo speed by reducing the prediction/visualiztion frequency.
-    # If -1, take the most recent read clip for visualization. This mode is only supported
+    # If -1, take the most recent read clip for slowfast. This mode is only supported
     # if `DEMO.THREAD_ENABLE` is set to True.
     _C.VISUALIZATION.NUM_CLIPS_SKIP = 0
 
@@ -91,6 +91,6 @@ def add_visualization_config(_C):
     # Visualize with top-k predictions or predictions above certain threshold(s).
     # Option: {"thres", "top-k"}
     _C.VISUALIZATION.VIS_MODE = "thres"
-    # Slow-motion rate for the visualization. The visualized portions of the
+    # Slow-motion rate for the slowfast. The visualized portions of the
     # manager will be played `_C.VISUALIZATION.SLOWMO` times slower than usual speed.
     _C.VISUALIZATION.SLOWMO = 1

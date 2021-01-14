@@ -43,7 +43,7 @@ class VideoVisualizer:
                 have `lower_thres` as a threshold. If None, all classes will have `thres` as a threshold.
                 This is helpful for model trained on highly imbalanced dataset.
             mode (str): Supported modes are {"top-k", "thres"}.
-                This is used for choosing predictions for visualization.
+                This is used for choosing predictions for slowfast.
 
         """
         assert mode in ["top-k", "thres"], "Mode {} is not supported.".format(
