@@ -1,36 +1,32 @@
 #!/usr/bin/env python3
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
-"""
-参考：
-[SlowFast/tools/demo_net.py](https://github.com/facebookresearch/SlowFast/blob/master/tools/demo_net.py)
-[SlowFast/slowfast/visualization](https://github.com/facebookresearch/SlowFast/tree/master/slowfast/visualization)
-"""
-
 import numpy as np
 import time
 import torch
 import tqdm
 
+from .visualizer import AsyncVis, VideoVisualizer
+from .predictor import ActionPredictor, AsyncActionPredictor
+
+from .configs import cfg
+from .utils.parser import load_config, parse_args
+from .manager import VideoManager, ThreadVideoManager
+
 from tsn.util import logging
 
 logger = logging.get_logger(__name__)
 
-from demo.slowfast.manager import VideoManager, ThreadVideoManager
-from demo.slowfast.visualizer import AsyncVisualizer
-from demo.slowfast.predictor import ActionPredictor, AsyncActionPredictor
-from demo.slowfast.utils.parser import parse_args, load_config
-
 
 def run_demo(cfg, frame_provider):
     """
-    Run demo slowfast.
+    Run demo visualization.
     Args:
         cfg (CfgNode): configs. Details can be found in
-            tsn/config/defaults.py
+            slowfast/config/defaults.py
         frame_provider (iterator): Python iterator that return task objects that are filled
             with necessary information such as `frames`, `id` and `num_buffer_frames` for the
-            prediction and slowfast pipeline.
+            prediction and visualization pipeline.
     """
     # Set random seed from configs.
     np.random.seed(cfg.RNG_SEED)
@@ -42,15 +38,35 @@ def run_demo(cfg, frame_provider):
     # Print config.
     logger.info("Run demo with config:")
     logger.info(cfg)
+    common_classes = (
+        cfg.DEMO.COMMON_CLASS_NAMES
+        if len(cfg.DEMO.LABEL_FILE_PATH) != 0
+        else None
+    )
 
-    async_vis = AsyncVisualizer(cfg, n_workers=cfg.VISUALIZATION.NUM_VIS_INSTANCES)
+    video_vis = VideoVisualizer(
+        num_classes=cfg.MODEL.NUM_CLASSES,
+        class_names_path=cfg.DEMO.LABEL_FILE_PATH,
+        top_k=cfg.TENSORBOARD.MODEL_VIS.TOPK_PREDS,
+        thres=cfg.DEMO.COMMON_CLASS_THRES,
+        lower_thres=cfg.DEMO.UNCOMMON_CLASS_THRES,
+        common_class_names=common_classes,
+        colormap=cfg.TENSORBOARD.MODEL_VIS.COLORMAP,
+        mode=cfg.DEMO.VIS_MODE,
+    )
+
+    async_vis = AsyncVis(video_vis, n_workers=cfg.DEMO.NUM_VIS_INSTANCES)
 
     if cfg.NUM_GPUS <= 1:
         model = ActionPredictor(cfg=cfg, async_vis=async_vis)
     else:
         model = AsyncActionPredictor(cfg=cfg, async_vis=async_vis)
 
-    start = time.time()
+    seq_len = cfg.DATA.NUM_FRAMES * cfg.DATA.SAMPLING_RATE
+
+    assert (
+            cfg.DEMO.BUFFER_SIZE <= seq_len // 2
+    ), "Buffer size cannot be greater than half of sequence length."
     num_task = 0
     # Start reading frames.
     frame_provider.start()
@@ -77,7 +93,6 @@ def run_demo(cfg, frame_provider):
             yield task
         except IndexError:
             continue
-    logger.info("Finish video in: {}".format(time.time() - start))
 
 
 def demo(cfg):
@@ -85,10 +100,10 @@ def demo(cfg):
     Run inference on an input video or stream from webcam.
     Args:
         cfg (CfgNode): configs. Details can be found in
-            tsn/config/defaults.py
+            slowfast/config/defaults.py
     """
     start = time.time()
-    if cfg.VISUALIZATION.THREAD_ENABLE:
+    if cfg.DEMO.THREAD_ENABLE:
         frame_provider = ThreadVideoManager(cfg)
     else:
         frame_provider = VideoManager(cfg)
@@ -103,13 +118,13 @@ def demo(cfg):
 
 def main():
     """
-    Main function to spawn the train and test predict.
+    Main function to spawn the train and test process.
     """
     args = parse_args()
     cfg = load_config(args)
 
     # Run demo.
-    if cfg.VISUALIZATION.ENABLE:
+    if cfg.DEMO.ENABLE:
         demo(cfg)
 
 
