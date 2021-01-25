@@ -58,8 +58,7 @@ class VideoManager:
         self.id = -1
         self.buffer = []
         self.buffer_size = cfg.DEMO.BUFFER_SIZE
-        self.seq_length = cfg.DATA.NUM_FRAMES * cfg.DATA.SAMPLING_RATE
-        self.test_crop_size = cfg.DATA.TEST_CROP_SIZE
+        self.seq_length = cfg.DATASETS.CLIP_LEN * cfg.DATASETS.NUM_CLIPS
         self.clip_vis_size = cfg.DEMO.CLIP_VIS_SIZE
 
     def __iter__(self):
@@ -77,7 +76,6 @@ class VideoManager:
 
         task.img_height = self.display_height
         task.img_width = self.display_width
-        task.crop_size = self.test_crop_size
         task.clip_vis_size = self.clip_vis_size
 
         frames = []

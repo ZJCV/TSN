@@ -117,17 +117,8 @@ def draw_predictions(task, video_vis):
             All attributes must lie on CPU devices.
         video_vis (VideoVisualizer object): the video visualizer object.
     """
-    boxes = task.bboxes
     frames = task.frames
     preds = task.action_preds
-    if boxes is not None:
-        img_width = task.img_width
-        img_height = task.img_height
-        if boxes.device != torch.device("cpu"):
-            boxes = boxes.cpu()
-        boxes = cv2_transform.revert_scaled_boxes(
-            task.crop_size, boxes, img_height, img_width
-        )
 
     keyframe_idx = len(frames) // 2 - task.num_buffer_frames
     draw_range = [
@@ -136,19 +127,10 @@ def draw_predictions(task, video_vis):
     ]
     buffer = frames[: task.num_buffer_frames]
     frames = frames[task.num_buffer_frames:]
-    if boxes is not None:
-        if len(boxes) != 0:
-            frames = video_vis.draw_clip_range(
-                frames,
-                preds,
-                boxes,
-                keyframe_idx=keyframe_idx,
-                draw_range=draw_range,
-            )
-    else:
-        frames = video_vis.draw_clip_range(
-            frames, preds, keyframe_idx=keyframe_idx, draw_range=draw_range
-        )
+
+    frames = video_vis.draw_clip_range(
+        frames, preds, keyframe_idx=keyframe_idx, draw_range=draw_range
+    )
     del task
 
     return buffer + frames

@@ -6,12 +6,11 @@ import time
 import torch
 import tqdm
 
-from .visualizer import AsyncVis, VideoVisualizer
-from .predictor import ActionPredictor, AsyncActionPredictor
+from demo.slowfast2.visualization.visualizer import AsyncVis, VideoVisualizer
+from demo.slowfast2.visualization.predictor import ActionPredictor, AsyncActionPredictor
 
-from .configs import cfg
-from .utils.parser import load_config, parse_args
-from .manager import VideoManager, ThreadVideoManager
+from demo.slowfast2.visualization.utils.parser import load_config, parse_args
+from demo.slowfast2.visualization.manager import VideoManager, ThreadVideoManager
 
 from tsn.util import logging
 
@@ -20,7 +19,7 @@ logger = logging.get_logger(__name__)
 
 def run_demo(cfg, frame_provider):
     """
-    Run demo visualization.
+    Run visualization visualization.
     Args:
         cfg (CfgNode): configs. Details can be found in
             slowfast/config/defaults.py
@@ -36,7 +35,7 @@ def run_demo(cfg, frame_provider):
     # Setup logging format.
     logging.setup_logging(cfg.OUTPUT_DIR)
     # Print config.
-    logger.info("Run demo with config:")
+    logger.info("Run visualization with config:")
     logger.info(cfg)
     common_classes = (
         cfg.DEMO.COMMON_CLASS_NAMES
@@ -45,13 +44,11 @@ def run_demo(cfg, frame_provider):
     )
 
     video_vis = VideoVisualizer(
-        num_classes=cfg.MODEL.NUM_CLASSES,
+        num_classes=cfg.MODEL.HEAD.NUM_CLASSES,
         class_names_path=cfg.DEMO.LABEL_FILE_PATH,
-        top_k=cfg.TENSORBOARD.MODEL_VIS.TOPK_PREDS,
         thres=cfg.DEMO.COMMON_CLASS_THRES,
         lower_thres=cfg.DEMO.UNCOMMON_CLASS_THRES,
         common_class_names=common_classes,
-        colormap=cfg.TENSORBOARD.MODEL_VIS.COLORMAP,
         mode=cfg.DEMO.VIS_MODE,
     )
 
@@ -62,7 +59,7 @@ def run_demo(cfg, frame_provider):
     else:
         model = AsyncActionPredictor(cfg=cfg, async_vis=async_vis)
 
-    seq_len = cfg.DATA.NUM_FRAMES * cfg.DATA.SAMPLING_RATE
+    seq_len = cfg.DATASETS.CLIP_LEN * cfg.DATASETS.NUM_CLIPS
 
     assert (
             cfg.DEMO.BUFFER_SIZE <= seq_len // 2
@@ -113,7 +110,7 @@ def demo(cfg):
 
     frame_provider.join()
     frame_provider.clean()
-    logger.info("Finish demo in: {}".format(time.time() - start))
+    logger.info("Finish visualization in: {}".format(time.time() - start))
 
 
 def main():
@@ -123,7 +120,7 @@ def main():
     args = parse_args()
     cfg = load_config(args)
 
-    # Run demo.
+    # Run visualization.
     if cfg.DEMO.ENABLE:
         demo(cfg)
 

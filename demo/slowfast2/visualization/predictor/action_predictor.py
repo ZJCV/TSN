@@ -20,15 +20,14 @@ class ActionPredictor:
     Synchronous Action Prediction and Visualization pipeline with AsyncVis.
     """
 
-    def __init__(self, cfg, async_vis=None, gpu_id=None):
+    def __init__(self, cfg, async_vis=None):
         """
         Args:
             cfg (CfgNode): configs. Details can be found in
                 slowfast/config/defaults.py
             async_vis (AsyncVis object): asynchronous visualizer.
-            gpu_id (Optional[int]): GPU id.
         """
-        self.predictor = Predictor(cfg=cfg, gpu_id=gpu_id)
+        self.predictor = Predictor(cfg=cfg)
         self.async_vis = async_vis
 
     def put(self, task):

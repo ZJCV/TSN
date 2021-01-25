@@ -16,7 +16,6 @@ class TaskInfo:
         self.num_buffer_frames = 0
         self.img_height = -1
         self.img_width = -1
-        self.crop_size = -1
         self.clip_vis_size = -1
 
     def add_frames(self, idx, frames):
