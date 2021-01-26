@@ -8,8 +8,8 @@ av == 8.0.2
 
 # TSN/demo/custom/visualizer/img_visualizer.py: 15
 # TSN/demo/slowfast/visualizer/img_visualizer.py: 15
-# TSN/demo/slowfast2/predictor/detectron2_predictor.py: 6,7,8
-# TSN/demo/slowfast2/visualizer/img_visualizer.py: 9
+# TSN/demo/slowfast2/visualization/predictor/detectron2_predictor.py: 6,7,8
+# TSN/demo/slowfast2/visualization/visualizer/img_visualizer.py: 9
 detectron2 == 0.3+cu102
 
 # TSN/tools/data/kinetics400/download.py: 15
@@ -19,8 +19,8 @@ joblib == 1.0.0
 # TSN/demo/custom/visualizer/video_visualizor.py: 14
 # TSN/demo/slowfast/visualizer/img_visualizer.py: 13
 # TSN/demo/slowfast/visualizer/video_visualizer.py: 7
-# TSN/demo/slowfast2/visualizer/img_visualizer.py: 7
-# TSN/demo/slowfast2/visualizer/video_visualizer.py: 13
+# TSN/demo/slowfast2/visualization/visualizer/img_visualizer.py: 7
+# TSN/demo/slowfast2/visualization/visualizer/video_visualizer.py: 13
 matplotlib == 3.3.3
 
 # TSN/tools/data/build_rawframes.py: 9
@@ -30,18 +30,17 @@ mmcv_full == 1.2.5
 # TSN/demo/custom/predictor/action_predictor.py: 12
 # TSN/demo/custom/visualizer/img_visualizer.py: 12
 # TSN/demo/custom/visualizer/video_visualizor.py: 13
-# TSN/demo/mmaction2/demo.py: 14
-# TSN/demo/mmaction2/webcam_demo.py: 12
+# TSN/demo/mmaction2/webcam_demo.py: 11
 # TSN/demo/slowfast/demo_net.py: 10
 # TSN/demo/slowfast/predictor/util.py: 11
 # TSN/demo/slowfast/visualizer/async_visualizer.py: 11
 # TSN/demo/slowfast/visualizer/img_visualizer.py: 12
 # TSN/demo/slowfast/visualizer/video_visualizer.py: 6
 # TSN/demo/slowfast2/demo_net.py: 4
-# TSN/demo/slowfast2/predictor/async_action_predictor.py: 5
-# TSN/demo/slowfast2/visualizer/async_vis.py: 5
-# TSN/demo/slowfast2/visualizer/img_visualizer.py: 6
-# TSN/demo/slowfast2/visualizer/video_visualizer.py: 12
+# TSN/demo/slowfast2/visualization/predictor/async_action_predictor.py: 5
+# TSN/demo/slowfast2/visualization/visualizer/async_vis.py: 5
+# TSN/demo/slowfast2/visualization/visualizer/img_visualizer.py: 6
+# TSN/demo/slowfast2/visualization/visualizer/video_visualizer.py: 12
 # TSN/test/test_clipsample.py: 11
 # TSN/test/test_transforms.py: 10
 # TSN/tools/compute_flops.py: 11
@@ -68,19 +67,31 @@ numpy == 1.19.5
 # TSN/demo/custom/manager/video_provider.py: 10
 # TSN/demo/custom/predictor/action_predictor.py: 11
 # TSN/demo/custom/visualizer/video_visualizor.py: 11
-# TSN/demo/mmaction2/constant.py: 10
-# TSN/demo/mmaction2/webcam_demo.py: 11
+# TSN/demo/mmaction2/visualization/configs/constant.py: 10
+# TSN/demo/mmaction2/visualization/utils/misc.py: 10
 # TSN/demo/slowfast/manager/thread_video_manager.py: 15
 # TSN/demo/slowfast/manager/video_manager.py: 10
 # TSN/demo/slowfast/predictor/util.py: 10
-# TSN/demo/slowfast2/manager/thread_video_manager.py: 9
-# TSN/demo/slowfast2/manager/video_manager.py: 6
-# TSN/demo/slowfast2/predictor/predictor.py: 4
+# TSN/demo/slowfast2/visualization/manager/thread_video_manager.py: 9
+# TSN/demo/slowfast2/visualization/manager/video_manager.py: 6
+# TSN/demo/slowfast2/visualization/predictor/predictor.py: 4
 # TSN/tsn/data/datasets/rawframe_dataset.py: 12
 # TSN/tsn/data/transforms/augmentation/resize.py: 10
 # TSN/tsn/data/transforms/augmentation/scale_jitter.py: 10
 # TSN/tsn/util/collect_env.py: 165
-opencv_python == 4.5.1.48
+opencv_contrib_python == 4.5.1.48
+
+# TSN/tsn/data/transforms/augmentation/center_crop.py: 10
+# TSN/tsn/data/transforms/augmentation/compose.py: 10
+# TSN/tsn/data/transforms/augmentation/normalize.py: 11,12
+# TSN/tsn/data/transforms/augmentation/random_crop.py: 10
+# TSN/tsn/data/transforms/augmentation/random_horizontal_flip.py: 10
+# TSN/tsn/data/transforms/augmentation/random_rotation.py: 10
+# TSN/tsn/data/transforms/augmentation/resize.py: 11
+# TSN/tsn/data/transforms/augmentation/scale_jitter.py: 12,13
+# TSN/tsn/data/transforms/augmentation/three_crop.py: 11,12
+# TSN/tsn/data/transforms/augmentation/to_tensor.py: 11,12
+opencv_transforms == 0.0.3.post3
 
 # TSN/tools/data/kinetics400/download.py: 14
 pandas == 1.2.0
@@ -98,8 +109,7 @@ thop == 0.0.31.post2005241907
 # TSN/demo/custom/predictor/action_predictor.py: 10
 # TSN/demo/custom/visualizer/img_visualizer.py: 14
 # TSN/demo/custom/visualizer/video_visualizor.py: 12
-# TSN/demo/mmaction2/demo.py: 15
-# TSN/demo/mmaction2/webcam_demo.py: 13
+# TSN/demo/mmaction2/webcam_demo.py: 12
 # TSN/demo/slowfast/demo_net.py: 12
 # TSN/demo/slowfast/predictor/async_predictor.py: 5,6
 # TSN/demo/slowfast/predictor/predictor.py: 4
@@ -108,14 +118,14 @@ thop == 0.0.31.post2005241907
 # TSN/demo/slowfast/visualizer/img_visualizer.py: 14
 # TSN/demo/slowfast/visualizer/video_visualizer.py: 8
 # TSN/demo/slowfast2/demo_net.py: 6
-# TSN/demo/slowfast2/predictor/async_action_predictor.py: 7,8
-# TSN/demo/slowfast2/predictor/async_predictor.py: 5,6
-# TSN/demo/slowfast2/predictor/detectron2_predictor.py: 5
-# TSN/demo/slowfast2/predictor/predictor.py: 5
-# TSN/demo/slowfast2/utils/misc.py: 4
-# TSN/demo/slowfast2/visualizer/async_vis.py: 6
-# TSN/demo/slowfast2/visualizer/img_visualizer.py: 8
-# TSN/demo/slowfast2/visualizer/video_visualizer.py: 14
+# TSN/demo/slowfast2/visualization/predictor/async_action_predictor.py: 7,8
+# TSN/demo/slowfast2/visualization/predictor/async_predictor.py: 5,6
+# TSN/demo/slowfast2/visualization/predictor/detectron2_predictor.py: 5
+# TSN/demo/slowfast2/visualization/predictor/predictor.py: 5
+# TSN/demo/slowfast2/visualization/utils/misc.py: 4
+# TSN/demo/slowfast2/visualization/visualizer/async_vis.py: 6
+# TSN/demo/slowfast2/visualization/visualizer/img_visualizer.py: 8
+# TSN/demo/slowfast2/visualization/visualizer/video_visualizer.py: 14
 # TSN/test/test_clipsample.py: 10
 # TSN/test/test_model/test_backbone/test_basicblock.py: 10,11
 # TSN/test/test_model/test_backbone/test_bottleneck.py: 10,11
@@ -184,8 +194,9 @@ torchvision == 0.8.2
 # TSN/tsn/engine/inference.py: 13
 tqdm == 4.56.0
 
+# TSN/demo/mmaction2/visualization/configs/demo.py: 10
 # TSN/demo/slowfast/configs/demo.py: 10
-# TSN/demo/slowfast2/configs/demo.py: 10
+# TSN/demo/slowfast2/visualization/configs/demo.py: 10
 # TSN/tsn/config/dataloader.py: 10
 # TSN/tsn/config/dataset.py: 10
 # TSN/tsn/config/defaults.py: 1
