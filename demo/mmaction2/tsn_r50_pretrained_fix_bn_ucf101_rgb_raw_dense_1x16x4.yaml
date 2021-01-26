@@ -1,0 +1,104 @@
+NUM_GPUS: 1
+NUM_NODES: 1
+RANK_ID: 0
+DIST_BACKEND: "nccl"
+RNG_SEED: 1
+OUTPUT_DIR: 'outputs/tsn_r50_pretrained_fix_bn_ucf101_rgb_raw_dense_1x16x4'
+TRAIN:
+  LOG_STEP: 10
+  MAX_EPOCH: 200
+  SAVE_EPOCH: 5
+  EVAL_EPOCH: 5
+  RESUME: False
+  USE_TENSORBOARD: True
+DATASETS:
+  MODALITY: 'RGB'
+  TYPE: 'RawFrame'
+  SAMPLE_STRATEGY: 'DenseSample'
+  CLIP_LEN: 1
+  FRAME_INTERVAL: 16
+  NUM_CLIPS: 4
+  NUM_SAMPLE_POSITIONS: 1
+  TRAIN:
+    NAME: 'UCF101'
+    DATA_DIR: 'data/ucf101/rawframes'
+    ANNOTATION_DIR: 'data/ucf101'
+    SPLIT: 1
+  TEST:
+    NAME: 'UCF101'
+    DATA_DIR: 'data/ucf101/rawframes'
+    ANNOTATION_DIR: 'data/ucf101'
+    SPLIT: 1
+TRANSFORM:
+  MEAN: (0.485, 0.456, 0.406)
+  STD: (0.229, 0.224, 0.225)
+  TRAIN:
+    SCALE_JITTER: (256, 320)
+    RANDOM_HORIZONTAL_FLIP: True
+    COLOR_JITTER: (0.1, 0.1, 0.1, 0.1)
+    RANDOM_ROTATION: 10
+    RANDOM_CROP: True
+    CENTER_CROP: False
+    TRAIN_CROP_SIZE: 224
+    RANDOM_ERASING: True
+  TEST:
+    SHORTER_SIDE: 256
+    CENTER_CROP: True
+    THREE_CROP: False
+    TEST_CROP_SIZE: 256
+DATALOADER:
+  TRAIN_BATCH_SIZE: 24
+  TEST_BATCH_SIZE: 24
+  NUM_WORKERS: 8
+MODEL:
+  NAME: 'TSN'
+  PRETRAINED: ''
+  NORM:
+    TYPE: 'BatchNorm2d'
+    SYNC_BN: False
+    FIX_BN: True
+    PARTIAL_BN: False
+  BACKBONE:
+    NAME: 'ResNetBackbone'
+    TORCHVISION_PRETRAINED: True
+    ARCH: "resnet50"
+    ZERO_INIT_RESIDUAL: True
+  HEAD:
+    NAME: 'TSNHead'
+    FEATURE_DIMS: 2048
+    DROPOUT: 0.5
+    NUM_CLASSES: 101
+  RECOGNIZER:
+    NAME: 'TSNRecognizer'
+  CONSENSUS:
+    NAME: 'AvgConsensus'
+  CRITERION:
+    NAME: 'CrossEntropyLoss'
+OPTIMIZER:
+  NAME: 'SGD'
+  LR: 1e-3
+  WEIGHT_DECAY: 1e-5
+  SGD:
+    MOMENTUM: 0.9
+LR_SCHEDULER:
+  NAME: 'MultiStepLR'
+  IS_WARMUP: True
+  GAMMA: 0.1
+  MULTISTEP_LR:
+    MILESTONES: [ 100, 150, 175 ]
+  WARMUP:
+    ITERATION: 5
+    MULTIPLIER: 1.0
+DEMO:
+  WEBCAM: -1
+#  INPUT_VIDEO: "demo/videos/v_Lunges_g16_c01.avi"
+#  INPUT_VIDEO: "demo/videos/test.mp4"
+  INPUT_VIDEO: "demo/videos/12-1.mp4"
+  DISPLAY_WIDTH: 0
+  DISPLAY_HEIGHT: 0
+  OUTPUT_FILE: 'demo/videos/mmaction2_output.avi'
+#  OUTPUT_FILE: ''
+  OUTPUT_FPS: -1
+  LABEL_FILE_PATH: 'data/ucf101/annotations/classInd.txt'
+  AVG_SIZE: 1
+  THRESHOLD: 0.01

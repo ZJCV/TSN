@@ -3,6 +3,7 @@
 
 import cv2
 import torch
+import numpy as np
 
 from tsn.data.transforms.build import build_transform
 from tsn.model.recognizers.build import build_recognizer
@@ -18,13 +19,21 @@ class Predictor:
     Action Predictor for action recognition.
     """
 
-    def __init__(self, cfg):
+    def __init__(self, cfg, gpu_id=None):
         """
         Args:
             cfg (CfgNode): configs. Details can be found in
                 slowfast/config/defaults.py.
         """
-        self.device = get_device(get_local_rank())
+        np.random.seed(cfg.RNG_SEED)
+        torch.manual_seed(cfg.RNG_SEED)
+        torch.backends.cudnn.deterministic = False
+        torch.backends.cudnn.benchmark = True
+
+        if gpu_id is None:
+            self.device = get_device(get_local_rank())
+        else:
+            self.device = torch.device(f"cuda:{gpu_id}")
 
         # Build the video model and print model statistics.
         self.model = build_recognizer(cfg, device=self.device)

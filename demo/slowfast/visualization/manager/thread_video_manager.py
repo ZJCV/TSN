@@ -65,7 +65,7 @@ class ThreadVideoManager:
         self.put_id = -1
         self.buffer = []
         self.buffer_size = cfg.DEMO.BUFFER_SIZE
-        self.seq_length = cfg.DATA.NUM_FRAMES * cfg.DATA.SAMPLING_RATE
+        self.seq_length = cfg.DATASETS.CLIP_LEN * cfg.DATASETS.NUM_CLIPS
         self.clip_vis_size = cfg.DEMO.CLIP_VIS_SIZE
 
         self.read_queue = queue.Queue()

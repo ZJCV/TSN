@@ -92,7 +92,12 @@ LR_SCHEDULER:
 DEMO:
   ENABLE: True
   THREAD_ENABLE: False
+  NUM_VIS_INSTANCES: 8
   WEBCAM: -1
-  INPUT_VIDEO: 'demo/videos/v_Lunges_g16_c01.avi'
-  OUTPUT_FILE: "demo/videos/output.avi"
+#  INPUT_VIDEO: 'demo/videos/v_Lunges_g16_c01.avi'
+#  INPUT_VIDEO: 'demo/videos/test.mp4'
+#  INPUT_VIDEO: 'demo/videos/12-1.mp4'
+  INPUT_VIDEO: 'demo/videos/1280-1024.mp4'
+  OUTPUT_FILE: "demo/videos/slowfast-output.mp4"
+#  OUTPUT_FILE: ""
   LABEL_FILE_PATH: "./data/ucf101/annotations/class2idx.json"

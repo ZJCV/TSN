@@ -102,7 +102,7 @@ class VideoManager:
         """
         return cv2.VideoWriter(
             filename=path,
-            fourcc=cv2.VideoWriter_fourcc(*"mp4v"),
+            fourcc=cv2.VideoWriter_fourcc(*"avc1"),
             fps=float(fps),
             frameSize=(self.display_width, self.display_height),
             isColor=True,
@@ -119,7 +119,8 @@ class VideoManager:
         for frame in task.frames[task.num_buffer_frames:]:
             if self.output_file is None:
                 cv2.imshow("SlowFast", frame)
-                time.sleep(1 / self.output_fps)
+                # time.sleep(1 / self.output_fps)
+                cv2.waitKey(int(1 / self.output_fps * 1000))
             else:
                 self.output_file.write(frame)
 
